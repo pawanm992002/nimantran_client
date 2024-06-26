@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-
+import "../styles/register.css"
+import img from "../../images/6131259.jpg"
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -30,10 +31,24 @@ const Login = () => {
 
     return (
         <div>
-            <h2>Login</h2>
-            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <button onClick={loginUser}>Login</button>
+              <section>
+        <div className="container">
+            <div className="imgBx"><img src={img} alt="" /></div>
+        </div>
+            <div className="formBx">
+              <form action="" onsubmit="return false;">
+                <h2>Login</h2>
+                <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                <input type="password" placeholder="Password"  value={password} onChange={(e) => setPassword(e.target.value)} />
+
+                <input type="submit" onClick={loginUser} value="Login" />
+                <p className="signup">
+                  Already have an account ?
+                  <a href="#" onclick="toggleForm();">Login</a>
+                </p>
+              </form>
+            </div>
+      </section>
         </div>
     );
 };

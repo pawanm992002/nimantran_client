@@ -1,0 +1,68 @@
+/* Modal backdrop */
+.Transfer-credit-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal content */
+.Transfer-credit-container form {
+  background: #fff;
+  position: relative;
+  padding: 40px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.Transfer-credit-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.Transfer-credit-container label {
+  display: block;
+  margin-bottom: 5px;
+  color: #666;
+  font-weight: bold;
+}
+
+.Transfer-credit-container input {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+.Transfer-credit-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.Transfer-credit-container button:hover {
+  background-color: #0056b3;
+}
+
+.close-btn{
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 25px;
+  cursor: pointer;
+}
