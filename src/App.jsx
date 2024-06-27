@@ -7,7 +7,43 @@ import CustomerDashboard from "./components/customer/CustomerDashboard";
 import Register from "./components/user/Register";
 import AdminLogin from "./components/admin/AdminLogin";
 import Events from "./components/user/Events";
-import "./App.css"
+import WeddingVideo from "./components/WeddingVideo/WeddingVideo";
+import WeddingCard from "./components/WeddingCard/WeddingCard";
+import WeddingImage from "./components/WeddingImage/WeddingImage";
+import "./App.css";
+
+export const fontFamilies = [
+  "Josefin Slab",
+  "Phudu",
+  "Londrina Shadow",
+  "Carattere",
+  "Permanent Marker",
+  "Noto Serif",
+  "Playfair Display",
+  "Ubuntu",
+  "Roboto",
+  "Alkatra",
+  "Tilt Warp",
+  "Kalnia",
+  "Grenze Gotisch",
+  "Antonio",
+  "Genos",
+  "Podkova",
+  "Ojuju",
+  "Changa",
+  "DynaPuff",
+  "Danfo",
+  "Jaro",
+  "Edu QLD Beginner",
+  "Edu VIC WA NT Beginner",
+  "Edu SA Beginner",
+  "Grandstander",
+  "Merienda",
+  "Edu TAS Beginner",
+  "Caveat",
+  "Dancing Script",
+];
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -24,7 +60,11 @@ const App = () => {
 
         <Route path="/client" element={<ClientDashboard />} />
         <Route path="/customer" element={<CustomerDashboard />} />
-        
+
+        <Route path="/videoEdit" element={<WeddingVideo />} />
+        <Route path="/cardEdit" element={<WeddingCard />} />
+        <Route path="/imageEdit" element={<WeddingImage />} />
+
         {/* <Route path="/:clientId" element={<ClientDashboard />} />
         <Route path="/:clientId/events" element={<h1>client event page</h1>} /> */}
 
@@ -36,7 +76,6 @@ const App = () => {
           path="/:clientId/:customerId/events"
           element={<h1>customer event page</h1>}
         /> */}
-
       </Routes>
     </BrowserRouter>
   );
