@@ -135,7 +135,7 @@ export default function WeddingImage() {
       formData.append("scalingH", scalingH);
 
       const response = await axios.post(
-        "http://localhost:5000/image/upload",
+        "http://localhost:8000/image/upload",
         formData,
         {
           headers: {
@@ -419,12 +419,12 @@ export default function WeddingImage() {
           {/* </div> */}
         </div>
       </div>
-
       {processedVideoUrls.length > 0 && <h2 className="heading">Processed Images</h2> }
       {processedVideoUrls.length > 0 && (
         <div className="processed_videos_container">
           {processedVideoUrls.map((url, index) => (
             <div key={index}>
+              {console.log(url)}
               <img src={url} controls style={{ maxHeight: "400px", padding: '20px' }} />
             </div>
           ))}
