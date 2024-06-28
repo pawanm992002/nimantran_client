@@ -36,7 +36,7 @@ const AdminDashboard = () => {
 
   const getAllUsers = async () => {
     const { data } = await axios.get(
-      `${process.env.REACT_APP_ADMIN}/getAllClientWihtCustomers`,
+      `${process.env.REACT_APP_ADMIN}/getAllClientWithCustomers`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }

@@ -23,7 +23,7 @@ const PurchaseCredit = ({ fetchClientDetails, handleModalPurchaseRequest}) => {
         fetchClientDetails();
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      // toast.error(error.response.data.message);
     }
   };
 
@@ -44,7 +44,7 @@ const PurchaseCredit = ({ fetchClientDetails, handleModalPurchaseRequest}) => {
               required
             />
           </div>
-          <button type="submit" className="btn-submit">Request Credits From Admin</button>
+          <button type="submit" onClick={handleModalPurchaseRequest} className="btn-submit">Request Credits From Admin</button>
         </form>
       </div>
     </div>

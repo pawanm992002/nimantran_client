@@ -2,6 +2,7 @@ import React from 'react';
 import './styles/CustomerTable.css';
 
 const CustomerRequestTable = ({ clientInfo }) => {
+  console.log(clientInfo?.receiveRequests);
   return (
     <>
         <h3 className='heading'>Customers Requests</h3>
@@ -11,16 +12,18 @@ const CustomerRequestTable = ({ clientInfo }) => {
             <tr>
               <th>Username</th>
               <th>Request Date</th>
+              <th>Credits</th>
               <th>Status</th>
               <th>Accept Request</th>
               <th>Reject Request</th>
             </tr>
           </thead>
           <tbody>
-            {clientInfo?.customers?.map((customer) => (
+            {clientInfo?.receiveRequests?.map((customer) => (
               <tr key={customer._id}>
-                <td data-label="Username">{customer.username}</td>
-                <td data-label="Request Date">{new Date(customer.date).toLocaleDateString()}</td>
+                <td data-label="Username">{customer.userId}</td>
+                <td data-label="Request Date">{new Date(customer.createdAt).toLocaleDateString()}</td>
+                <td data-label="Credits">{customer.credits}</td>
                 <td data-label="Status">{customer.status}</td>
                 <td>
                   <button className="btn-transfer-credit accept-btn">
