@@ -9,11 +9,10 @@
   margin: 0;
   box-sizing: border-box;
 }
-.heading {
+/* .heading {
   background: rgb(207, 175, 238);
   padding: 10px;
-  
-}
+} */
 .main {
   background: #cfccf6;
   padding: 10px 0px;

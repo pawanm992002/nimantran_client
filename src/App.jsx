@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./components/user/Login";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
-import CustomerDashboard from "./components/customer/CustomerDashboard";
+import CustomerDashboard from "./pages/CustomerDashboard";
 import Register from "./components/user/Register";
 import AdminLogin from "./components/admin/AdminLogin";
 import Events from "./components/user/Events";
@@ -56,7 +56,7 @@ const App = () => {
 
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/events" element={<Events />} />
+        <Route path="/events" element={<Events/>} />
 
         <Route path="/client" element={<ClientDashboard />} />
         <Route path="/customer" element={<CustomerDashboard />} />

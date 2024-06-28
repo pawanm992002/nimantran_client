@@ -31,7 +31,7 @@ export default function WeddingVideo() {
   const [onHover3, setOnHover3] = useState(false);
   const [onHover4, setOnHover4] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const handleStyleChange = () => {};
+  const handleStyleChange = () => { };
 
   const deleteText = (id) => {
     setTexts(texts.filter((val) => val.id !== id));
@@ -59,7 +59,7 @@ export default function WeddingVideo() {
   const onDocumentLoad = async ({ doc }) => {
     const page = await doc.getPage(1);
     const viewport = page.getViewport({ scale: 1 });
-    
+
     setOriginalSize({
       w: viewport.width,
       h: viewport.height,
@@ -85,7 +85,7 @@ export default function WeddingVideo() {
       backgroundColor: "none",
       hidden: false,
       page: currentPage,
-      transition: {type: 'none', options: null}
+      transition: { type: 'none', options: null }
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
