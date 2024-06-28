@@ -136,7 +136,7 @@ export default function WeddingVideo() {
       formData.append("videoH", parseInt(OriginalSize.h));
 
       const response = await axios.post(
-        "http://localhost:5000/video/upload",
+        "http://localhost:8000/video/upload",
         formData,
         {
           headers: {
