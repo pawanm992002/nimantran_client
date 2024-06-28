@@ -6,7 +6,7 @@ import ClientDashboard from "./pages/ClientDashboard";
 import CustomerDashboard from "./components/customer/CustomerDashboard";
 import Register from "./components/user/Register";
 import AdminLogin from "./components/admin/AdminLogin";
-import Events from "./components/user/Events";
+import Events from "./pages/events/Events";
 import WeddingVideo from "./components/WeddingVideo/WeddingVideo";
 import WeddingCard from "./components/WeddingCard/WeddingCard";
 import WeddingImage from "./components/WeddingImage/WeddingImage";
