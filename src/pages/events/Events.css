@@ -1,7 +1,8 @@
 .eventCont {
     display: flex;
-    width: 100vw;
-    /* height: 100vh; */
+    /* width: 100vw; */
+    width: 100%;
+    height: 100vh;
     overflow-y: auto;
     background-color: bisque;
     box-sizing: border-box;
@@ -9,6 +10,7 @@
     padding: 15px 20px;
     flex-wrap: wrap;
     justify-content: center;
+    position: relative;
 }
 .card {
     background-color: rgb(213, 243, 233);

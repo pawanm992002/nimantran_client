@@ -143,6 +143,7 @@ export default function WeddingImage() {
           },
         }
       );
+      
       setProcessedVideoUrls(response.data.videoUrls);
       setZipUrl(response.data.zipUrl);
     } catch (error) {

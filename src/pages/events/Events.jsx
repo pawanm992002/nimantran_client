@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../../components/small_component/Modal";
+import Sidebar from "../../components/sidebar/Sidebar";
 
 export default function Events() {
   const [eventsInfo, setEventsInfo] = useState([]);
@@ -18,6 +19,7 @@ export default function Events() {
     setShowOpenModal(true);
     setSelectedEventModal(data);
   };
+
   const AddEvent = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -82,6 +84,7 @@ export default function Events() {
   }, []);
   return (
     <div className="eventCont">
+      {/* <Sidebar /> */}
       <div className="card cardAdd" onClick={() => setshowAddModal(true)}>
         <FontAwesomeIcon icon={faSquarePlus} />
       </div>
