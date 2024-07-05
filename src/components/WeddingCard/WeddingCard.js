@@ -220,7 +220,7 @@ export default function WeddingVideo() {
         </form>
 
         <div className="mainbar">
-          <label
+          {!pdfFile && <label
             className="upload-container"
             onChange={handleFileChange}
             style={{
@@ -243,7 +243,7 @@ export default function WeddingVideo() {
               {!pdfFile && <p>or Drag & Drop a file</p>}
               {/* <p className="paste-text">paste File or URL</p> */}
             </div>
-          </label>
+          </label>}
           <div
             className="videoContainer"
             style={{ display: !pdfFile ? "none" : "flex" }}
@@ -311,13 +311,7 @@ export default function WeddingVideo() {
 
         <div className="configuration">
           <h2>Text Configuration</h2>
-          <textarea
-            className="inputArea"
-            // value={guestNames}
-            // onChange={handleGuestNamesChange}
-            placeholder="Enter Guest Names (comma separated & for Sample)"
-          />
-          {texts?.map(
+          {texts.length > 0 ? texts?.map(
             ({
               id,
               text,
@@ -483,12 +477,14 @@ export default function WeddingVideo() {
                 </div>
               </div>
             )
-          )}
+          ): <span className="NoText">NO TEXT</span>}
           {/* </div> */}
         </div>
       </div>
 
-      <h2 className="heading">Processed Videos</h2>
+      {processedVideoUrls.length > 0 && (
+        <h2 className="heading">Processed Cards</h2>
+      )}
       {processedVideoUrls.length > 0 && (
         <div className="processed_videos_container">
           {processedVideoUrls.map((url, index) => (

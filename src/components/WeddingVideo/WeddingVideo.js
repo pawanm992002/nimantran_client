@@ -213,7 +213,7 @@ export default function WeddingVideo() {
         </form>
 
         <div className="mainbar">
-          <label
+          {!video && <label
             className="upload-container"
             onChange={handleVideoUpload}
             style={{
@@ -233,7 +233,7 @@ export default function WeddingVideo() {
               {!video && <p>or Drag & Drop a file</p>}
               {/* <p className="paste-text">paste File or URL</p> */}
             </div>
-          </label>
+          </label>}
           <div
             className="videoContainer"
             style={{ display: !video ? "none" : "flex" }}
@@ -275,15 +275,10 @@ export default function WeddingVideo() {
           </div>
         </div>
 
-        <div className="configuration">
+        {video && <div className="configuration">
           <h2>Text Configuration</h2>
-          <textarea
-            className="inputArea"
-            // value={guestNames}
-            // onChange={handleGuestNamesChange}
-            placeholder="Enter Guest Names (comma separated & for Sample)"
-          />
-          {texts?.map(
+          
+          {texts.length > 0 ? texts?.map(
             ({
               id,
               text,
@@ -449,9 +444,9 @@ export default function WeddingVideo() {
                 </div>
               </div>
             )
-          )}
+          ) : <span className="NoText">NO TEXT</span>}
           {/* </div> */}
-        </div>
+        </div>}
       </div>
 
       {processedVideoUrls.length > 0 && (
@@ -461,7 +456,7 @@ export default function WeddingVideo() {
         <div className="processed_videos_container">
           {processedVideoUrls.map((url, index) => (
             <div key={index} className="processed_videos">
-              <video src={url} controls style={{ maxHeight: "400px" }} />
+              <video src={url.link} controls style={{ maxHeight: "400px" }} />
             </div>
           ))}
         </div>
