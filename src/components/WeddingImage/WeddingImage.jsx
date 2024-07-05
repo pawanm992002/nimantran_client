@@ -8,11 +8,19 @@ import {
   faFileArrowDown,
   faFileArrowUp,
   faSquarePlus,
-  faVideo,
+  faVideo
 } from "@fortawesome/free-solid-svg-icons";
 import { fontFamilies } from "../../App";
 
 export default function WeddingImage() {
+
+  //dragable
+
+
+
+
+
+  
   const videoRef = useRef();
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
@@ -66,7 +74,7 @@ export default function WeddingImage() {
       text: `Edit Text - ${count}`,
       backgroundColor: "none",
       hidden: false,
-      transition: {type: 'none', options: null}
+      transition: { type: "none", options: null },
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
@@ -105,7 +113,7 @@ export default function WeddingImage() {
   };
 
   const handleGuestNamesChange = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     setGuestNames(event.target.files[0]);
     // setGuestNames(event.target.value)
   };
@@ -114,7 +122,7 @@ export default function WeddingImage() {
     event.preventDefault();
     try {
       const formData = new FormData();
-      
+
       let resized = document.getElementById("videoPlayer");
       let scalingW = OriginalSize.w / resized.clientWidth;
       let scalingH = OriginalSize.h / resized.clientHeight;
@@ -126,7 +134,7 @@ export default function WeddingImage() {
       if (!video) {
         return toast.error("Please Upload the Video");
       }
-    
+
       formData.append("video", video);
       formData.append("guestNames", guestNames);
       formData.append("textProperty", JSON.stringify(texts));
@@ -143,7 +151,7 @@ export default function WeddingImage() {
           },
         }
       );
-      
+
       setProcessedVideoUrls(response.data.videoUrls);
       setZipUrl(response.data.zipUrl);
     } catch (error) {
@@ -194,11 +202,14 @@ export default function WeddingImage() {
           </button>
 
           {zipUrl && (
-            <label className="custom-file-upload" onMouseOver={() => setOnHover4(true)}
-            onMouseOut={() => setOnHover4(false)}>
+            <label
+              className="custom-file-upload"
+              onMouseOver={() => setOnHover4(true)}
+              onMouseOut={() => setOnHover4(false)}
+            >
               <div className="tooltip" style={{ display: onHover4 && "flex" }}>
-              Download All Videos in Zip
-            </div>
+                Download All Videos in Zip
+              </div>
               <a
                 href={zipUrl}
                 download="processed_videos.zip"
@@ -263,7 +274,7 @@ export default function WeddingImage() {
                     takeTextDetails={takeTextDetails}
                     property={val}
                     videoCenter={resized.w / 2}
-                    comp='image'
+                    comp="image"
                   />
                 ))}
               </div>
@@ -295,7 +306,11 @@ export default function WeddingImage() {
               backgroundColor,
               hidden,
             }) => (
-              <div key={id} className="context-menu" style={{ position: "relative" }}>
+              <div
+                key={id}
+                className="context-menu"
+                style={{ position: "relative" }}
+              >
                 <div>
                   <label>Text Id : {id}</label>
                 </div>
@@ -420,13 +435,19 @@ export default function WeddingImage() {
           {/* </div> */}
         </div>
       </div>
-      {processedVideoUrls.length > 0 && <h2 className="heading">Processed Images</h2> }
+      {processedVideoUrls.length > 0 && (
+        <h2 className="heading">Processed Images</h2>
+      )}
       {processedVideoUrls.length > 0 && (
         <div className="processed_videos_container">
           {processedVideoUrls.map((url, index) => (
             <div key={index}>
               {console.log(url)}
-              <img src={url} controls style={{ maxHeight: "400px", padding: '20px' }} />
+              <img
+                src={url}
+                controls
+                style={{ maxHeight: "400px", padding: "20px" }}
+              />
             </div>
           ))}
         </div>
