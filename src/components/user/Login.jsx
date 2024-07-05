@@ -6,17 +6,17 @@ import "../styles/register.css";
 import img from "../../images/6131259.jpg";
 
 const Login = () => {
-    const [username, setUsername] = useState('');
+    const [mobile, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
     const loginUser = async (event) => {
         event.preventDefault(); // Prevents the default form submission
         try {
-            const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/login`, { username, password });
+            const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/login`, { mobile, password });
 
             localStorage.setItem('token', data?.data?.token);
-            localStorage.setItem('username', data?.data?.username);
+            localStorage.setItem('mobile', data?.data?.mobile);
             localStorage.setItem('_id', data?.data?._id);
             localStorage.setItem('role', data?.data?.role);
 
@@ -42,8 +42,8 @@ const Login = () => {
                         <h2>Login</h2>
                         <input 
                             type="text" 
-                            placeholder="Username" 
-                            value={username} 
+                            placeholder="mobile" 
+                            value={mobile} 
                             onChange={(e) => setUsername(e.target.value)} 
                         />
                         <input 

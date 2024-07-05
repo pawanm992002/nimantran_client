@@ -8,11 +8,19 @@ import {
   faFileArrowDown,
   faFileArrowUp,
   faSquarePlus,
-  faVideo,
+  faVideo
 } from "@fortawesome/free-solid-svg-icons";
 import { fontFamilies } from "../../App";
 
 export default function WeddingImage() {
+
+  //dragable
+
+
+
+
+
+  
   const videoRef = useRef();
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);

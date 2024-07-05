@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./components/user/Login";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
-import CustomerDashboard from "./pages/CustomerDashboard";
 import Register from "./components/user/Register";
 import AdminLogin from "./components/admin/AdminLogin";
 import Events from "./pages/events/Events";
@@ -11,6 +10,12 @@ import WeddingVideo from "./components/WeddingVideo/WeddingVideo";
 import WeddingCard from "./components/WeddingCard/WeddingCard";
 import WeddingImage from "./components/WeddingImage/WeddingImage";
 import "./App.css";
+import "./tailwind.css";
+
+import CustomerDashboard from "./pages/CustomerDashboard";
+import Client from "./pages/Client";
+import CustomerTable from "./components/client/CustomerTable";
+
 
 export const fontFamilies = [
   "Josefin Slab",
@@ -56,10 +61,15 @@ const App = () => {
 
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/events" element={<Events/>} />
+        <Route path="/events" element={<Events />} />
 
-        <Route path="/client" element={<ClientDashboard />} />
-        <Route path="/customer" element={<CustomerDashboard />} />
+        {/* <Route path="/client" element={<ClientDashboard />} /> */}
+        <Route path="/client" element={<Client />}>
+          <Route path="/client/dashboard" element={<ClientDashboard/>} />
+          <Route path="/client/customers" element={<CustomerTable/>} />
+        </Route>
+            
+       
 
         <Route path="/videoEdit" element={<WeddingVideo />} />
         <Route path="/cardEdit" element={<WeddingCard />} />

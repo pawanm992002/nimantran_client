@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import "../styles/register.css"
 import img from "../../images/6131259.jpg"
 const Register = () => {
-  const [username, setUsername] = useState('');
+  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('client'); // default role for registration
   const [clientId, setClientId] = useState('');
@@ -13,7 +13,7 @@ const Register = () => {
 
   const registerUser = async () => {
     try {
-      const user = { username, password, role };
+      const user = { mobile, password, role };
       if (role === 'customer') {
         user.clientId = clientId;
       }
@@ -40,8 +40,8 @@ const Register = () => {
             <div className="formBx">
               <form action="" onsubmit="return false;">
                 <h2>Registraion</h2>
-                <input type="text" placeholder="Username" value={username}
-                  onChange={(e) => setUsername(e.target.value)} />
+                <input type="text" placeholder="Mobile Number" value={mobile}
+                  onChange={(e) => setMobile(e.target.value)} />
                 <input type="password" placeholder="Password" value={password}
                   onChange={(e) => setPassword(e.target.value)} />
                 <select value={role} onChange={(e) => setRole(e.target.value)}>
