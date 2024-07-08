@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import Navbar from "../components/Navbar";
 
 const ClientDashboard = () => {
   const token = localStorage.getItem("token");
@@ -129,7 +128,7 @@ const ClientDashboard = () => {
 
 
      
-
+   
       {createCustomerModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-lg p-8 w-1/3">

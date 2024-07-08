@@ -119,10 +119,10 @@ const CustomerTable = () => {
                         key={customer._id}
                         className="even:bg-gray-100 odd:bg-white"
                       >
-                        <td className="px-4 py-2">{customer._id}</td>
-                        <td className="px-4 py-2">{customer.mobile}</td>
-                        <td className="px-4 py-2">{customer.credits}</td>
-                        <td className="px-4 py-2">
+                        <td className="px-4 py-2 text-center">{customer._id}</td>
+                        <td className="px-4 py-2 text-center">{customer.mobile}</td>
+                        <td className="px-4 py-2 text-center">{customer.credits}</td>
+                        <td className="px-4 py-2 text-center">
                           <button
                             onClick={() => handleModalCredits(customer._id)}
                             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
