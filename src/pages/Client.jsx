@@ -29,8 +29,8 @@ const Client = () => {
                             <span className="mr-2">👥</span> End Users
                         </Link>
                         <Link 
-                            to="/client/events" 
-                            className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/events" ? "bg-gray-200" : ""}`}
+                            to="/client/eventlist" 
+                            className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/eventlist" ? "bg-gray-200" : ""}`}
                         >
                             <span className="mr-2">🎊</span> Events
                         </Link>
@@ -89,7 +89,7 @@ const Client = () => {
                         </button>
                         <div className="flex items-center">
                             <img className="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Profile" />
-                            <span>Tom Cook</span>
+                            <span>Nimantran</span>
                         </div>
                     </div>
                 </header>
