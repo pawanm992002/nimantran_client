@@ -164,7 +164,7 @@ export default function WeddingImage() {
       formData.append("isSample", isSample);
 
       const response = await axios.post(
-        "http://localhost:8000/image/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/imageEdit`,
         formData,
       );
 

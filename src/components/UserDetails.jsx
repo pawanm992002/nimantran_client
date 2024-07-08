@@ -10,7 +10,7 @@ const UserDetails = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/users/${id}`);
+        const response = await axios.get(`${REACT_APP_BACKEND_URL}/users/${id}`);
         console.log(response)
         setUser(response.data);
       } catch (error) {
