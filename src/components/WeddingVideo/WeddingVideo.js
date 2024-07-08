@@ -139,7 +139,7 @@ export default function WeddingVideo() {
       formData.append("isSample", isSample);
 
       const response = await axios.post(
-        "http://localhost:8000/video/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/videoEdit`,
         formData,
         {
           headers: {

@@ -31,7 +31,8 @@ export default function WeddingVideo() {
   const [onHover3, setOnHover3] = useState(false);
   const [onHover4, setOnHover4] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const handleStyleChange = () => { };
+  const [isSample, setIsSample] = useState(true);
+  const handleStyleChange = () => {};
 
   const deleteText = (id) => {
     setTexts(texts.filter((val) => val.id !== id));
@@ -85,7 +86,7 @@ export default function WeddingVideo() {
       backgroundColor: "none",
       hidden: false,
       page: currentPage,
-      transition: { type: 'none', options: null }
+      transition: { type: "none", options: null },
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
@@ -125,7 +126,7 @@ export default function WeddingVideo() {
         scalingW,
         OriginalSize
       );
-      if (!guestNames) {
+      if (!guestNames && !isSample) {
         return toast.error("Please Enter Guest List");
       }
       if (!pdfFile) {
@@ -138,11 +139,12 @@ export default function WeddingVideo() {
       formData.append("scalingFont", scalingFont);
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
+      formData.append("isSample", isSample)
       // formData.append("videoW", parseInt(OriginalSize.w));
       // formData.append("videoH", parseInt(OriginalSize.h));
 
       const response = await axios.post(
-        "http://localhost:8000/pdf/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/pdfEdit`,
         formData,
         {
           headers: {
@@ -219,30 +221,32 @@ export default function WeddingVideo() {
         </form>
 
         <div className="mainbar">
-          {!pdfFile && <label
-            className="upload-container"
-            onChange={handleFileChange}
-            style={{
-              height: pdfFile && "50px",
-              margin: pdfFile && "0 auto",
-              padding: pdfFile && "5px",
-            }}
-          >
-            <input type="file" accept="pdf/*" />
-            <div className="upload-content">
-              <h2
-                className="upload-button"
-                style={{
-                  fontSize: pdfFile && "15px",
-                  padding: pdfFile && "8px",
-                }}
-              >
-                Upload PDF
-              </h2>
-              {!pdfFile && <p>or Drag & Drop a file</p>}
-              {/* <p className="paste-text">paste File or URL</p> */}
-            </div>
-          </label>}
+          {!pdfFile && (
+            <label
+              className="upload-container"
+              onChange={handleFileChange}
+              style={{
+                height: pdfFile && "50px",
+                margin: pdfFile && "0 auto",
+                padding: pdfFile && "5px",
+              }}
+            >
+              <input type="file" accept="pdf/*" />
+              <div className="upload-content">
+                <h2
+                  className="upload-button"
+                  style={{
+                    fontSize: pdfFile && "15px",
+                    padding: pdfFile && "8px",
+                  }}
+                >
+                  Upload PDF
+                </h2>
+                {!pdfFile && <p>or Drag & Drop a file</p>}
+                {/* <p className="paste-text">paste File or URL</p> */}
+              </div>
+            </label>
+          )}
           <div
             className="videoContainer"
             style={{ display: !pdfFile ? "none" : "flex" }}
@@ -310,173 +314,188 @@ export default function WeddingVideo() {
 
         <div className="configuration">
           <h2>Text Configuration</h2>
-          {texts.length > 0 ? texts?.map(
-            ({
-              id,
-              text,
-              fontColor,
-              fontSize,
-              duration,
-              startTime,
-              position,
-              fontFamily,
-              fontStyle,
-              size,
-              backgroundColor,
-              hidden,
-            }) => (
-              <div
-                key={id}
-                className="context-menu"
-                style={{ position: "relative" }}
-              >
-                <div>
-                  <label>Text Id : {id}</label>
-                </div>
-                <div>
-                  <label>
-                    Font Color:
-                    <input
-                      className="context-property"
-                      type="color"
-                      name="color"
-                      value={fontColor}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Background:
-                    <input
-                      className="context-property"
-                      type="color"
-                      name="backgroundColor"
-                      value={backgroundColor}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Font Style:
-                    <select
-                      className="context-property"
-                      name="style"
-                      value={fontStyle}
-                      onChange={handleStyleChange}
+          <div className="NoText">
+            <input
+              type="checkbox"
+              id="sample"
+              checked={isSample}
+              onChange={(e) => setIsSample(JSON.parse(e.target.checked))}
+            />
+            <label htmlFor="sample" id="sample">
+              Generate Sample Images
+            </label>
+          </div>
+          {texts.length > 0 ? (
+            texts?.map(
+              ({
+                id,
+                text,
+                fontColor,
+                fontSize,
+                duration,
+                startTime,
+                position,
+                fontFamily,
+                fontStyle,
+                size,
+                backgroundColor,
+                hidden,
+              }) => (
+                <div
+                  key={id}
+                  className="context-menu"
+                  style={{ position: "relative" }}
+                >
+                  <div>
+                    <label>Text Id : {id}</label>
+                  </div>
+                  <div>
+                    <label>
+                      Font Color:
+                      <input
+                        className="context-property"
+                        type="color"
+                        name="color"
+                        value={fontColor}
+                        onChange={handleStyleChange}
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <label>
+                      Background:
+                      <input
+                        className="context-property"
+                        type="color"
+                        name="backgroundColor"
+                        value={backgroundColor}
+                        onChange={handleStyleChange}
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <label>
+                      Font Style:
+                      <select
+                        className="context-property"
+                        name="style"
+                        value={fontStyle}
+                        onChange={handleStyleChange}
+                      >
+                        <option value="normal">Normal</option>
+                        <option value="italic">Italic</option>
+                        <option value="oblique">Oblique</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div>
+                    <label>
+                      Font Size:
+                      <input
+                        className="context-property"
+                        type="number"
+                        name="size"
+                        value={fontSize}
+                        onChange={handleStyleChange}
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <label>
+                      Font Family:
+                      <select
+                        className="context-property"
+                        name="family"
+                        value={fontFamily}
+                        onChange={handleStyleChange}
+                      >
+                        {fontFamilies.map((val, i) => (
+                          <option
+                            style={{ fontFamily: `${val}` }}
+                            value={val}
+                            key={i}
+                          >
+                            {val}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                  <div>
+                    <label>
+                      Start Time:
+                      <input
+                        className="context-property"
+                        type="number"
+                        name="startTime"
+                        step="0.1"
+                        value={startTime}
+                        onChange={handleStyleChange}
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <label>
+                      Duration:
+                      <input
+                        className="context-property"
+                        type="number"
+                        name="duration"
+                        step="0.1"
+                        value={duration}
+                        onChange={handleStyleChange}
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        background: "#B5B4F3",
+                        textAlign: "center",
+                        borderRadius: "5px",
+                        padding: "0 10px",
+                      }}
+                      name="delete"
+                      onClick={() => deleteText(id)}
                     >
-                      <option value="normal">Normal</option>
-                      <option value="italic">Italic</option>
-                      <option value="oblique">Oblique</option>
-                    </select>
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Font Size:
-                    <input
-                      className="context-property"
-                      type="number"
-                      name="size"
-                      value={fontSize}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Font Family:
-                    <select
-                      className="context-property"
-                      name="family"
-                      value={fontFamily}
-                      onChange={handleStyleChange}
+                      Delete Text - {id}
+                    </label>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        background: "#B5B4F3",
+                        textAlign: "center",
+                        borderRadius: "5px",
+                        padding: "0 10px",
+                      }}
+                      name="hidden"
+                      onClick={() =>
+                        hideText({
+                          id,
+                          text,
+                          fontColor,
+                          fontSize,
+                          duration,
+                          startTime,
+                          position,
+                          fontFamily,
+                          fontStyle,
+                          size,
+                          backgroundColor,
+                          hidden,
+                        })
+                      }
                     >
-                      {fontFamilies.map((val, i) => (
-                        <option
-                          style={{ fontFamily: `${val}` }}
-                          value={val}
-                          key={i}
-                        >
-                          {val}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                      {hidden ? "Show" : "Hide"} Text - {id}
+                    </label>
+                  </div>
                 </div>
-                <div>
-                  <label>
-                    Start Time:
-                    <input
-                      className="context-property"
-                      type="number"
-                      name="startTime"
-                      step="0.1"
-                      value={startTime}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Duration:
-                    <input
-                      className="context-property"
-                      type="number"
-                      name="duration"
-                      step="0.1"
-                      value={duration}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      background: "#B5B4F3",
-                      textAlign: "center",
-                      borderRadius: "5px",
-                      padding: "0 10px",
-                    }}
-                    name="delete"
-                    onClick={() => deleteText(id)}
-                  >
-                    Delete Text - {id}
-                  </label>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      background: "#B5B4F3",
-                      textAlign: "center",
-                      borderRadius: "5px",
-                      padding: "0 10px",
-                    }}
-                    name="hidden"
-                    onClick={() =>
-                      hideText({
-                        id,
-                        text,
-                        fontColor,
-                        fontSize,
-                        duration,
-                        startTime,
-                        position,
-                        fontFamily,
-                        fontStyle,
-                        size,
-                        backgroundColor,
-                        hidden,
-                      })
-                    }
-                  >
-                    {hidden ? "Show" : "Hide"} Text - {id}
-                  </label>
-                </div>
-              </div>
+              )
             )
-          ): <span className="NoText">NO TEXT</span>}
+          ) : (
+            <span className="NoText">NO TEXT</span>
+          )}
           {/* </div> */}
         </div>
       </div>
