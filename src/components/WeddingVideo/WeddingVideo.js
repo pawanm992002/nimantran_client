@@ -23,6 +23,7 @@ export default function WeddingVideo() {
   const [onHover2, setOnHover2] = useState(false);
   const [onHover3, setOnHover3] = useState(false);
   const [onHover4, setOnHover4] = useState(false);
+  const [isSample, setIsSample] = useState(true)
   const handleStyleChange = () => {};
 
   const deleteText = (id) => {
@@ -119,9 +120,10 @@ export default function WeddingVideo() {
       let scalingH = OriginalSize.h / resized.clientHeight;
       let scalingFont = Math.min(scalingW, scalingH);
 
-      if (!guestNames) {
+      if (!guestNames && !isSample) {
         return toast.error("Please Enter Guest List");
       }
+      
       if (!video) {
         return toast.error("Please Upload the Video");
       }
@@ -134,6 +136,7 @@ export default function WeddingVideo() {
       formData.append("scalingH", scalingH);
       formData.append("videoW", parseInt(OriginalSize.w));
       formData.append("videoH", parseInt(OriginalSize.h));
+      formData.append("isSample", isSample);
 
       const response = await axios.post(
         "http://localhost:8000/video/upload",
@@ -153,7 +156,7 @@ export default function WeddingVideo() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
-      <div className="container">
+      <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
             className="custom-file-upload"
@@ -270,13 +273,23 @@ export default function WeddingVideo() {
                   />
                 ))}
               </div>
-              {/* </div> */}
             </div>
           </div>
         </div>
 
         {video && <div className="configuration">
           <h2>Text Configuration</h2>
+          <div className="NoText">
+            <input
+              type="checkbox"
+              id="sample"
+              checked={isSample}
+              onChange={(e) => setIsSample(JSON.parse(e.target.checked))}
+            />
+            <label htmlFor="sample" id="sample">
+              Generate Sample Images
+            </label>
+          </div>
           
           {texts.length > 0 ? texts?.map(
             ({
@@ -445,7 +458,6 @@ export default function WeddingVideo() {
               </div>
             )
           ) : <span className="NoText">NO TEXT</span>}
-          {/* </div> */}
         </div>}
       </div>
 

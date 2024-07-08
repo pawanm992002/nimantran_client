@@ -18,7 +18,7 @@
   margin: 0;
   text-align: center;
 }
-.container {
+.mainContainer {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -114,7 +114,10 @@
   color: blue;
   letter-spacing: 2px;
   font-weight: bold;
-  border-bottom: 1px solid blue;
+  text-align: center;
+  input {
+    margin: 5px
+  }
 }
 
 .inputText {

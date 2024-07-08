@@ -158,9 +158,8 @@ export default function WeddingVideo() {
   };
   return (
     <div className="main">
-      {console.log(resized)}
       <h2 className="heading">Wedding Invitation Editor</h2>
-      <div className="container">
+      <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
             className="custom-file-upload"

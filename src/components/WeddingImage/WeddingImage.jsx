@@ -43,7 +43,6 @@ export default function WeddingImage() {
     setTexts([...others, details]);
   };
 
-  console.log(isSample);
   const [scaling, setScaling] = useState({
     width: 1,
     height: 1,
@@ -179,7 +178,7 @@ export default function WeddingImage() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
-      <div className="container">
+      <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
             className="custom-file-upload"
@@ -302,7 +301,7 @@ export default function WeddingImage() {
           </div>
         </div>
 
-        <div className="configuration">
+        {video && <div className="configuration">
           <h2>Text Configuration</h2>
           <div className="NoText">
             <input
@@ -461,7 +460,7 @@ export default function WeddingImage() {
             <span className="NoText">NO TEXT</span>
           )}
           {/* </div> */}
-        </div>
+        </div>}
       </div>
       {processedVideoUrls.length > 0 && (
         <h2 className="heading">Processed Images</h2>
