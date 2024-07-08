@@ -1,7 +1,10 @@
 import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
-const CustomerDashboard = () => {
+const Client = () => {
+    const location = useLocation();
+    const currentPath = location.pathname;
+
     return (
         <div className="flex h-screen">
             <aside className="w-64 bg-gray-100">
@@ -13,35 +16,62 @@ const CustomerDashboard = () => {
                         <span className="text-xl font-bold ml-2">Dashboard</span>
                     </div>
                     <nav className="space-y-2">
-                        <Link to="/client/dashboard" className="flex items-center px-4 py-2 text-gray-700 bg-gray-200 rounded-md">
+                        <Link 
+                            to="/client/dashboard" 
+                            className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/dashboard" ? "bg-gray-200" : ""}`}
+                        >
                             <span className="mr-2">🏠</span> Dashboard
                         </Link>
-                        <Link to="/client/customers" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
+                        <Link 
+                            to="/client/endUsers" 
+                            className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/endUsers" ? "bg-gray-200" : ""}`}
+                        >
                             <span className="mr-2">👥</span> End Users
                         </Link>
-                        <Link to="/client/events" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
+                        <Link 
+                            to="/client/eventlist" 
+                            className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/eventlist" ? "bg-gray-200" : ""}`}
+                        >
                             <span className="mr-2">🎊</span> Events
                         </Link>
-                        <Link to="/client/credits" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
+                        <Link 
+                            to="/client/credits" 
+                            className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/credits" ? "bg-gray-200" : ""}`}
+                        >
                             <span className="mr-2">💲</span> Credits
                         </Link>
-                        <Link to="/client/customers" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
+                        <Link 
+                            to="/client/customers" 
+                            className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/customers" ? "bg-gray-200" : ""}`}
+                        >
                             <span className="mr-2">🤵🏻</span> Customers
                         </Link>
-                        <Link to="/client/reports" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
+                        <Link 
+                            to="/client/reports" 
+                            className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/reports" ? "bg-gray-200" : ""}`}
+                        >
                             <span className="mr-2">📊</span> Reports
                         </Link>
                     </nav>
                     <div className="mt-6">
                         <h3 className="text-sm font-semibold text-gray-600 px-4">Your teams</h3>
                         <nav className="mt-2 space-y-2">
-                            <Link to="/client/teams/heroicons" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
+                            <Link 
+                                to="/client/teams/heroicons" 
+                                className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/teams/heroicons" ? "bg-gray-200" : ""}`}
+                            >
                                 <span className="h-4 w-4 mr-2 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">H</span> Heroicons
                             </Link>
-                            <Link to="/client/teams/tailwind-labs" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
+                            <Link 
+                                to="/client/teams/tailwind-labs" 
+                                className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/teams/tailwind-labs" ? "bg-gray-200" : ""}`}
+                            >
                                 <span className="h-4 w-4 mr-2 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">T</span> Tailwind Labs
                             </Link>
-                            <Link to="/client/teams/workcation" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
+                            <Link 
+                                to="/client/teams/workcation" 
+                                className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${currentPath === "/client/teams/workcation" ? "bg-gray-200" : ""}`}
+                            >
                                 <span className="h-4 w-4 mr-2 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">W</span> Workcation
                             </Link>
                         </nav>
@@ -59,17 +89,17 @@ const CustomerDashboard = () => {
                         </button>
                         <div className="flex items-center">
                             <img className="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Profile" />
-                            <span>Tom Cook</span>
+                            <span>Nimantran</span>
                         </div>
                     </div>
                 </header>
                 <div className="border-4 border-dashed border-gray-200 rounded-lg h-[80vh]">
                     {/* components */}
-                    <Outlet/>
+                    <Outlet />
                 </div>
             </main>
         </div>
     );
 };
 
-export default CustomerDashboard;
+export default Client;

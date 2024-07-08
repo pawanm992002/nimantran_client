@@ -142,7 +142,6 @@ export default function Events() {
         <input type="file" id="file" ref={fileInputRef} name="guestNames" />
         <input type="submit" value="Create Event" />
       </form>
-      
     </div>
   );
 }

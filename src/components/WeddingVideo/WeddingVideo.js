@@ -23,6 +23,7 @@ export default function WeddingVideo() {
   const [onHover2, setOnHover2] = useState(false);
   const [onHover3, setOnHover3] = useState(false);
   const [onHover4, setOnHover4] = useState(false);
+  const [isSample, setIsSample] = useState(true)
   const handleStyleChange = () => {};
 
   const deleteText = (id) => {
@@ -119,9 +120,10 @@ export default function WeddingVideo() {
       let scalingH = OriginalSize.h / resized.clientHeight;
       let scalingFont = Math.min(scalingW, scalingH);
 
-      if (!guestNames) {
+      if (!guestNames && !isSample) {
         return toast.error("Please Enter Guest List");
       }
+      
       if (!video) {
         return toast.error("Please Upload the Video");
       }
@@ -134,9 +136,10 @@ export default function WeddingVideo() {
       formData.append("scalingH", scalingH);
       formData.append("videoW", parseInt(OriginalSize.w));
       formData.append("videoH", parseInt(OriginalSize.h));
+      formData.append("isSample", isSample);
 
       const response = await axios.post(
-        "http://localhost:8000/video/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/videoEdit`,
         formData,
         {
           headers: {
@@ -153,7 +156,7 @@ export default function WeddingVideo() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
-      <div className="container">
+      <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
             className="custom-file-upload"
@@ -213,7 +216,7 @@ export default function WeddingVideo() {
         </form>
 
         <div className="mainbar">
-          <label
+          {!video && <label
             className="upload-container"
             onChange={handleVideoUpload}
             style={{
@@ -233,7 +236,7 @@ export default function WeddingVideo() {
               {!video && <p>or Drag & Drop a file</p>}
               {/* <p className="paste-text">paste File or URL</p> */}
             </div>
-          </label>
+          </label>}
           <div
             className="videoContainer"
             style={{ display: !video ? "none" : "flex" }}
@@ -270,20 +273,25 @@ export default function WeddingVideo() {
                   />
                 ))}
               </div>
-              {/* </div> */}
             </div>
           </div>
         </div>
 
-        <div className="configuration">
+        {video && <div className="configuration">
           <h2>Text Configuration</h2>
-          <textarea
-            className="inputArea"
-            // value={guestNames}
-            // onChange={handleGuestNamesChange}
-            placeholder="Enter Guest Names (comma separated & for Sample)"
-          />
-          {texts?.map(
+          <div className="NoText">
+            <input
+              type="checkbox"
+              id="sample"
+              checked={isSample}
+              onChange={(e) => setIsSample(JSON.parse(e.target.checked))}
+            />
+            <label htmlFor="sample" id="sample">
+              Generate Sample Images
+            </label>
+          </div>
+          
+          {texts.length > 0 ? texts?.map(
             ({
               id,
               text,
@@ -449,9 +457,8 @@ export default function WeddingVideo() {
                 </div>
               </div>
             )
-          )}
-          {/* </div> */}
-        </div>
+          ) : <span className="NoText">NO TEXT</span>}
+        </div>}
       </div>
 
       {processedVideoUrls.length > 0 && (
@@ -461,7 +468,7 @@ export default function WeddingVideo() {
         <div className="processed_videos_container">
           {processedVideoUrls.map((url, index) => (
             <div key={index} className="processed_videos">
-              <video src={url} controls style={{ maxHeight: "400px" }} />
+              <video src={url.link} controls style={{ maxHeight: "400px" }} />
             </div>
           ))}
         </div>

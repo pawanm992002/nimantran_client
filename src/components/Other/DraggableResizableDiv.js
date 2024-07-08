@@ -22,9 +22,7 @@ const DraggableResizableDiv = ({
   const [position, setPosition] = useState(property?.position);
   const [size, setSize] = useState(property?.size);
   const [fontColor, setFontColor] = useState(property?.fontColor);
-  const [backgroundColor, setBackgroundColor] = useState(
-    property?.backgroundColor
-  );
+  const [backgroundColor, setBackgroundColor] = useState(property?.backgroundColor);
   const [fontStyle, setFontStyle] = useState(property?.fontStyle);
   const [fontSize, setFontSize] = useState(property?.fontSize);
   const [fontFamily, setFontFamily] = useState(property?.fontFamily);

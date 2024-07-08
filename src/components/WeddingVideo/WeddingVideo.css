@@ -2,26 +2,23 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  --contentMaxHeight: 90vh;
+  --contentMaxHeight: 95vh;
 }
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
-/* .heading {
-  background: rgb(207, 175, 238);
-  padding: 10px;
-} */
+
 .main {
-  background: #cfccf6;
+  background: #786ef6;
   padding: 10px 0px;
 }
 .main > h2 {
   margin: 0;
   text-align: center;
 }
-.container {
+.mainContainer {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -34,7 +31,7 @@
   flex: 1;
   background: #b4f2f3;
   border-radius: 5px;
-  padding: 20px 10px;
+  padding: 40px 10px;
   /* min-width: 200px; */
   /* max-width: 300px; */
   flex-direction: column;
@@ -42,6 +39,7 @@
   display: flex;
   gap: 15px;
   height: var(--contentMaxHeight);
+  box-shadow: 4px 4px 7px 1px #000;
 }
 
 .mainbar {
@@ -54,6 +52,7 @@
   display: flex;
   flex-direction: column;
   height: var(--contentMaxHeight);
+  box-shadow: 4px 4px 7px 1px #000;
 }
 
 .configuration {
@@ -68,6 +67,42 @@
   overflow-y: auto;
   align-items: center;
   gap: 25px;
+  box-shadow: 4px 4px 7px 1px #000;
+  h2 {
+    font-family: 'Podkova';
+  }
+}
+
+.EditName {
+  color: #ff497c;
+  font-weight: 700;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px;
+}
+
+.sendButton {
+  background: #786ef6;
+  padding: 10px 40px;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  margin-bottom: 5px;
+  &:hover {
+    background: #9a95e0;
+  }
+}
+
+
+.heading {
+  color: black !important;
+  font-family: "Grenze Gotisch";
+  word-spacing: 5px;
+  letter-spacing: 2px;
+  font-size: 100px;
+  font-size: 35px !important;
 }
 
 .configuration h2 {
@@ -75,18 +110,14 @@
   /* margin: 10px auto; */
 }
 
-.inputArea {
-  /* width: 80%; */
-  border: none;
+.NoText {
+  color: blue;
+  letter-spacing: 2px;
+  font-weight: bold;
   text-align: center;
-  outline: none;
-  max-height: 100px;
-  max-width: 80%;
-  min-width: 80%;
-  min-height: 80px;
-  padding: 5px;
-  border-radius: 5px;
-  /* resize: none; */
+  input {
+    margin: 5px
+  }
 }
 
 .inputText {
