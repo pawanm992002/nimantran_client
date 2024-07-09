@@ -4,7 +4,7 @@ import Draggable from "react-draggable";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 import "./DraggableResizableDiv.css";
-import { fontFamilies } from "../../App";
+import { fontFamilies } from "../../../App";
 
 const DraggableResizableDiv = ({
   videoRef,

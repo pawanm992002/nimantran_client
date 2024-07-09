@@ -1,26 +1,23 @@
 import { useState, useRef } from "react";
 import axios from "axios";
 import "../WeddingVideo/WeddingVideo.css";
-import DraggableResizableDiv from "../Other/DraggableResizableDiv";
+import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFileArrowDown,
   faFileArrowUp,
   faSquarePlus,
-  faVideo
+  faVideo,
 } from "@fortawesome/free-solid-svg-icons";
-import { fontFamilies } from "../../App";
+import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
 
 export default function WeddingImage() {
+  const handleStyleChange = () => {};
+  const fontFamilies = () => {};
+  const deleteText = () => {};
+  const hideText = () => {};
 
-  //dragable
-
-
-
-
-
-  
   const videoRef = useRef();
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
@@ -32,16 +29,7 @@ export default function WeddingImage() {
   const [onHover3, setOnHover3] = useState(false);
   const [onHover4, setOnHover4] = useState(false);
   const [isSample, setIsSample] = useState(true);
-  const handleStyleChange = () => {};
-
-  const deleteText = (id) => {
-    setTexts(texts.filter((val) => val.id !== id));
-  };
-  const hideText = (details) => {
-    const others = texts.filter((val) => val.id !== details.id);
-    details.hidden = !details.hidden;
-    setTexts([...others, details]);
-  };
+  const [selectedText, setSelectedText] = useState(null);
 
   const [scaling, setScaling] = useState({
     width: 1,
@@ -165,7 +153,7 @@ export default function WeddingImage() {
 
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/imageEdit`,
-        formData,
+        formData
       );
 
       setProcessedVideoUrls(response.data.videoUrls);
@@ -178,6 +166,7 @@ export default function WeddingImage() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
+      {/* <TextEditorToolbar selectedText={selectedText} /> */}
       <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
@@ -293,6 +282,8 @@ export default function WeddingImage() {
                     property={val}
                     videoCenter={resized.w / 2}
                     comp="image"
+                    setSelectedText={setSelectedText}
+                    selectedText={selectedText}
                   />
                 ))}
               </div>
@@ -301,166 +292,9 @@ export default function WeddingImage() {
           </div>
         </div>
 
-        {video && <div className="configuration">
-          <h2>Text Configuration</h2>
-          <div className="NoText">
-            <input
-              type="checkbox"
-              id="sample"
-              checked={isSample}
-              onChange={(e) => setIsSample(JSON.parse(e.target.checked))}
-            />
-            <label htmlFor="sample" id="sample">
-              Generate Sample Images
-            </label>
-          </div>
-          {texts.length > 0 ? (
-            texts?.map(
-              ({
-                id,
-                text,
-                fontColor,
-                fontSize,
-                duration,
-                startTime,
-                position,
-                fontFamily,
-                fontStyle,
-                size,
-                backgroundColor,
-                hidden,
-              }) => (
-                <div
-                  key={id}
-                  className="context-menu"
-                  style={{ position: "relative" }}
-                >
-                  <div>
-                    <label>Text Id : {id}</label>
-                  </div>
-                  <div>
-                    <label>
-                      Font Color:
-                      <input
-                        className="context-property"
-                        type="color"
-                        name="color"
-                        value={fontColor}
-                        onChange={handleStyleChange}
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Background:
-                      <input
-                        className="context-property"
-                        type="color"
-                        name="backgroundColor"
-                        value={backgroundColor}
-                        onChange={handleStyleChange}
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Font Style:
-                      <select
-                        className="context-property"
-                        name="style"
-                        value={fontStyle}
-                        onChange={handleStyleChange}
-                      >
-                        <option value="normal">Normal</option>
-                        <option value="italic">Italic</option>
-                        <option value="oblique">Oblique</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Font Size:
-                      <input
-                        className="context-property"
-                        type="number"
-                        name="size"
-                        value={fontSize}
-                        onChange={handleStyleChange}
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Font Family:
-                      <select
-                        className="context-property"
-                        name="family"
-                        value={fontFamily}
-                        onChange={handleStyleChange}
-                      >
-                        {fontFamilies.map((val, i) => (
-                          <option
-                            style={{ fontFamily: `${val}` }}
-                            value={val}
-                            key={i}
-                          >
-                            {val}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        background: "#B5B4F3",
-                        textAlign: "center",
-                        borderRadius: "5px",
-                        padding: "0 10px",
-                      }}
-                      name="delete"
-                      onClick={() => deleteText(id)}
-                    >
-                      Delete Text - {id}
-                    </label>
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        background: "#B5B4F3",
-                        textAlign: "center",
-                        borderRadius: "5px",
-                        padding: "0 10px",
-                      }}
-                      name="hidden"
-                      onClick={() =>
-                        hideText({
-                          id,
-                          text,
-                          fontColor,
-                          fontSize,
-                          duration,
-                          startTime,
-                          position,
-                          fontFamily,
-                          fontStyle,
-                          size,
-                          backgroundColor,
-                          hidden,
-                        })
-                      }
-                    >
-                      {hidden ? "Show" : "Hide"} Text - {id}
-                    </label>
-                  </div>
-                </div>
-              )
-            )
-          ) : (
-            <span className="NoText">NO TEXT</span>
-          )}
-          {/* </div> */}
-        </div>}
+        {video && (
+          <SideConfiguration isSample={isSample} setIsSample={setIsSample} texts={texts} setTexts={setTexts} />
+        )}
       </div>
       {processedVideoUrls.length > 0 && (
         <h2 className="heading">Processed Images</h2>
