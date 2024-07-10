@@ -4,7 +4,6 @@ import Draggable from "react-draggable";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 import "./DraggableResizableDiv.css";
-import { fontFamilies } from "../../../App";
 
 const DraggableResizableDiv = ({
   videoRef,
@@ -21,11 +20,6 @@ const DraggableResizableDiv = ({
   );
   const [position, setPosition] = useState(property?.position);
   const [size, setSize] = useState(property?.size);
-  const [fontColor, setFontColor] = useState(property?.fontColor);
-  const [backgroundColor, setBackgroundColor] = useState(property?.backgroundColor);
-  const [fontStyle, setFontStyle] = useState(property?.fontStyle);
-  const [fontSize, setFontSize] = useState(property?.fontSize);
-  const [fontFamily, setFontFamily] = useState(property?.fontFamily);
   const [startTime, setStartTime] = useState(property?.startTime);
   const [duration, setDuration] = useState(property?.duration);
   const [visible, setVisible] = useState(true);
@@ -33,7 +27,10 @@ const DraggableResizableDiv = ({
 
   const transitions = [
     { type: "none", options: null },
-    { type: "slide", options: { left: 0, right: 0, top: 0, bottom: 0, duration: 0 } },
+    {
+      type: "slide",
+      options: { left: 0, right: 0, top: 0, bottom: 0, duration: 0 },
+    },
   ];
 
   const changeTransition = (e, dif) => {
@@ -44,12 +41,12 @@ const DraggableResizableDiv = ({
         right: selectedTranstion?.options?.right,
         top: selectedTranstion?.options?.top,
         bottom: selectedTranstion?.options?.bottom,
-        duration: selectedTranstion?.options?.duration
+        duration: selectedTranstion?.options?.duration,
       },
     };
     obj.options[dif] = parseInt(e.target.value);
-    console.log('oooooo', obj)
-    setSelectedTranstion(obj)
+    console.log("oooooo", obj);
+    setSelectedTranstion(obj);
   };
   const handleDrag = (e, data) => {
     setPosition({ x: data.x, y: data.y });
@@ -77,26 +74,10 @@ const DraggableResizableDiv = ({
 
   const handleStyleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "color") {
-      setFontColor(value);
-    } else if (name === "style") {
-      setFontStyle(value);
-    } else if (name === "size") {
-      setFontSize(parseInt(value, 10));
-    } else if (name === "family") {
-      setFontFamily(value);
-    } else if (name === "startTime") {
+    if (name === "startTime") {
       setStartTime(parseFloat(value));
     } else if (name === "duration") {
       setDuration(parseFloat(value));
-    } else if (name === "backgroundColor") {
-      setBackgroundColor(value);
-    }
-  };
-
-  const handleClickOutside = (e) => {
-    if (!e.target.closest(".context-menu")) {
-      setOpenContextMenuId(null);
     }
   };
 
@@ -106,13 +87,14 @@ const DraggableResizableDiv = ({
       text,
       position,
       size,
-      fontColor,
-      fontSize,
-      fontFamily,
-      fontStyle,
+      fontColor: property.fontColor,
+      fontWeight: property.fontWeight,
+      fontSize: property.fontSize,
+      fontFamily: property.fontFamily,
+      fontStyle: property.fontStyle,
       startTime,
       duration,
-      backgroundColor,
+      backgroundColor: property.backgroundColor,
       transition: selectedTranstion,
       hidden: property.hidden,
       page: property.page,
@@ -120,26 +102,20 @@ const DraggableResizableDiv = ({
   }, [
     position,
     size,
-    fontColor,
-    fontSize,
     text,
-    fontColor,
     startTime,
     duration,
-    fontStyle,
-    fontFamily,
-    backgroundColor,
     selectedTranstion,
     property.page,
     property.hidden,
   ]);
 
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
+  // useEffect(() => {
+  //   document.addEventListener("click", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("click", handleClickOutside);
+  //   };
+  // }, []);
 
   useEffect(() => {
     // try {
@@ -171,7 +147,7 @@ const DraggableResizableDiv = ({
     >
       <div
         className="draggable-container"
-        onContextMenu={handleContextMenu}
+        onClick={handleContextMenu}
         style={{
           zIndex: openContextMenuId === property.id ? 50 : 1,
           display: property.hidden ? "none" : "inline-block",
@@ -201,106 +177,28 @@ const DraggableResizableDiv = ({
             className="editable-box"
             style={{
               display: visible ? "flex" : "none",
-              background: backgroundColor,
+              background: property.backgroundColor,
             }}
           >
             <input
               type="text"
               style={{
-                color: fontColor,
-                fontStyle,
-                fontSize: `${fontSize}px`,
-                fontFamily,
+                color: property.fontColor,
+                fontStyle: property.fontStyle,
+                fontSize: `${property.fontSize}px`,
+                fontFamily: property.fontFamily,
                 display: visible ? "flex" : "none",
+                fontWeight: property.fontWeight,
               }}
               className="textInput"
               placeholder="Write Text..."
               value={text}
               onChange={(e) => setText(e.target.value)}
             />
-            {/* <span
-              contentEditable={isEditing ? "true" : "false"}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            >
-              {text}
-            </span> */}
           </div>
         </ResizableBox>
         {openContextMenuId === property.id && (
           <div className="context-menu" style={{ top: 100, left: 20 }}>
-            <div>
-              <label>
-                Font Color:
-                <input
-                  className="context-property"
-                  type="color"
-                  name="color"
-                  value={fontColor}
-                  onChange={handleStyleChange}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                Background:
-                <input
-                  className="context-property"
-                  type="color"
-                  name="backgroundColor"
-                  value={backgroundColor}
-                  onChange={handleStyleChange}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                Font Style:
-                <select
-                  className="context-property"
-                  name="style"
-                  value={fontStyle}
-                  onChange={handleStyleChange}
-                >
-                  <option value="normal">Normal</option>
-                  <option value="italic">Italic</option>
-                  <option value="oblique">Oblique</option>
-                </select>
-              </label>
-            </div>
-            <div>
-              <label>
-                Font Size:
-                <input
-                  className="context-property"
-                  type="number"
-                  name="size"
-                  value={fontSize}
-                  onChange={handleStyleChange}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                Font Family:
-                <select
-                  className="context-property"
-                  name="family"
-                  value={fontFamily}
-                  onChange={handleStyleChange}
-                >
-                  {fontFamilies.map((val, i) => (
-                    <option
-                      style={{ fontFamily: `${val}` }}
-                      value={val}
-                      key={i}
-                    >
-                      {val}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
             {comp === "video" && (
               <div>
                 <label>
@@ -331,7 +229,6 @@ const DraggableResizableDiv = ({
                 </label>
               </div>
             )}
-            {console.log(selectedTranstion)}
             {comp === "video" && (
               <div>
                 <label>
@@ -355,7 +252,8 @@ const DraggableResizableDiv = ({
             {selectedTranstion.type === "slide" && (
               <div>
                 <label>
-                  Duration: <input
+                  Duration:{" "}
+                  <input
                     className="context-property"
                     type="number"
                     value={selectedTranstion?.options?.duration}

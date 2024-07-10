@@ -11,6 +11,7 @@ import {
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
+import TextEditor from "../Other/TextEditor/TextEditor";
 
 export default function WeddingVideo() {
   const videoRef = useRef();
@@ -49,6 +50,7 @@ export default function WeddingVideo() {
       id: count,
       duration: 5,
       fontColor: "#000000",
+      fontWeight: "normal",
       fontFamily: "Josefin Slab",
       fontSize: 20,
       fontStyle: "normal",
@@ -147,6 +149,9 @@ export default function WeddingVideo() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
+      {
+        texts.map((val, i) => (<TextEditor key={i} property={val} openContextMenuId={openContextMenuId} takeTextDetails={takeTextDetails} />))
+      }
       <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label

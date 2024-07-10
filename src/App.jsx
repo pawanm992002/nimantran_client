@@ -17,7 +17,6 @@ import Client from "./pages/Client";
 import CustomerTable from "./components/client/CustomerTable";
 import EventsList from "./components/events/EventsList";
 
-
 export const fontFamilies = [
   "Josefin Slab",
   "Phudu",
@@ -66,12 +65,10 @@ const App = () => {
 
         {/* <Route path="/client" element={<ClientDashboard />} /> */}
         <Route path="/client" element={<Client />}>
-          <Route path="/client/dashboard" element={<ClientDashboard/>} />
-          <Route path="/client/customers" element={<CustomerTable/>} />
-          <Route path="/client/eventlist" element={<EventsList/>} />
+          <Route path="/client/dashboard" element={<ClientDashboard />} />
+          <Route path="/client/customers" element={<CustomerTable />} />
+          <Route path="/client/eventlist" element={<EventsList />} />
         </Route>
-            
-       
 
         <Route path="/videoEdit" element={<WeddingVideo />} />
         <Route path="/cardEdit" element={<WeddingCard />} />

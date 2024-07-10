@@ -11,13 +11,9 @@ import {
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
+import TextEditor from "../Other/TextEditor/TextEditor";
 
 export default function WeddingImage() {
-  const handleStyleChange = () => {};
-  const fontFamilies = () => {};
-  const deleteText = () => {};
-  const hideText = () => {};
-
   const videoRef = useRef();
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
@@ -58,6 +54,7 @@ export default function WeddingImage() {
       fontFamily: "Josefin Slab",
       fontSize: 20,
       fontStyle: "normal",
+      fontWeight: "normal",
       position: { x: 0, y: 0 },
       size: { width: 200, height: 100 },
       startTime: 0,
@@ -166,7 +163,9 @@ export default function WeddingImage() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
-      {/* <TextEditorToolbar selectedText={selectedText} /> */}
+      {
+        texts.map((val, i) => (<TextEditor key={i} property={val} openContextMenuId={openContextMenuId} takeTextDetails={takeTextDetails} />))
+      }
       <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
