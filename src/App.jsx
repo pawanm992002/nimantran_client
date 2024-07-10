@@ -18,6 +18,8 @@ import Profile from "./components/customer/Profile";
 import EditProfileCustomer from "./components/customer/EditProfileCustomer";
 import CustomerEvents from "./components/customer/CustomerEvents";
 import ErrorPage from "./pages/ErrorPage";
+import LandingPage from "./pages/LandingPage";
+import Transactions from "./components/transiction/Transactions";
 
 export const fontFamilies = [
   "Josefin Slab",
@@ -55,7 +57,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<h1>Home page of main site</h1>} />
+        <Route path="/" element={<LandingPage/>} />
         <Route path="/admin">
           <Route path="" element={<AdminDashboard />} />
           <Route path="login" element={<AdminLogin />} />
@@ -73,6 +75,7 @@ const App = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="editProfile" element={<EditProfileCustomer />} />
           <Route path="events" element={<CustomerEvents />} />
+          <Route path="credits" element={<Transactions />} />
         </Route>
         <Route path="/videoEdit" element={<WeddingVideo />} />
         <Route path="/cardEdit" element={<WeddingCard />} />

@@ -57,7 +57,7 @@ const ClientDashboard = () => {
         dateOfBirth: dateOfBirthRef.current.value,
         location: locationRef.current.value,
       };
-      console.log(newCustomer)
+      console.log(newCustomer);
 
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/client/create-customer`,

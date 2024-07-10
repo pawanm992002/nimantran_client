@@ -8,12 +8,9 @@ const Client = () => {
     return (
         <div className="flex h-screen">
             <aside className="w-64 bg-gray-100">
-                <div className="p-4">
+                <div className="px-4">
                     <div className="flex items-center mb-4">
-                        <svg className="h-8 w-8 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L2 7v7c0 5 3.58 9.33 8 9.93 4.42-.6 8-4.93 8-9.93V7L12 2z" />
-                        </svg>
-                        <span className="text-xl font-bold ml-2 ">Nimantran</span>
+                    <img className='w-44' src="/nimantran logo 3.png" alt="" />
                     </div>
                     <nav className="space-y-2 pt-5">
                         <Link 
@@ -53,7 +50,7 @@ const Client = () => {
             </aside>
             <main className="flex-1 p-6 bg-white">
                 <header className="flex items-center justify-between mb-6">
-                    <input type="text" placeholder="Search..." className="px-4 py-2 border rounded-md w-1/3" />
+                    <input type="text" placeholder="Search..." className="px-4 py-2 border rounded-xl w-1/3" />
                     <div className="flex items-center">
                        
                         <div className="flex items-center">
