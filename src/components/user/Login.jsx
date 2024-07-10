@@ -12,7 +12,7 @@ const Login = () => {
         event.preventDefault();
         try {
             const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/login`, { mobile, password });
-
+           console.log(data);
             localStorage.setItem('token', data?.data?.token);
             localStorage.setItem('mobile', data?.data?.mobile);
             localStorage.setItem('_id', data?.data?._id);
@@ -25,7 +25,7 @@ const Login = () => {
                 navigate('/customer');
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            // toast.error(error.response.data.message);
         }
     };
 
