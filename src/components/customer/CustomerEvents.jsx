@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import EditEventModal from '../events/EditEventModal';
+import CreateEventModal from '../events/CreateEventModal';
 import toast from 'react-hot-toast';
 
 const CustomerEvents = () => {
@@ -8,7 +9,8 @@ const CustomerEvents = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const token = localStorage.getItem("token");
   const id = localStorage.getItem("customerId");
@@ -38,12 +40,16 @@ const CustomerEvents = () => {
 
   const handleEditClick = (event) => {
     setSelectedEvent(event);
-    setShowModal(true);
+    setShowEditModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
     setSelectedEvent(null);
+  };
+
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false);
   };
 
   const handleDeleteEvent = async (event) => {
@@ -66,12 +72,22 @@ const CustomerEvents = () => {
     fetchEvents();
   };
 
+  const handleEventCreated = () => {
+    fetchEvents();
+  };
+
   if (loading) {
     return <div>Loading...</div>; // Show a loading indicator while data is being fetched
   }
 
   return (
     <div className="w-full flex flex-wrap overflow-scroll no-scrollbar h-full justify-between">
+      <button
+        onClick={() => setShowCreateModal(true)}
+        className="absolute top-4 right-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
+      >
+        Create Event
+      </button>
       {events.length > 0 ? (
         events.map((event) => (
           <div
@@ -130,11 +146,16 @@ const CustomerEvents = () => {
         </div>
       )}
       <EditEventModal
-        show={showModal}
-        onClose={handleCloseModal}
+        show={showEditModal}
+        onClose={handleCloseEditModal}
         event={selectedEvent}
         customerId={customer._id}
         onEventUpdated={handleEventUpdated}
+      />
+      <CreateEventModal
+        show={showCreateModal}
+        onClose={handleCloseCreateModal}
+        onEventCreated={handleEventCreated}
       />
     </div>
   );

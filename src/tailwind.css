@@ -4,7 +4,6 @@
 @tailwind utilities;
 
 
-
 @layer utilities {
       /* Hide scrollbar for Chrome, Safari and Opera */
       .no-scrollbar::-webkit-scrollbar {
@@ -31,10 +30,10 @@
     }
   }
   
-.bg-blue-500 {
+.bg-blue-500 ,.bg-blue-600 {
   background-color: rgb(255, 128, 0);
 }
-.text-blue-500{
+.text-blue-500, .text-blue-600{
   color: rgb(255, 128, 0);
 }
 

@@ -102,7 +102,7 @@ const ClientDashboard = () => {
   return (
     <>
       <div className="flex m-8">
-        <div className="bg-white rounded-lg shadow-lg flex items-center p-6 lg:w-2/4 w-full">
+        <div className="bg-white border rounded-lg shadow-lg flex items-center p-4 lg:w-2/4 w-full">
           <div className="w-full m-5">
             <div className="bg-blue-50 p-5 rounded-lg mb-4">
               <h3 className="text-blue-500 text-xl font-semibold mb-2">

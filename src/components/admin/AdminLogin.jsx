@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./styles/AdminLogin.css"; // Ensure you save the CSS in this file
 
 const AdminLogin = () => {
-  const [username, setUsername] = useState("");
+  const [mobile, setmobile] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ const AdminLogin = () => {
     try {
       const { data } = await axios.post(
         `${process.env.REACT_APP_ADMIN}/login`,
-        { username, password }
+        { mobile, password }
       );
       console.log(data);
       if (!data?.token) {
@@ -38,9 +38,9 @@ const AdminLogin = () => {
       <h2>Login</h2>
       <input
         type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        placeholder="mobile"
+        value={mobile}
+        onChange={(e) => setmobile(e.target.value)}
       />
       <input
         type="password"
