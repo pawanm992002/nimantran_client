@@ -55,7 +55,7 @@ const Profile = () => {
                 </p>
                 <p>
                   <strong>D.O.B.:</strong>
-                  {Date(customerInfo.dateOfBirth)}
+                  {new Date(customerInfo.dateOfBirth).toLocaleDateString()}
                 </p>
                 <p>
                   <strong>Location:</strong> {customerInfo.location}
