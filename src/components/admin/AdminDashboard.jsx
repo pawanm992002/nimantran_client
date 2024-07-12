@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const AdminDashboard = () => {
   const token = localStorage.getItem("token");
-  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [users, setUsers] = useState([]);
 
-  const createClient = async (e) => {
+const createClient = async (e) => {
     e.preventDefault();
     try {
       if (!username || !password) {
@@ -26,35 +23,16 @@ const AdminDashboard = () => {
       );
       if (data?.flag) {
         toast.success(data.message);
-        getAllUsers();
         return;
       }
     } catch (error) {
       toast.error(error.message);
     }
-  };
+};
 
-  const getAllUsers = async () => {
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_ADMIN}/getAllClientWithCustomers`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    if (!data) {
-      navigate("/");
-      return;
-    }
-    setUsers(data?.data);
-  };
+ 
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/");
-      return;
-    }
-    getAllUsers();
-  }, []);
+ 
 
   return (
     <div>
@@ -86,41 +64,7 @@ const AdminDashboard = () => {
         </form>
       </div>
 
-      <table cellPadding={5} cellSpacing={5} border="1px solid black">
-        <thead>
-          <tr>
-            <td>ID</td>
-            <td>Username</td>
-            <td>Role</td>
-            <td>Credits</td>
-            <td>No. of Customers</td>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((client) => (
-            <>
-              <tr key={client._id}>
-                <td> {client?._id} </td>
-                <td>{client?.username} </td>
-                <td>{client?.role} </td>
-                <td>{client?.credits} </td>
-                <td>{client?.customers?.length} </td>
-              </tr>
-              <tr>
-                {client?.customers?.map((customer) => (
-                  <>
-                    <td> {customer?._id} </td>
-                    <td>{customer?.username} </td>
-                    <td>{customer?.role} </td>
-                    <td>{customer?.credits} </td>
-                    <td> - </td>
-                  </>
-                ))}
-              </tr>
-            </>
-          ))}
-        </tbody>
-      </table>
+      
     </div>
   );
 };
