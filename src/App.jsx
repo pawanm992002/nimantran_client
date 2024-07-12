@@ -21,6 +21,7 @@ import CustomerEvents from "./components/customer/CustomerEvents";
 import ErrorPage from "./pages/ErrorPage";
 import LandingPage from "./pages/LandingPage";
 import Transactions from "./components/transiction/Transactions";
+import ClientCredits from "./components/client/ClientCredits";
 
 export const fontFamilies = [
   "Josefin Slab",
@@ -71,6 +72,7 @@ const App = () => {
           <Route path="dashboard" element={<ClientDashboard />} />
           <Route path="customers" element={<CustomerTable />} />
           <Route path="eventlist" element={<EventsList />} />
+          <Route path="credits" element={<ClientCredits />} />
         </Route>
 
         <Route path="/customer" element={<Customer />}>
