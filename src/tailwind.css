@@ -37,4 +37,6 @@
   color: rgb(255, 128, 0);
 }
 
-  
+.CircularProgressbar-text {
+  transform: translate(-15%, 5%);
+}

@@ -12,9 +12,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
 import TextEditor from "../Other/TextEditor/TextEditor";
+import { useSearchParams } from "react-router-dom";
 
 export default function WeddingVideo() {
   const videoRef = useRef();
+  const token = localStorage.getItem("token");
+  const [params] = useSearchParams();
+  const eventId = params.get("eventId");
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
@@ -132,12 +136,10 @@ export default function WeddingVideo() {
       formData.append("isSample", isSample);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/videoEdit`,
+        `${process.env.REACT_APP_BACKEND_URL}/videoEdit?eventId=${eventId}`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setProcessedVideoUrls(response.data.videoUrls);

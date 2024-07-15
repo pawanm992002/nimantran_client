@@ -17,8 +17,12 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
+import { useSearchParams } from "react-router-dom";
 
 export default function WeddingVideo() {
+  const token = localStorage.getItem("token");
+  const [params] = useSearchParams();
+  const eventId = params.get("eventId");
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const parentRef = useRef();
   const [pdfFile, setPdfFile] = useState(null);
@@ -139,9 +143,7 @@ export default function WeddingVideo() {
         `${process.env.REACT_APP_BACKEND_URL}/pdfEdit`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setProcessedVideoUrls(response.data.videoUrls);
@@ -304,12 +306,14 @@ export default function WeddingVideo() {
           </div>
         </div>
 
-       {pdfFile && <SideConfiguration
-          isSample={isSample}
-          setIsSample={setIsSample}
-          texts={texts}
-          setTexts={setTexts}
-        />}
+        {pdfFile && (
+          <SideConfiguration
+            isSample={isSample}
+            setIsSample={setIsSample}
+            texts={texts}
+            setTexts={setTexts}
+          />
+        )}
       </div>
 
       {processedVideoUrls.length > 0 && (

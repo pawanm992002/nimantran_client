@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const CreateEventModal = ({ show, onClose, onEventCreated }) => {
-  const [eventName, setEventName] = useState('');
-  const [dateOfOrganising, setDateOfOrganising] = useState('');
-  const [location, setLocation] = useState('');
+  const [eventName, setEventName] = useState("");
+  const [dateOfOrganising, setDateOfOrganising] = useState("");
+  const [location, setLocation] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -15,16 +15,18 @@ const CreateEventModal = ({ show, onClose, onEventCreated }) => {
       const eventData = {
         eventName,
         dateOfOrganising,
-        location
+        location,
       };
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/events/create-event/${localStorage.getItem("customerId")}`,
+        `${
+          process.env.REACT_APP_BACKEND_URL
+        }/events/create-event/${localStorage.getItem("customerId")}`,
         eventData,
         {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -46,7 +48,9 @@ const CreateEventModal = ({ show, onClose, onEventCreated }) => {
         <h2 className="text-2xl font-semibold mb-4">Create Event</h2>
         <form onSubmit={handleCreateEvent}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Event Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Event Name
+            </label>
             <input
               type="text"
               value={eventName}
@@ -56,7 +60,9 @@ const CreateEventModal = ({ show, onClose, onEventCreated }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Date of Organising</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Date of Organising
+            </label>
             <input
               type="date"
               value={dateOfOrganising}
@@ -66,7 +72,9 @@ const CreateEventModal = ({ show, onClose, onEventCreated }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Location</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Location
+            </label>
             <input
               type="text"
               value={location}

@@ -12,9 +12,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
 import TextEditor from "../Other/TextEditor/TextEditor";
+import { useSearchParams } from "react-router-dom";
 
 export default function WeddingImage() {
+  const token = localStorage.getItem("token");
   const videoRef = useRef();
+  const [params] = useSearchParams();
+  const eventId = params.get("eventId");
+  
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
@@ -149,8 +154,11 @@ export default function WeddingImage() {
       formData.append("isSample", isSample);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/imageEdit`,
-        formData
+        `${process.env.REACT_APP_BACKEND_URL}/imageEdit?eventId=${eventId}`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       setProcessedVideoUrls(response.data.videoUrls);
@@ -163,9 +171,14 @@ export default function WeddingImage() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
-      {
-        texts.map((val, i) => (<TextEditor key={i} property={val} openContextMenuId={openContextMenuId} takeTextDetails={takeTextDetails} />))
-      }
+      {texts.map((val, i) => (
+        <TextEditor
+          key={i}
+          property={val}
+          openContextMenuId={openContextMenuId}
+          takeTextDetails={takeTextDetails}
+        />
+      ))}
       <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
@@ -292,7 +305,12 @@ export default function WeddingImage() {
         </div>
 
         {video && (
-          <SideConfiguration isSample={isSample} setIsSample={setIsSample} texts={texts} setTexts={setTexts} />
+          <SideConfiguration
+            isSample={isSample}
+            setIsSample={setIsSample}
+            texts={texts}
+            setTexts={setTexts}
+          />
         )}
       </div>
       {processedVideoUrls.length > 0 && (
