@@ -23,12 +23,12 @@ const Admin = () => {
             </Link>
 
             <Link
-              to="/admin/customers"
+              to="/admin/userDetails"
               className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${
-                currentPath === "/admin/customers" ? "bg-gray-200" : ""
+                currentPath === "/admin/userDetails" ? "bg-gray-200" : ""
               }`}
             >
-              <span className="mr-2">👥</span> End Users
+              <span className="mr-2">👥</span> Users
             </Link>
             <Link
               to="/admin/eventlist"

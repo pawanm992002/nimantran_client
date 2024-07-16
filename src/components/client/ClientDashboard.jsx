@@ -106,9 +106,9 @@ const ClientDashboard = () => {
           <div className="w-full m-5">
             <div className="bg-blue-50 p-5 rounded-lg mb-4">
               <h3 className="text-blue-500 text-xl font-semibold mb-2">
-                Client ID:
+                Client Name:
               </h3>
-              <p className="text-gray-800 text-lg">{clientInfo?._id}</p>
+              <p className="text-gray-800 text-lg">{clientInfo?.name}</p>
             </div>
             <div className="bg-blue-50 p-5 rounded-lg mb-4">
               <h3 className="text-blue-500 text-xl font-semibold mb-2">
