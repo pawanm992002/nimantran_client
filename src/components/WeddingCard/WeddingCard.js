@@ -18,6 +18,7 @@ import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
 import { useSearchParams } from "react-router-dom";
+import TextEditor from "../Other/TextEditor/TextEditor";
 
 export default function WeddingVideo() {
   const token = localStorage.getItem("token");
@@ -155,6 +156,14 @@ export default function WeddingVideo() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
+      {texts.map((val, i) => (
+        <TextEditor
+          key={i}
+          property={val}
+          openContextMenuId={openContextMenuId}
+          takeTextDetails={takeTextDetails}
+        />
+      ))}
       <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label

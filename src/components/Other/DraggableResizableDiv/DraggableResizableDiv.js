@@ -20,8 +20,6 @@ const DraggableResizableDiv = ({
   );
   const [position, setPosition] = useState(property?.position);
   const [size, setSize] = useState(property?.size);
-  const [startTime, setStartTime] = useState(property?.startTime);
-  const [duration, setDuration] = useState(property?.duration);
   const [visible, setVisible] = useState(true);
   const [isAtCenter, setIsAtCenter] = useState(false);
 
@@ -45,7 +43,7 @@ const DraggableResizableDiv = ({
       },
     };
     obj.options[dif] = parseInt(e.target.value);
-    console.log("oooooo", obj);
+    // console.log("oooooo", obj);
     setSelectedTranstion(obj);
   };
   const handleDrag = (e, data) => {
@@ -72,14 +70,6 @@ const DraggableResizableDiv = ({
     setOpenContextMenuId(property.id);
   };
 
-  const handleStyleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "startTime") {
-      setStartTime(parseFloat(value));
-    } else if (name === "duration") {
-      setDuration(parseFloat(value));
-    }
-  };
 
   useEffect(() => {
     takeTextDetails({
@@ -92,8 +82,8 @@ const DraggableResizableDiv = ({
       fontSize: property.fontSize,
       fontFamily: property.fontFamily,
       fontStyle: property.fontStyle,
-      startTime,
-      duration,
+      startTime: property.startTime,
+      duration: property.duration,
       backgroundColor: property.backgroundColor,
       transition: selectedTranstion,
       hidden: property.hidden,
@@ -103,11 +93,11 @@ const DraggableResizableDiv = ({
     position,
     size,
     text,
-    startTime,
-    duration,
     selectedTranstion,
     property.page,
     property.hidden,
+    property.backgroundColor,
+    property.fontWeight
   ]);
 
   // useEffect(() => {
@@ -122,7 +112,7 @@ const DraggableResizableDiv = ({
     const checkVisibility = () => {
       if (videoRef.current) {
         const currentTime = videoRef.current.currentTime;
-        setVisible(currentTime >= startTime && currentTime <= duration);
+        setVisible(currentTime >= property.startTime && currentTime <= property.duration);
       }
     };
 
@@ -136,7 +126,7 @@ const DraggableResizableDiv = ({
       }
     };
     // } catch (error) {}
-  }, [startTime, duration, videoRef]);
+  }, [property.startTime, property.duration, videoRef]);
 
   return (
     <Draggable
@@ -197,38 +187,8 @@ const DraggableResizableDiv = ({
             />
           </div>
         </ResizableBox>
-        {openContextMenuId === property.id && (
+        {/* {openContextMenuId === property.id && (
           <div className="context-menu" style={{ top: 100, left: 20 }}>
-            {comp === "video" && (
-              <div>
-                <label>
-                  Start Time:
-                  <input
-                    className="context-property"
-                    type="number"
-                    name="startTime"
-                    step="0.1"
-                    value={startTime}
-                    onChange={handleStyleChange}
-                  />
-                </label>
-              </div>
-            )}
-            {comp === "video" && (
-              <div>
-                <label>
-                  End Time:
-                  <input
-                    className="context-property"
-                    type="number"
-                    name="duration"
-                    step="0.1"
-                    value={duration}
-                    onChange={handleStyleChange}
-                  />
-                </label>
-              </div>
-            )}
             {comp === "video" && (
               <div>
                 <label>
@@ -299,7 +259,7 @@ const DraggableResizableDiv = ({
               </div>
             )}
           </div>
-        )}
+        )} */}
         {isAtCenter && (
           <div
             className="dotted-center-line"

@@ -96,7 +96,11 @@ export default function WeddingVideo() {
     setVideo(event.target.files[0]);
   };
 
+  // text-1: dc8add, text-2: cdab8f
+  console.log('rrrrrrrrrrrrrr', texts)
+
   const takeTextDetails = (details) => {
+    console.log('rrrrrrrrrrrr 2', details)
     const others = texts.filter((val) => val?.id !== details?.id);
     setTexts([...others, details]);
   };
@@ -152,7 +156,7 @@ export default function WeddingVideo() {
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
       {
-        texts.map((val, i) => (<TextEditor key={i} property={val} openContextMenuId={openContextMenuId} takeTextDetails={takeTextDetails} />))
+        texts.map((val, i) => (<TextEditor key={i} property={val} openContextMenuId={openContextMenuId} takeTextDetails={takeTextDetails} comp={"video"} />))
       }
       <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
