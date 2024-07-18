@@ -9,7 +9,6 @@ const Profile = () => {
     const [customerInfo, setCustomerInfo] = useState({});
     const id  = localStorage.getItem("customerId");
     const fetchCustomerDetails = async () => {
-      console.log(id);
       try {
         const { data } = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/customers/customerInfo/${id}`,

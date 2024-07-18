@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 const Login = () => {
     const [mobile, setMobile] = useState('');
     const [password, setPassword] = useState('');
+
     const navigate = useNavigate();
 
     const loginUser = async (event) => {

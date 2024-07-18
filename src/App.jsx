@@ -24,6 +24,9 @@ import Transactions from "./components/transiction/Transactions";
 import ClientCredits from "./components/client/ClientCredits";
 import UsersTable from "./components/admin/UsersTable";
 import Admin from "./pages/Admin";
+import AdminEvents from "./components/admin/AdminEvents";
+import AdminTransaction from "./components/admin/AdminTransaction";
+import ViewGuest from "./components/events/ViewGuest";
 
 export const fontFamilies = [
   "Josefin Slab",
@@ -66,7 +69,8 @@ const App = () => {
         <Route path="/admin" element={<Admin/>}>
           <Route path="dashboard" element={<AdminDashboard/>} />
           <Route path="userDetails" element={<UsersTable/>} />
-          <Route path="eventlist" element={<EventsList />} />
+          <Route path="eventlist" element={<AdminEvents/>} />
+          <Route path="credits" element={<AdminTransaction/>} />
         </Route>
 
         <Route path="/register" element={<Register />} />
@@ -86,7 +90,8 @@ const App = () => {
           <Route path="events" element={<CustomerEvents />} />
           <Route path="credits" element={<Transactions />} />
         </Route>
-
+        
+        <Route path="/viewGuest" element={<ViewGuest />} />
         <Route path="/videoEdit" element={<WeddingVideo />} />
         <Route path="/cardEdit" element={<WeddingCard />} />
         <Route path="/imageEdit" element={<WeddingImage />} />

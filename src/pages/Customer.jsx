@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 
 const Customer = () => {
   const location = useLocation();
-
+  const role = localStorage.getItem("role");
   const getLinkClasses = (path) => {
     return location.pathname === path
       ? "bg-blue-500 text-white px-4 py-2 rounded-md"
@@ -14,7 +14,7 @@ const Customer = () => {
     <div className="bg-white rounded-lg p-6">
       <div className="flex justify-between items-center border-b pb-4">
         <h1 className="text-2xl font-semibold">End User Details</h1>
-        <Link to={'/client/dashboard'} className="text-blue-500">&larr; Back</Link>
+        <Link to={role=="client"?'/client/dashboard':'/admin/dashboard'}className="text-blue-500">&larr; Back</Link>
       </div>
       <div className="flex space-x-4 m-8 gap-10 justify-center">
         <Link to="/customer/profile" className={getLinkClasses('/customer/profile')}>

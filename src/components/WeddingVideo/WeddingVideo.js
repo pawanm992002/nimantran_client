@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
@@ -12,11 +12,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
 import TextEditor from "../Other/TextEditor/TextEditor";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function WeddingVideo() {
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  useEffect(()=>{
+     const role = localStorage.getItem('role');
+     if(role == null || token == null){
+      navigate('/login');
+     }
+  },[])
   const videoRef = useRef();
-  const token = localStorage.getItem("token");
+
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
   const [video, setVideo] = useState(null);

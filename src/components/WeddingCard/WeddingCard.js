@@ -17,11 +17,18 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import TextEditor from "../Other/TextEditor/TextEditor";
 
 export default function WeddingVideo() {
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  useEffect(()=>{
+     const role = localStorage.getItem('role');
+     if(role == null || token == null){
+      navigate('/login');
+     }
+  },[])
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
   const defaultLayoutPluginInstance = defaultLayoutPlugin();

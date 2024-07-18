@@ -1,26 +1,16 @@
-// src/components/TextEditor.js
-
 import React, { useState, useEffect } from "react";
 import { fontFamilies } from "../../../App";
 
 const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
-  const [backgroundColor, setBackgroundColor] = useState(
-    property.backgroundColor
-  );
-  // const [text, setText] = useState(property?.text);
-  const [selectedTranstion, setSelectedTranstion] = useState(
-    property?.transition
-  );
+  const [backgroundColor, setBackgroundColor] = useState(property.backgroundColor);
+  const [selectedTransition, setSelectedTransition] = useState(property?.transition);
   const [fontWeight, setFontWeight] = useState(property?.fontWeight);
-  // const [position, setPosition] = useState(property?.position);
-  // const [size, setSize] = useState(property?.size);
   const [fontColor, setFontColor] = useState(property?.fontColor);
   const [fontStyle, setFontStyle] = useState(property?.fontStyle);
   const [fontSize, setFontSize] = useState(property?.fontSize);
   const [fontFamily, setFontFamily] = useState(property?.fontFamily);
   const [startTime, setStartTime] = useState(property?.startTime);
   const [duration, setDuration] = useState(property?.duration);
-  // const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     takeTextDetails({
@@ -36,7 +26,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       startTime: startTime,
       duration: duration,
       backgroundColor: backgroundColor,
-      transition: selectedTranstion,
+      transition: selectedTransition,
       hidden: property.hidden,
       page: property.page,
     });
@@ -49,9 +39,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     fontStyle,
     fontFamily,
     backgroundColor,
-    // selectedTranstion,
-    // property.page,
-    // property.hidden,
+    selectedTransition
   ]);
 
   const handleStyleChange = (e) => {
@@ -72,8 +60,74 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       setDuration(parseFloat(value));
     } else if (name === "backgroundColor") {
       setBackgroundColor(value);
+    } else if (name === "transition") {
+      setSelectedTransition(JSON.parse(value));
     }
   };
+
+  const transitionArray = [
+    {
+      type: 'none',
+      options: {
+        top: NaN,
+        duration: NaN,
+      },
+    },
+    {
+      type: "move_up",
+      options: {
+        top: 50,
+        duration: 1,
+      },
+    },
+    {
+      type: "move_down",
+      options: {
+        bottom: 100,
+        duration: 1,
+      },
+    },
+    {
+      type: "move_right",
+      options: {
+        right: 50,
+        duration: 1,
+      },
+    },
+    {
+      type: "move_left",
+      options: {
+        left: 50,
+        duration: 1,
+      },
+    },
+    {
+      type: "path_cover",
+      options: {
+        rotationSpeed: 0.4,
+        duration: 1,
+        clockwise: false,
+      },
+    },
+    {
+      type: "fade",
+      options: {
+        duration: 2,
+      },
+    },
+    {
+      type: "zoom_in",
+      options: {
+        scale: 2,
+      },
+    },
+    {
+      type: "zoom_out",
+      options: {
+        scale: 2,
+      },
+    },
+  ];
 
   return (
     openContextMenuId === property.id && (
@@ -86,6 +140,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               value={fontFamily}
               onChange={handleStyleChange}
               style={{ fontFamily: fontFamily }}
+              title="Select font family"
             >
               {fontFamilies.map((val, i) => (
                 <option style={{ fontFamily: val }} value={val} key={i}>
@@ -102,6 +157,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             name="size"
             value={fontSize}
             onChange={handleStyleChange}
+            title="Set font size"
           />
         </div>
         <div className="h-9 flex items-center justify-center bg-gray-100 rounded-md">
@@ -112,6 +168,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             <span
               className="absolute inset-x-0 bottom-0 h-2"
               style={{ background: fontColor }}
+              title="Set font color"
             ></span>
             <input
               type="color"
@@ -131,6 +188,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             name="backgroundColor"
             value={backgroundColor}
             onChange={handleStyleChange}
+            title="Set background color"
           />
         </div>
         <div className="h-9 flex items-center">
@@ -141,6 +199,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             }`}
             onClick={handleStyleChange}
             value={fontWeight}
+            title="Toggle bold"
           >
             B
           </button>
@@ -151,13 +210,27 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             }`}
             value={fontStyle}
             onClick={handleStyleChange}
+            title="Toggle italic"
           >
             I
           </button>
         </div>
-        <button className="p-2 border rounded" title="Text Effects">
-          Transition
-        </button>
+
+        <div className="h-9 flex items-center bg-gray-100 rounded-md">
+          <select
+            className="h-9 outline-none p-2 rounded-md w-48"
+            name="transition"
+            value={JSON.stringify(selectedTransition)}
+            onChange={handleStyleChange}
+            title="Select transition"
+          >
+            {transitionArray.map((transition, i) => (
+              <option  value={JSON.stringify(transition)} key={i}>
+                {transition.type}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {comp === "video" && (
           <div className="h-9 flex items-center bg-gray-100 rounded-md">
@@ -168,6 +241,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               strokeWidth={1.5}
               stroke="currentColor"
               className="size-6"
+              title="Start time"
             >
               <path
                 strokeLinecap="round"
@@ -188,6 +262,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               step="0.1"
               value={startTime}
               onChange={handleStyleChange}
+              title="Set start time"
             />
           </div>
         )}
@@ -200,6 +275,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               strokeWidth={1.5}
               stroke="currentColor"
               className="size-6"
+              title="Duration"
             >
               <path
                 strokeLinecap="round"
@@ -215,12 +291,10 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               step="0.1"
               value={duration}
               onChange={handleStyleChange}
+              title="Set duration"
             />
           </div>
         )}
-        {/* <button className="p-2 border rounded" title="Animate">
-          Animate
-        </button> */}
       </div>
     )
   );

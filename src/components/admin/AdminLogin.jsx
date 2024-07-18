@@ -15,12 +15,15 @@ const AdminLogin = () => {
         { mobile, password }
       );
       console.log(data);
-      if (!data?.token) {
+      localStorage.setItem("token", data?.data?.token);
+      localStorage.setItem("mobile", data?.data?.mobile);
+      localStorage.setItem("_id", data?.data?._id);
+      localStorage.setItem("role", data?.data?.role);
+      if (!data?.data?.token) {
         navigate("/");
         return;
       }
-      localStorage.setItem("token", data?.token);
-      navigate("/admin");
+      navigate("/admin/dashboard");
     } catch (error) {
       console.error(error);
       alert("Error logging in");

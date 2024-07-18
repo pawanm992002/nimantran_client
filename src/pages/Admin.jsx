@@ -1,16 +1,25 @@
-import React from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+
 
 const Admin = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const navigate = useNavigate();
+  useEffect(()=>{
+     const role = localStorage.getItem('role');
+     const token = localStorage.getItem('token');
+     if(role == null || token == null){
+      navigate('/adminLogin');
+     }
+  },[])
 
   return (
     <div className="flex h-screen">
       <aside className="w-64 bg-gray-100">
         <div className="px-4">
           <div className="flex items-center mb-4">
-            <img className="w-44" src="/nimantran logo 3.png" alt="" />
+            <img className="w-full pt-4 object-contain" src="/nimantran logo.png" alt="" />
           </div>
           <nav className="space-y-2 pt-5">
             <Link

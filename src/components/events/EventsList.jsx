@@ -4,7 +4,8 @@ import toast from "react-hot-toast";
 import EditEventModal from "./EditEventModal";
 
 const EventsList = () => {
-  const [events, setEvents] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  // const [customerName, setCustomerName] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -16,12 +17,12 @@ const EventsList = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/events/get-all-events`,
+        `${process.env.REACT_APP_BACKEND_URL}/events/clientEvents`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setEvents(response?.data?.data);
+      setCustomers(response?.data?.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -51,7 +52,7 @@ const EventsList = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setEvents(events.filter((e) => e._id !== event._id));
+      setCustomers(customers.filter((e) => e._id !== event._id));
       toast.success("Event deleted successfully");
     } catch (error) {
       console.error("Error deleting event:", error);
@@ -208,7 +209,8 @@ const EventsList = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {events.map((event) => (
+          
+          {customers[0]?.events?.map((event) => (
             <tr
               key={event._id}
               className="hover:bg-gray-100 cursor-pointer"
@@ -224,7 +226,7 @@ const EventsList = () => {
                 {event.location}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {event.user.name}
+                {/* {customer.name} */}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <svg
