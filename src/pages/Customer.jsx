@@ -11,7 +11,7 @@ const Customer = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6">
+    <div className="bg-white rounded-lg p-5">
       <div className="flex justify-between items-center border-b pb-4">
         <h1 className="text-2xl font-semibold">End User Details</h1>
         <Link to={role=="client"?'/client/dashboard':'/admin/dashboard'}className="text-blue-500">&larr; Back</Link>

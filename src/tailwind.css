@@ -29,13 +29,6 @@
       transform: rotate(360deg);
     }
   }
-  
-.bg-blue-500 ,.bg-blue-600 {
-  background-color: rgb(255, 128, 0);
-}
-.text-blue-500, .text-blue-600{
-  color: rgb(255, 128, 0);
-}
 
 .CircularProgressbar-text {
   transform: translate(-15%, 5%);

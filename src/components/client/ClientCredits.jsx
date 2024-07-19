@@ -42,9 +42,9 @@ const Transactions = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full mx-auto ">
-      <h2 className="text-2xl font-bold mb-8">Customer Transactions</h2>
-      <div className="flex justify-between mb-6">
+    <div className="w-full flex flex-col overflow-hidden no-scrollbar h-full mx-auto ">
+      <h2 className="text-2xl p-3 font-bold mb-3">Customer Transactions</h2>
+      <div className="flex justify-between p-2 mb-6">
         <div className="flex flex-wrap space-x-4">
           <button
             className={`px-6 py-2 text-lg font-semibold rounded-lg ${
@@ -84,9 +84,9 @@ const Transactions = () => {
           {transactions.length === 0 ? (
             <div>No Transactions yet</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border">
-                <thead className="bg-gray-100 border-b">
+            <div className="overflow-x-auto h-[55vh]">
+              <table className="min-w-full bg-white">
+                <thead className="bg-gray-200 sticky top-0">
                   <tr>
                     {transactions.length > 0 && !transactions[0].eventId ? <th className="text-left p-4">Reciever</th> : <th className="text-left p-4">Event</th>} 
                     <th className="text-left p-4">Amount</th>
@@ -96,8 +96,8 @@ const Transactions = () => {
                 </thead>
                 <tbody>
                   {transactions?.map((transaction) => (
-                    <tr key={transaction._id} className="border-b">
-                      <td className="p-4">{transaction.recieverId.name}</td>
+                    <tr key={transaction._id} className=" hover:bg-gray-100 ">
+                      <td className=" p-4">{transaction.recieverId.name}</td>
                       <td className="p-4">{transaction.amount}</td>
                       <td className="p-4">
                         {new Date(
