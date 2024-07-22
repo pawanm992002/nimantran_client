@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./WeddingVideo.css";
-import DraggableResizableDiv from "../Other/DraggableResizableDiv";
+import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,10 +10,23 @@ import {
   faSquarePlus,
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
-import { fontFamilies } from "../../App";
+import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
+import TextEditor from "../Other/TextEditor/TextEditor";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function WeddingVideo() {
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  useEffect(()=>{
+     const role = localStorage.getItem('role');
+     if(role == null || token == null){
+      navigate('/login');
+     }
+  },[])
   const videoRef = useRef();
+
+  const [params] = useSearchParams();
+  const eventId = params.get("eventId");
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
@@ -23,17 +36,8 @@ export default function WeddingVideo() {
   const [onHover2, setOnHover2] = useState(false);
   const [onHover3, setOnHover3] = useState(false);
   const [onHover4, setOnHover4] = useState(false);
-  const [isSample, setIsSample] = useState(true)
-  const handleStyleChange = () => {};
+  const [isSample, setIsSample] = useState(true);
 
-  const deleteText = (id) => {
-    setTexts(texts.filter((val) => val.id !== id));
-  };
-  const hideText = (details) => {
-    const others = texts.filter((val) => val.id !== details.id);
-    details.hidden = !details.hidden;
-    setTexts([...others, details]);
-  };
   const [scaling, setScaling] = useState({
     width: 1,
     height: 1,
@@ -58,6 +62,7 @@ export default function WeddingVideo() {
       id: count,
       duration: 5,
       fontColor: "#000000",
+      fontWeight: "normal",
       fontFamily: "Josefin Slab",
       fontSize: 20,
       fontStyle: "normal",
@@ -67,7 +72,7 @@ export default function WeddingVideo() {
       text: `Edit Text - ${count}`,
       backgroundColor: "none",
       hidden: false,
-      transition: {type: 'none', options: null}
+      transition: { type: "none", options: null },
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
@@ -99,7 +104,11 @@ export default function WeddingVideo() {
     setVideo(event.target.files[0]);
   };
 
+  // text-1: dc8add, text-2: cdab8f
+  console.log('rrrrrrrrrrrrrr', texts)
+
   const takeTextDetails = (details) => {
+    console.log('rrrrrrrrrrrr 2', details)
     const others = texts.filter((val) => val?.id !== details?.id);
     setTexts([...others, details]);
   };
@@ -123,7 +132,7 @@ export default function WeddingVideo() {
       if (!guestNames && !isSample) {
         return toast.error("Please Enter Guest List");
       }
-      
+
       if (!video) {
         return toast.error("Please Upload the Video");
       }
@@ -139,12 +148,10 @@ export default function WeddingVideo() {
       formData.append("isSample", isSample);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/videoEdit`,
+        `${process.env.REACT_APP_BACKEND_URL}/videoEdit?eventId=${eventId}`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setProcessedVideoUrls(response.data.videoUrls);
@@ -156,6 +163,9 @@ export default function WeddingVideo() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
+      {
+        texts.map((val, i) => (<TextEditor key={i} property={val} openContextMenuId={openContextMenuId} takeTextDetails={takeTextDetails} comp={"video"} />))
+      }
       <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
@@ -216,27 +226,29 @@ export default function WeddingVideo() {
         </form>
 
         <div className="mainbar">
-          {!video && <label
-            className="upload-container"
-            onChange={handleVideoUpload}
-            style={{
-              height: video && "50px",
-              margin: video && "0 auto",
-              padding: video && "5px",
-            }}
-          >
-            <input type="file" accept="video/*" />
-            <div className="upload-content">
-              <h2
-                className="upload-button"
-                style={{ fontSize: video && "15px", padding: video && "8px" }}
-              >
-                Upload Video
-              </h2>
-              {!video && <p>or Drag & Drop a file</p>}
-              {/* <p className="paste-text">paste File or URL</p> */}
-            </div>
-          </label>}
+          {!video && (
+            <label
+              className="upload-container"
+              onChange={handleVideoUpload}
+              style={{
+                height: video && "50px",
+                margin: video && "0 auto",
+                padding: video && "5px",
+              }}
+            >
+              <input type="file" accept="video/*" />
+              <div className="upload-content">
+                <h2
+                  className="upload-button"
+                  style={{ fontSize: video && "15px", padding: video && "8px" }}
+                >
+                  Upload Video
+                </h2>
+                {!video && <p>or Drag & Drop a file</p>}
+                {/* <p className="paste-text">paste File or URL</p> */}
+              </div>
+            </label>
+          )}
           <div
             className="videoContainer"
             style={{ display: !video ? "none" : "flex" }}
@@ -277,188 +289,14 @@ export default function WeddingVideo() {
           </div>
         </div>
 
-        {video && <div className="configuration">
-          <h2>Text Configuration</h2>
-          <div className="NoText">
-            <input
-              type="checkbox"
-              id="sample"
-              checked={isSample}
-              onChange={(e) => setIsSample(JSON.parse(e.target.checked))}
-            />
-            <label htmlFor="sample" id="sample">
-              Generate Sample Images
-            </label>
-          </div>
-          
-          {texts.length > 0 ? texts?.map(
-            ({
-              id,
-              text,
-              fontColor,
-              fontSize,
-              duration,
-              startTime,
-              position,
-              fontFamily,
-              fontStyle,
-              size,
-              backgroundColor,
-              hidden,
-            }) => (
-              <div
-                key={id}
-                className="context-menu"
-                style={{ position: "relative" }}
-              >
-                <div>
-                  <label>Text Id : {id}</label>
-                </div>
-                <div>
-                  <label>
-                    Font Color:
-                    <input
-                      className="context-property"
-                      type="color"
-                      name="color"
-                      value={fontColor}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Background:
-                    <input
-                      className="context-property"
-                      type="color"
-                      name="backgroundColor"
-                      value={backgroundColor}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Font Style:
-                    <select
-                      className="context-property"
-                      name="style"
-                      value={fontStyle}
-                      onChange={handleStyleChange}
-                    >
-                      <option value="normal">Normal</option>
-                      <option value="italic">Italic</option>
-                      <option value="oblique">Oblique</option>
-                    </select>
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Font Size:
-                    <input
-                      className="context-property"
-                      type="number"
-                      name="size"
-                      value={fontSize}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Font Family:
-                    <select
-                      className="context-property"
-                      name="family"
-                      value={fontFamily}
-                      onChange={handleStyleChange}
-                    >
-                      {fontFamilies.map((val, i) => (
-                        <option
-                          style={{ fontFamily: `${val}` }}
-                          value={val}
-                          key={i}
-                        >
-                          {val}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Start Time:
-                    <input
-                      className="context-property"
-                      type="number"
-                      name="startTime"
-                      step="0.1"
-                      value={startTime}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    End Time:
-                    <input
-                      className="context-property"
-                      type="number"
-                      name="duration"
-                      step="0.1"
-                      value={duration}
-                      onChange={handleStyleChange}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      background: "#B5B4F3",
-                      textAlign: "center",
-                      borderRadius: "5px",
-                      padding: "0 10px",
-                    }}
-                    name="delete"
-                    onClick={() => deleteText(id)}
-                  >
-                    Delete Text - {id}
-                  </label>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      background: "#B5B4F3",
-                      textAlign: "center",
-                      borderRadius: "5px",
-                      padding: "0 10px",
-                    }}
-                    name="hidden"
-                    onClick={() =>
-                      hideText({
-                        id,
-                        text,
-                        fontColor,
-                        fontSize,
-                        duration,
-                        startTime,
-                        position,
-                        fontFamily,
-                        fontStyle,
-                        size,
-                        backgroundColor,
-                        hidden,
-                      })
-                    }
-                  >
-                    {hidden ? "Show" : "Hide"} Text - {id}
-                  </label>
-                </div>
-              </div>
-            )
-          ) : <span className="NoText">NO TEXT</span>}
-        </div>}
+        {video && (
+          <SideConfiguration
+            isSample={isSample}
+            setIsSample={setIsSample}
+            texts={texts}
+            setTexts={setTexts}
+          />
+        )}
       </div>
 
       {processedVideoUrls.length > 0 && (

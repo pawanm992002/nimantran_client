@@ -1,32 +1,57 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const AdminDashboard = () => {
   const token = localStorage.getItem("token");
-  const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [users, setUsers] = useState([]);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [requests, setRequests] = useState([]);
+  
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const fetchRequests = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_ADMIN}/getAllRequest`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setRequests(response.data.data.reverse());
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+      toast.error("Error fetching requests");
+    }
+  };
 
   const createClient = async (e) => {
     e.preventDefault();
     try {
-      if (!username || !password) {
-        toast.error("Enter all Neccessary Fields");
+      if (!mobile || !password || !name || !email) {
+        toast.error("Enter all necessary fields");
         return;
       }
       const { data } = await axios.post(
         `${process.env.REACT_APP_ADMIN}/create-client`,
-        { username, password },
+        { mobile, password, name, email },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (data?.flag) {
         toast.success(data.message);
-        getAllUsers();
+        setIsModalOpen(false);
+        setMobile("");
+        setPassword("");
+        setName("");
+        setEmail("");
+        fetchRequests(); // Fetch requests again after creating client
         return;
       }
     } catch (error) {
@@ -34,93 +59,161 @@ const AdminDashboard = () => {
     }
   };
 
-  const getAllUsers = async () => {
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_ADMIN}/getAllClientWithCustomers`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+  const handleAcceptRequest = async (requestId) => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/admin/acceptCreditRequest/${requestId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (data?.success) {
+        toast.success(data.message);
+        fetchRequests(); // Refresh requests after accepting
       }
-    );
-    if (!data) {
-      navigate("/");
-      return;
+    } catch (error) {
+      console.error("Error accepting request:", error);
+      toast.error("Error accepting request");
     }
-    setUsers(data?.data);
   };
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/");
-      return;
-    }
-    getAllUsers();
-  }, []);
-
   return (
-    <div>
-      <h2>Admin Dashboard</h2>
-      <div>
-        <h2>Create Client</h2>
-        <form onSubmit={createClient}>
-          <div>
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="temp_password">Temporary Password</label>
-            <input
-              id="temp_password"
-              type="text"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div>
-            <button type="submit">Create</button>
-          </div>
-        </form>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-wrap space-x-4">
+          <button
+            className={`px-6 py-2 text-lg font-semibold rounded-lg bg-blue-500 text-white`}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Create Client
+          </button>
+        </div>
       </div>
 
-      <table cellPadding={5} cellSpacing={5} border="1px solid black">
-        <thead>
-          <tr>
-            <td>ID</td>
-            <td>Username</td>
-            <td>Role</td>
-            <td>Credits</td>
-            <td>No. of Customers</td>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((client) => (
-            <>
-              <tr key={client._id}>
-                <td> {client?._id} </td>
-                <td>{client?.username} </td>
-                <td>{client?.role} </td>
-                <td>{client?.credits} </td>
-                <td>{client?.customers?.length} </td>
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed z-30 inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Create Client</h2>
+            <form onSubmit={createClient}>
+              <div className="mb-4">
+                <label htmlFor="name" className="block text-gray-700 mb-2">
+                  Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="mobile" className="block text-gray-700 mb-2">
+                  Mobile
+                </label>
+                <input
+                  id="mobile"
+                  type="text"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="temp_password"
+                  className="block text-gray-700 mb-2"
+                >
+                  Temporary Password
+                </label>
+                <input
+                  id="temp_password"
+                  type="text"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  className="px-6 py-2 font-semibold rounded-lg bg-gray-200 text-gray-800"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
+                >
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Requests Table */}
+      <div className="overflow-auto mt-6 h-[53vh] border">
+        <table className="min-w-full  bg-white border border-gray-200 border-collapse rounded-lg shadow-md">
+          <thead className="sticky top-0" >
+            <tr >
+              <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
+                User Name
+              </th>
+              <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
+                Credits
+              </th>
+              <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
+                Status
+              </th>
+              <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {requests.map((request) => (
+              <tr key={request._id}>
+                <td className="py-2 px-4 border-b text-center border-gray-200">
+                  {request.user.name}
+                </td>
+                <td className="py-2 px-4 border-b text-center border-gray-200">
+                  {request.credits}
+                </td>
+                <td className="py-2 px-4 border-b text-center border-gray-200">
+                  {request.status}
+                </td>
+                <td className="py-2 px-4 border-b text-center border-gray-200">
+                  {request.status === "pending" && (
+                    <button
+                      className="px-4 py-1 bg-blue-500 text-white rounded-lg"
+                      onClick={() => handleAcceptRequest(request._id)}
+                    >
+                      Accept
+                    </button>
+                  )}
+                </td>
               </tr>
-              <tr>
-                {client?.customers?.map((customer) => (
-                  <>
-                    <td> {customer?._id} </td>
-                    <td>{customer?.username} </td>
-                    <td>{customer?.role} </td>
-                    <td>{customer?.credits} </td>
-                    <td> - </td>
-                  </>
-                ))}
-              </tr>
-            </>
-          ))}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -55,23 +55,6 @@
   box-shadow: 4px 4px 7px 1px #000;
 }
 
-.configuration {
-  flex: 7;
-  /* background: #bceec2; */
-  background: #b4f2f3;
-  padding: 20px 10px;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  height: var(--contentMaxHeight);
-  overflow-y: auto;
-  align-items: center;
-  gap: 25px;
-  box-shadow: 4px 4px 7px 1px #000;
-  h2 {
-    font-family: 'Podkova';
-  }
-}
 
 .EditName {
   color: #ff497c;
@@ -110,16 +93,6 @@
   /* margin: 10px auto; */
 }
 
-.NoText {
-  color: blue;
-  letter-spacing: 2px;
-  font-weight: bold;
-  text-align: center;
-  input {
-    margin: 5px
-  }
-}
-
 .inputText {
   border-radius: 5px;
   height: 30px;
@@ -129,7 +102,6 @@
   text-align: center;
   margin: 0;
 }
-
 
 .UploadButton {
   width: 80%;
@@ -230,7 +202,6 @@ video {
   margin-top: 20px;
   max-width: 100%;
 }
-
 
 .processed_videos_container {
   display: flex;

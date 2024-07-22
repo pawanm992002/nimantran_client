@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "../WeddingVideo/WeddingVideo.css";
-import DraggableResizableDiv from "../Other/DraggableResizableDiv";
+import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,8 +16,21 @@ import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import TextEditor from "../Other/TextEditor/TextEditor";
 
 export default function WeddingVideo() {
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  useEffect(()=>{
+     const role = localStorage.getItem('role');
+     if(role == null || token == null){
+      navigate('/login');
+     }
+  },[])
+  const [params] = useSearchParams();
+  const eventId = params.get("eventId");
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const parentRef = useRef();
   const [pdfFile, setPdfFile] = useState(null);
@@ -32,16 +45,7 @@ export default function WeddingVideo() {
   const [onHover4, setOnHover4] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSample, setIsSample] = useState(true);
-  const handleStyleChange = () => {};
 
-  const deleteText = (id) => {
-    setTexts(texts.filter((val) => val.id !== id));
-  };
-  const hideText = (details) => {
-    const others = texts.filter((val) => val.id !== details.id);
-    details.hidden = !details.hidden;
-    setTexts([...others, details]);
-  };
   // const [scaling, setScaling] = useState({
   //   width: 1,
   //   height: 1,
@@ -139,7 +143,7 @@ export default function WeddingVideo() {
       formData.append("scalingFont", scalingFont);
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
-      formData.append("isSample", isSample)
+      formData.append("isSample", isSample);
       // formData.append("videoW", parseInt(OriginalSize.w));
       // formData.append("videoH", parseInt(OriginalSize.h));
 
@@ -147,9 +151,7 @@ export default function WeddingVideo() {
         `${process.env.REACT_APP_BACKEND_URL}/pdfEdit`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setProcessedVideoUrls(response.data.videoUrls);
@@ -161,6 +163,14 @@ export default function WeddingVideo() {
   return (
     <div className="main">
       <h2 className="heading">Wedding Invitation Editor</h2>
+      {texts.map((val, i) => (
+        <TextEditor
+          key={i}
+          property={val}
+          openContextMenuId={openContextMenuId}
+          takeTextDetails={takeTextDetails}
+        />
+      ))}
       <div className="mainContainer">
         <form className="sidebar" onSubmit={handleSubmit}>
           <label
@@ -312,192 +322,14 @@ export default function WeddingVideo() {
           </div>
         </div>
 
-        <div className="configuration">
-          <h2>Text Configuration</h2>
-          <div className="NoText">
-            <input
-              type="checkbox"
-              id="sample"
-              checked={isSample}
-              onChange={(e) => setIsSample(JSON.parse(e.target.checked))}
-            />
-            <label htmlFor="sample" id="sample">
-              Generate Sample Images
-            </label>
-          </div>
-          {texts.length > 0 ? (
-            texts?.map(
-              ({
-                id,
-                text,
-                fontColor,
-                fontSize,
-                duration,
-                startTime,
-                position,
-                fontFamily,
-                fontStyle,
-                size,
-                backgroundColor,
-                hidden,
-              }) => (
-                <div
-                  key={id}
-                  className="context-menu"
-                  style={{ position: "relative" }}
-                >
-                  <div>
-                    <label>Text Id : {id}</label>
-                  </div>
-                  <div>
-                    <label>
-                      Font Color:
-                      <input
-                        className="context-property"
-                        type="color"
-                        name="color"
-                        value={fontColor}
-                        onChange={handleStyleChange}
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Background:
-                      <input
-                        className="context-property"
-                        type="color"
-                        name="backgroundColor"
-                        value={backgroundColor}
-                        onChange={handleStyleChange}
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Font Style:
-                      <select
-                        className="context-property"
-                        name="style"
-                        value={fontStyle}
-                        onChange={handleStyleChange}
-                      >
-                        <option value="normal">Normal</option>
-                        <option value="italic">Italic</option>
-                        <option value="oblique">Oblique</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Font Size:
-                      <input
-                        className="context-property"
-                        type="number"
-                        name="size"
-                        value={fontSize}
-                        onChange={handleStyleChange}
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Font Family:
-                      <select
-                        className="context-property"
-                        name="family"
-                        value={fontFamily}
-                        onChange={handleStyleChange}
-                      >
-                        {fontFamilies.map((val, i) => (
-                          <option
-                            style={{ fontFamily: `${val}` }}
-                            value={val}
-                            key={i}
-                          >
-                            {val}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Start Time:
-                      <input
-                        className="context-property"
-                        type="number"
-                        name="startTime"
-                        step="0.1"
-                        value={startTime}
-                        onChange={handleStyleChange}
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Duration:
-                      <input
-                        className="context-property"
-                        type="number"
-                        name="duration"
-                        step="0.1"
-                        value={duration}
-                        onChange={handleStyleChange}
-                      />
-                    </label>
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        background: "#B5B4F3",
-                        textAlign: "center",
-                        borderRadius: "5px",
-                        padding: "0 10px",
-                      }}
-                      name="delete"
-                      onClick={() => deleteText(id)}
-                    >
-                      Delete Text - {id}
-                    </label>
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        background: "#B5B4F3",
-                        textAlign: "center",
-                        borderRadius: "5px",
-                        padding: "0 10px",
-                      }}
-                      name="hidden"
-                      onClick={() =>
-                        hideText({
-                          id,
-                          text,
-                          fontColor,
-                          fontSize,
-                          duration,
-                          startTime,
-                          position,
-                          fontFamily,
-                          fontStyle,
-                          size,
-                          backgroundColor,
-                          hidden,
-                        })
-                      }
-                    >
-                      {hidden ? "Show" : "Hide"} Text - {id}
-                    </label>
-                  </div>
-                </div>
-              )
-            )
-          ) : (
-            <span className="NoText">NO TEXT</span>
-          )}
-          {/* </div> */}
-        </div>
+        {pdfFile && (
+          <SideConfiguration
+            isSample={isSample}
+            setIsSample={setIsSample}
+            texts={texts}
+            setTexts={setTexts}
+          />
+        )}
       </div>
 
       {processedVideoUrls.length > 0 && (
