@@ -17,16 +17,16 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 export default function WeddingImage() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  useEffect(()=>{
-     const role = localStorage.getItem('role');
-     if(role == null || token == null){
-      navigate('/login');
-     }
-  },[])
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role == null || token == null) {
+      navigate("/login");
+    }
+  }, []);
   const videoRef = useRef();
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
-  
+
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
