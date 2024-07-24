@@ -19,14 +19,7 @@ const Navbar = () => {
             className="h-full w-full rounded-full"
           />
         </div>
-        <div className="h-full flex items-center justify-center">
-          <div
-            className="bg-black text-white text-center mx-2 py-2 px-4 rounded-lg cursor-pointer"
-            onClick={handleLogout}
-          >
-            Logout
-          </div>
-        </div>
+        
       </nav>
     </>
   );

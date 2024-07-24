@@ -1,13 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const ClientDashboard = () => {
   const token = localStorage.getItem("token");
   const [clientInfo, setClientInfo] = useState({});
-
   const [createCustomerModal, showCreateCustomerModal] = useState(false);
   const [purchaseRequestModal, showPurchaseRequestModal] = useState(false);
+  const [adminCredits, setAdminCredits] = useState(0);
+  const [requests, setRequests] = useState([]);
+
+  const nameRef = useRef("");
+  const mobileRef = useRef("");
+  const passwordRef = useRef("");
+  const emailRef = useRef("");
+  const genderRef = useRef("");
+  const dateOfBirthRef = useRef("");
+  const locationRef = useRef("");
 
   const fetchClientDetails = async () => {
     try {
@@ -19,12 +29,27 @@ const ClientDashboard = () => {
       );
       setClientInfo(data?.data);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to fetch client details");
+    }
+  };
+
+  const fetchRequests = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/client/client-requests`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setRequests(data?.data || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to fetch requests");
     }
   };
 
   useEffect(() => {
     fetchClientDetails();
+    fetchRequests();
   }, []);
 
   const handleModalCreateCustomer = () => {
@@ -35,19 +60,9 @@ const ClientDashboard = () => {
     showPurchaseRequestModal(!purchaseRequestModal);
   };
 
-  const nameRef = useRef("");
-  const mobileRef = useRef("");
-  const passwordRef = useRef("");
-  const emailRef = useRef("");
-  const genderRef = useRef("");
-  const dateOfBirthRef = useRef("");
-  const locationRef = useRef("");
-
   const createCustomer = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-
       const newCustomer = {
         name: nameRef.current.value,
         mobile: mobileRef.current.value,
@@ -57,7 +72,6 @@ const ClientDashboard = () => {
         dateOfBirth: dateOfBirthRef.current.value,
         location: locationRef.current.value,
       };
-      console.log(newCustomer);
 
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/client/create-customer`,
@@ -66,43 +80,40 @@ const ClientDashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (data) {
-        toast.success("New Customer Added Successfully");
-        fetchClientDetails();
-        handleModalCreateCustomer(); // Close the modal after creation
-      }
+
+      toast.success("New Customer Added Successfully");
+      fetchClientDetails();
+      handleModalCreateCustomer();
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message || "Failed to create customer");
+      handleModalCreateCustomer(); // Close modal even if the request fails
     }
   };
 
-  const [admincredits, setAdmincredits] = useState(0);
-
-  const RequestCreditsFromAdmin = async (e) => {
+  const requestCreditsFromAdmin = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/client/purchase-request-from-admin`,
-        { credits: parseInt(admincredits) },
+        { credits: parseInt(adminCredits) },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (data) {
-        toast.success("Request Sent Successfully");
-        fetchClientDetails();
-      }
+
+      toast.success("Request Sent Successfully");
+      fetchClientDetails();
+      handleModalPurchaseRequest();
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message || "Failed to request credits");
+      handleModalPurchaseRequest(); // Close modal even if the request fails
     }
   };
 
   return (
     <>
       <div className="flex m-8">
-        <div className="bg-white border rounded-lg shadow-lg flex items-center p-4 lg:w-2/4 w-full">
+        <div className="bg-white  border rounded-lg shadow-lg flex items-center p-3 lg:w-2/4 w-full">
           <div className="w-full m-5">
             <div className="bg-blue-50 p-5 rounded-lg mb-4">
               <h3 className="text-blue-500 text-xl font-semibold mb-2">
@@ -124,7 +135,7 @@ const ClientDashboard = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col p-6 w-full">
+        <div className="flex flex-col px-4 w-full">
           <button
             onClick={handleModalCreateCustomer}
             className="px-6 py-2 mb-4 w-full text-xl font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 transition duration-200"
@@ -135,8 +146,41 @@ const ClientDashboard = () => {
             onClick={handleModalPurchaseRequest}
             className="px-6 py-2 w-full text-xl font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 transition duration-200"
           >
-            Purchase Credits
+            Request for Credits
           </button>
+          <div className="m-8">
+            <h2 className="text-2xl font-semibold mb-4">Requests</h2>
+            <div className="overflow-y-auto no-scrollbar border" style={{ height: '40vh' }}>
+              <table className="min-w-full  bg-white border border-gray-200">
+                <thead className="bg-gray-200 sticky top-[-1px]">
+                  <tr>
+                    <th className="py-2 px-4 border-b">User ID</th>
+                    <th className="py-2 px-4 border-b">Credits</th>
+                    <th className="py-2 px-4 border-b">Status</th>
+                   
+                  </tr>
+                </thead>
+                <tbody >
+                  {requests.length > 0 ? (
+                    requests.map((request) => (
+                      <tr key={request._id}>
+                        <td className="py-2 text-center px-4 border-b">{request.user.name}</td>
+                        <td className="py-2 text-center px-4 border-b">{request.credits}</td>
+                        <td className="py-2 text-center px-4 border-b">{request.status}</td>
+                       
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className="py-2 px-4 border-b text-center" colSpan="5">
+                        No requests found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -238,15 +282,16 @@ const ClientDashboard = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-lg p-8 w-1/3">
             <h3 className="text-2xl mb-4">Request Credits from Admin</h3>
-            <form onSubmit={RequestCreditsFromAdmin}>
+            <form onSubmit={requestCreditsFromAdmin}>
               <div className="mb-4">
                 <label className="block mb-2">Credits:</label>
                 <input
                   type="number"
-                  value={admincredits}
-                  onChange={(e) => setAdmincredits(e.target.value)}
+                  value={adminCredits}
+                  onChange={(e) => setAdminCredits(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   required
+                  min={1}
                 />
               </div>
               <div className="flex justify-end">
