@@ -13,6 +13,10 @@ const Client = () => {
       navigate("/login");
     }
   }, []);
+   const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
 
   return (
     <div className="flex h-screen">
@@ -67,19 +71,22 @@ const Client = () => {
         </div>
       </aside>
       <main className="flex-1 p-6 bg-white">
-        <header className="flex items-center justify-between mb-6">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="px-4 py-2 border rounded-xl w-1/3"
-          />
+        <header className="flex items-center justify-end mb-6">
+         
           <div className="flex items-center">
             <div className="flex items-center">
               {/* <img className="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Profile" /> */}
               <span className="h-8 w-8 rounded-full mr-2 bg-slate-400 justify-center items-center flex">
                 P
               </span>
-              <span>Nimantran</span>
+              <div className="h-full flex items-center justify-center">
+          <div
+            className="bg-black text-white text-center mx-2 py-2 px-4 rounded-lg cursor-pointer"
+            onClick={handleLogout}
+          >
+            Logout
+          </div>
+        </div>
             </div>
           </div>
         </header>
