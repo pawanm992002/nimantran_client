@@ -30,6 +30,7 @@ import Events from "./pages/Events";
 import EventDashboard from "./components/events/EventDashboard";
 import GuestsList from "./components/events/GuestsList";
 import CreateEvent from "./pages/CreateEvent";
+import EventLayout from "./pages/EventLayout";
 
 export const fontFamilies = [
   "Josefin Slab",
@@ -86,7 +87,7 @@ const App = () => {
           <Route path="eventlist" element={<EventsList />} />
           <Route path="credits" element={<ClientCredits />} />
         </Route>
-          <Route path="/createEvent" element={<CreateEvent />} />
+          <Route path="/Event" element={<EventLayout />} />
 
         <Route path="/customer" element={<Customer />}>
           <Route path="profile" element={<Profile />} />
