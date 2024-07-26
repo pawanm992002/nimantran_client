@@ -38,11 +38,17 @@ const Transactions = () => {
     fetchTransactions();
   }, [token, tableSwitch]);
 
+  const filteredTransactions = transactions.filter((transaction) => {
+    return transaction.recieverId.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+  });
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="w-full flex flex-col overflow-hidden no-scrollbar h-full mx-auto ">
+    <div className="w-full flex flex-col overflow-hidden no-scrollbar h-full mx-auto">
       <h2 className="text-2xl p-3 font-bold mb-3">Customer Transactions</h2>
       <div className="flex justify-between p-2 mb-6">
         <div className="flex flex-wrap space-x-4">
@@ -72,7 +78,7 @@ const Transactions = () => {
           placeholder="Search..."
           value={searchTerm}
           onChange={handleSearch}
-          className="px-4 py-2 w-1/3  min-w-40 max-h-10 border border-gray-300 rounded-lg"
+          className="px-4 py-2 w-1/3 min-w-40 max-h-10 border border-gray-300 rounded-lg"
         />
       </div>
       {loading ? (
@@ -81,23 +87,27 @@ const Transactions = () => {
         </div>
       ) : (
         <div>
-          {transactions.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <div>No Transactions yet</div>
           ) : (
             <div className="overflow-x-auto h-[55vh]">
               <table className="min-w-full bg-white">
                 <thead className="bg-gray-200 sticky top-0">
                   <tr>
-                    {transactions.length > 0 && !transactions[0].eventId ? <th className="text-left p-4">Reciever</th> : <th className="text-left p-4">Event</th>} 
+                    {transactions.length > 0 && !transactions[0].eventId ? (
+                      <th className="text-left p-4">Receiver</th>
+                    ) : (
+                      <th className="text-left p-4">Event</th>
+                    )}
                     <th className="text-left p-4">Amount</th>
                     <th className="text-left p-4">Date</th>
                     <th className="text-left p-4">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions?.map((transaction) => (
-                    <tr key={transaction._id} className=" hover:bg-gray-100 ">
-                      <td className=" p-4">{transaction.recieverId.name}</td>
+                  {filteredTransactions.map((transaction) => (
+                    <tr key={transaction._id} className="hover:bg-gray-100">
+                      <td className="p-4">{transaction.recieverId.name}</td>
                       <td className="p-4">{transaction.amount}</td>
                       <td className="p-4">
                         {new Date(

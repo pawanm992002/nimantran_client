@@ -26,7 +26,10 @@ import UsersTable from "./components/admin/UsersTable";
 import Admin from "./pages/Admin";
 import AdminEvents from "./components/admin/AdminEvents";
 import AdminTransaction from "./components/admin/AdminTransaction";
-import ViewGuest from "./components/events/ViewGuest";
+import Events from "./pages/Events";
+import EventDashboard from "./components/events/EventDashboard";
+import GuestsList from "./components/events/GuestsList";
+import CreateEvent from "./pages/CreateEvent";
 
 export const fontFamilies = [
   "Josefin Slab",
@@ -83,6 +86,7 @@ const App = () => {
           <Route path="eventlist" element={<EventsList />} />
           <Route path="credits" element={<ClientCredits />} />
         </Route>
+          <Route path="/createEvent" element={<CreateEvent />} />
 
         <Route path="/customer" element={<Customer />}>
           <Route path="profile" element={<Profile />} />
@@ -90,8 +94,12 @@ const App = () => {
           <Route path="events" element={<CustomerEvents />} />
           <Route path="credits" element={<Transactions />} />
         </Route>
+        <Route path="/events" element={<Events/>}>
+          <Route path="dashboard" element={<EventDashboard/>} />
+          <Route path="guests" element={<GuestsList/>} />
+          <Route path="dashboard" element={<EventDashboard/>} />
+        </Route>
         
-        <Route path="/viewGuest" element={<ViewGuest />} />
         <Route path="/videoEdit" element={<WeddingVideo />} />
         <Route path="/cardEdit" element={<WeddingCard />} />
         <Route path="/imageEdit" element={<WeddingImage />} />

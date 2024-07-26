@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CustomerTable = () => {
   const token = localStorage.getItem("token");
@@ -42,9 +42,15 @@ const CustomerTable = () => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredCustomers = (clientInfo?.receiveRequests || []).filter(
-    (customer) =>
-      customer?.mobile?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCustomers = (clientInfo?.customers || []).filter((customer) =>
+    customer?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredRequests = (clientInfo?.receiveRequests || []).filter(
+    (request) =>
+      request?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request?._id?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const transferCredits = async (e) => {
@@ -74,8 +80,7 @@ const CustomerTable = () => {
 
   const navigate = useNavigate();
   const handleCustomerProfile = (id) => {
-    localStorage.setItem("customerId", id);
-    navigate(`/customer/profile`);
+    navigate(`/customer/profile?customerId=${id}`);
   };
 
   return (
@@ -109,7 +114,7 @@ const CustomerTable = () => {
             placeholder="Search..."
             value={searchTerm}
             onChange={handleSearch}
-            className="px-4 py-2 w-1/3  min-w-40 max-h-10 border border-gray-300 rounded-lg"
+            className="px-4 py-2 w-1/3 min-w-40 max-h-10 border border-gray-300 rounded-lg"
           />
         </div>
         <div className="overflow-auto max-h-full font-light">
@@ -121,14 +126,14 @@ const CustomerTable = () => {
             <table className="w-full table-auto max-h-full border-collapse relative">
               <thead className="bg-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-4 py-2">ID</th>
+                  <th className="px-4 py-2">Name</th>
                   <th className="px-4 py-2">Mobile</th>
                   <th className="px-4 py-2">Credits</th>
                   <th className="px-4 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {clientInfo?.customers?.map((customer) => (
+                {filteredCustomers.map((customer) => (
                   <tr
                     key={customer._id}
                     className="even:bg-gray-100 odd:bg-white cursor-pointer hover:bg-slate-200"
@@ -137,7 +142,7 @@ const CustomerTable = () => {
                       onClick={() => handleCustomerProfile(customer._id)}
                       className="px-4 py-2 text-center"
                     >
-                      {customer._id}
+                      {customer.name}
                     </td>
                     <td className="px-4 py-2 text-center">{customer.mobile}</td>
                     <td className="px-4 py-2 text-center">
@@ -167,27 +172,27 @@ const CustomerTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredCustomers.map((customer) => (
+                {filteredRequests.map((request) => (
                   <tr
-                    key={customer._id}
+                    key={request._id}
                     className="even:bg-gray-100 odd:bg-white"
                   >
-                    <td className="px-4 py-2">{customer._id}</td>
-                    <td className="px-4 py-2">{customer.mobile}</td>
+                    <td className="px-4 py-2">{request._id}</td>
+                    <td className="px-4 py-2">{request.mobile}</td>
                     <td className="px-4 py-2">
-                      {new Date(customer.date).toLocaleDateString()}
+                      {new Date(request.date).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-2">{customer.credits}</td>
+                    <td className="px-4 py-2">{request.credits}</td>
                     <td
                       className={`px-4 py-2 ${
-                        customer.status === "pending"
+                        request.status === "pending"
                           ? "text-yellow-600"
-                          : customer.status === "accepted"
+                          : request.status === "accepted"
                           ? "text-green-600"
                           : "text-red-600"
                       }`}
                     >
-                      {customer.status}
+                      {request.status}
                     </td>
                   </tr>
                 ))}
@@ -209,6 +214,7 @@ const CustomerTable = () => {
                   onChange={(e) => setCredits(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   required
+                  min={1}
                 />
               </div>
               <div className="flex justify-end">

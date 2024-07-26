@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
 const Transactions = () => {
   const token = localStorage.getItem("token");
-  const customerId = localStorage.getItem("customerId");
+  const [params] = useSearchParams();
+  const customerId = params.get("customerId");
 
   const [transactions, setTransactions] = useState([]);
   const [creditSpendings, setCreditSpendings] = useState([]);

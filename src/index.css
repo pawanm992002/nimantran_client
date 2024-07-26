@@ -8,8 +8,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "Amita", serif;
-  font-family: "Kalam", cursive;
+  /* font-family: "Amita", serif; */
+  /* font-family: "Kalam", cursive; */
 }
 
 code {

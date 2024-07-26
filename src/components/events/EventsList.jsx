@@ -31,9 +31,10 @@ const EventsList = () => {
     fetchEvents();
   }, []);
 
-  const handleEditClick = (event) => {
+  const handleEditClick = (customer , event) => {
+    console.log(customer)
     setSelectedEvent(event);
-    setCustomerId(event?.user?._id);
+    setCustomerId(customer.customerId);
     setShowModal(true);
   };
 
@@ -42,25 +43,21 @@ const EventsList = () => {
     setSelectedEvent(null);
   };
 
-  const handleDeleteEvent = async (event) => {
+  const handleDeleteEvent = async (customer , event) => {
     try {
       await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/events/delete-event/${event._id}/${event.user._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/events/delete-event/${event._id}/${customer.customerId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setCustomers(customers.filter((e) => e._id !== event._id));
+      fetchEvents();
       toast.success("Event deleted successfully");
     } catch (error) {
       console.error("Error deleting event:", error);
       toast.error("Error deleting event");
     }
   };
-
- 
-
- 
 
   const handleEventUpdated = () => {
     fetchEvents();
@@ -138,7 +135,7 @@ const EventsList = () => {
                     className="w-6 h-6 cursor-pointer text-gray-500 hover:text-blue-500 transition duration-300"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleEditClick(event);
+                      handleEditClick(customer , event);
                     }}
                   >
                     <path
@@ -157,7 +154,7 @@ const EventsList = () => {
                     className="w-6 h-6 cursor-pointer text-gray-500 hover:text-red-500 transition duration-300"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeleteEvent(event);
+                      handleDeleteEvent(customer ,event);
                     }}
                   >
                     <path

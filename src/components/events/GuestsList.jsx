@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 
-const ViewGuest = () => {
+const GuestsList = () => {
   const [guests, setGuests] = useState([]);
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
@@ -18,7 +18,6 @@ const ViewGuest = () => {
         }
       );
       setGuests(response?.data?.data?.guests);
-      toast.success(response?.data?.message);
     } catch (error) {
       toast.error(error?.message);
       console.error("Error fetching event data:", error);
@@ -99,4 +98,4 @@ const ViewGuest = () => {
   );
 };
 
-export default ViewGuest;
+export default GuestsList;

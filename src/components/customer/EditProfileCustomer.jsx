@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const EditProfileCustomer = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const customerId = localStorage.getItem("customerId");
+  
+  const [params] = useSearchParams();
+  const customerId = params.get("customerId");
 
   const [formData, setFormData] = useState({
     name: "",

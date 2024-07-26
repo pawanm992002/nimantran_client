@@ -38,6 +38,7 @@ export default function WeddingImage() {
   const [onHover4, setOnHover4] = useState(false);
   const [isSample, setIsSample] = useState(true);
   const [selectedText, setSelectedText] = useState(null);
+  
 
   const [scaling, setScaling] = useState({
     width: 1,
