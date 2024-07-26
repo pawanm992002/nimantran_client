@@ -41,6 +41,7 @@ const ClientDashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log(data);
       setRequests(data?.data || []);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch requests");
@@ -93,7 +94,7 @@ const ClientDashboard = () => {
   const requestCreditsFromAdmin = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/client/purchase-request-from-admin`,
         { credits: parseInt(adminCredits) },
         {
@@ -113,7 +114,7 @@ const ClientDashboard = () => {
   return (
     <>
       <div className="flex m-8">
-        <div className="bg-white  border rounded-lg shadow-lg flex items-center p-3 lg:w-2/4 w-full">
+        <div className="bg-white border rounded-lg shadow-lg flex h-3/4 items-center p-3 lg:w-2/4 w-full">
           <div className="w-full m-5">
             <div className="bg-blue-50 p-5 rounded-lg mb-4">
               <h3 className="text-blue-500 text-xl font-semibold mb-2">

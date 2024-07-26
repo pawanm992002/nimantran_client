@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import EditEventModal from "../events/EditEventModal";
 import CreateEventModal from "../events/CreateEventModal";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const CustomerEvents = () => {
   const navigate = useNavigate();
@@ -15,7 +15,9 @@ const CustomerEvents = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const token = localStorage.getItem("token");
-  const id = localStorage.getItem("customerId");
+  const [params] = useSearchParams();
+  const id = params.get("customerId");
+  
 
   const fetchEvents = async () => {
     try {
@@ -160,7 +162,7 @@ const CustomerEvents = () => {
             Edit Video
           </button>
           <button
-            onClick={() => navigate(`/viewGuest?eventId=${event._id}`)}
+            onClick={() => navigate(`/Events?eventId=${event._id}`)}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 transition duration-300"
           >
             <svg

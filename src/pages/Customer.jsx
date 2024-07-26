@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 const Customer = () => {
   const location = useLocation();
@@ -9,7 +9,16 @@ const Customer = () => {
       ? "bg-blue-500 text-white px-4 py-2 rounded-md"
       : "bg-gray-200 text-gray-700 px-4 py-2 rounded-md";
   };
+  const [params] = useSearchParams();
+  const customerId = params.get("customerId");
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("hello")
+    if (location.pathname === `/customer` && customerId) {
+      navigate(`/customer/profile?customerId=${customerId}`);
+    }
+  }, [location.pathname, customerId, navigate]);
   return (
     <div className="bg-white rounded-lg p-5">
       <div className="flex justify-between items-center border-b pb-4">
@@ -17,16 +26,16 @@ const Customer = () => {
         <Link to={role=="client"?'/client/dashboard':'/admin/dashboard'}className="text-blue-500">&larr; Back</Link>
       </div>
       <div className="flex space-x-4 m-8 gap-10 justify-center">
-        <Link to="/customer/profile" className={getLinkClasses('/customer/profile')}>
+        <Link to={`/customer/profile?customerId=${customerId}`} className={getLinkClasses(`/customer/profile`)}>
           Profile
         </Link>
-        <Link to="/customer/editProfile" className={getLinkClasses('/customer/editProfile')}>
+        <Link to={`/customer/editProfile?customerId=${customerId}`} className={getLinkClasses(`/customer/editProfile`)}>
           Edit Profile
         </Link>
-        <Link to="/customer/events" className={getLinkClasses('/customer/events')}>
+        <Link to={`/customer/events?customerId=${customerId}`} className={getLinkClasses(`/customer/events`)}>
           Events
         </Link>
-        <Link to="/customer/credits" className={getLinkClasses('/customer/credits')}>
+        <Link to={`/customer/credits?customerId=${customerId}`} className={getLinkClasses(`/customer/credits`)}>
           Credit history
         </Link>
       </div>

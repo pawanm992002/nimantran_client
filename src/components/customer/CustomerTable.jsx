@@ -80,7 +80,7 @@ const CustomerTable = () => {
 
   const navigate = useNavigate();
   const handleCustomerProfile = (id) => {
-    navigate(`/customer`,{state:id});
+    navigate(`/customer/profile?customerId=${id}`);
   };
 
   return (

@@ -94,7 +94,11 @@ const Transactions = () => {
               <table className="min-w-full bg-white">
                 <thead className="bg-gray-200 sticky top-0">
                   <tr>
-                    {transactions.length > 0 && !transactions[0].eventId ? <th className="text-left p-4">Receiver</th> : <th className="text-left p-4">Event</th>}
+                    {transactions.length > 0 && !transactions[0].eventId ? (
+                      <th className="text-left p-4">Receiver</th>
+                    ) : (
+                      <th className="text-left p-4">Event</th>
+                    )}
                     <th className="text-left p-4">Amount</th>
                     <th className="text-left p-4">Date</th>
                     <th className="text-left p-4">Status</th>
@@ -106,7 +110,9 @@ const Transactions = () => {
                       <td className="p-4">{transaction.recieverId.name}</td>
                       <td className="p-4">{transaction.amount}</td>
                       <td className="p-4">
-                        {new Date(transaction.transactionDate).toLocaleDateString()}
+                        {new Date(
+                          transaction.transactionDate
+                        ).toLocaleDateString()}
                       </td>
                       <td className="p-4">{transaction.status}</td>
                     </tr>
