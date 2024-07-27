@@ -119,7 +119,7 @@ const CustomerTable = () => {
         </div>
         <div className="overflow-auto max-h-full font-light">
           {loading ? (
-            <div className="flex justify-center items-center">
+            <div className="flex h-full w-full justify-center items-center">
               <div className="spinner"></div> {/* Spinner */}
             </div>
           ) : tableSwitch ? (

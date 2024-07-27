@@ -70,7 +70,6 @@ const DraggableResizableDiv = ({
     setOpenContextMenuId(property.id);
   };
 
-
   useEffect(() => {
     takeTextDetails({
       id: property.id,
@@ -167,7 +166,7 @@ const DraggableResizableDiv = ({
             className="editable-box"
             style={{
               display: visible ? "flex" : "none",
-              background: property.backgroundColor,
+              background: `${property.backgroundColor}`,
             }}
           >
             <input

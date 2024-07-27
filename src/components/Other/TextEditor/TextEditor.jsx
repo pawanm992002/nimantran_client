@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import { fontFamilies } from "../../../App";
 
 const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
-  const [backgroundColor, setBackgroundColor] = useState(property.backgroundColor);
-  const [selectedTransition, setSelectedTransition] = useState(property?.transition);
+  const [backgroundColor, setBackgroundColor] = useState(
+    property.backgroundColor
+  );
+  const [selectedTransition, setSelectedTransition] = useState(
+    property?.transition
+  );
   const [fontWeight, setFontWeight] = useState(property?.fontWeight);
   const [fontColor, setFontColor] = useState(property?.fontColor);
   const [fontStyle, setFontStyle] = useState(property?.fontStyle);
@@ -39,7 +43,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     fontStyle,
     fontFamily,
     backgroundColor,
-    selectedTransition
+    selectedTransition,
   ]);
 
   const handleStyleChange = (e) => {
@@ -67,7 +71,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
 
   const transitionArray = [
     {
-      type: 'none',
+      type: "none",
       options: {
         top: NaN,
         duration: NaN,
@@ -143,7 +147,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               title="Select font family"
             >
               {fontFamilies.map((val, i) => (
-                <option style={{ fontFamily: val }} value={val} key={i}>
+                <option key={i} style={{ fontFamily: val }} value={val}>
                   {val}
                 </option>
               ))}
@@ -216,7 +220,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
           </button>
         </div>
 
-        <div className="h-9 flex items-center bg-gray-100 rounded-md">
+        {comp === "video" && <div className="h-9 flex items-center bg-gray-100 rounded-md">
           <select
             className="h-9 outline-none p-2 rounded-md w-48"
             name="transition"
@@ -225,12 +229,12 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             title="Select transition"
           >
             {transitionArray.map((transition, i) => (
-              <option  value={JSON.stringify(transition)} key={i}>
+              <option value={JSON.stringify(transition)} key={i}>
                 {transition.type}
               </option>
             ))}
           </select>
-        </div>
+        </div>}
 
         {comp === "video" && (
           <div className="h-9 flex items-center bg-gray-100 rounded-md">
