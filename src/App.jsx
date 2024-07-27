@@ -70,11 +70,11 @@ const App = () => {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="adminLogin" element={<AdminLogin />} />
-        <Route path="/admin" element={<Admin/>}>
-          <Route path="dashboard" element={<AdminDashboard/>} />
-          <Route path="userDetails" element={<UsersTable/>} />
-          <Route path="eventlist" element={<AdminEvents/>} />
-          <Route path="credits" element={<AdminTransaction/>} />
+        <Route path="/admin" element={<Admin />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="userDetails" element={<UsersTable />} />
+          <Route path="eventlist" element={<AdminEvents />} />
+          <Route path="credits" element={<AdminTransaction />} />
         </Route>
 
         <Route path="/register" element={<Register />} />
@@ -87,7 +87,13 @@ const App = () => {
           <Route path="eventlist" element={<EventsList />} />
           <Route path="credits" element={<ClientCredits />} />
         </Route>
-          <Route path="/Event" element={<EventLayout />} />
+        <Route path="/Event" element={<EventLayout />}>
+          <Route path="createEvent" element={<CreateEvent />} />
+          <Route path="imageEdit" element={<WeddingImage />} />
+          
+        <Route path="videoEdit" element={<WeddingVideo />} />
+        <Route path="cardEdit" element={<WeddingCard />} />
+        </Route>
 
         <Route path="/customer" element={<Customer />}>
           <Route path="profile" element={<Profile />} />
@@ -95,12 +101,12 @@ const App = () => {
           <Route path="events" element={<CustomerEvents />} />
           <Route path="credits" element={<Transactions />} />
         </Route>
-        <Route path="/events" element={<Events/>}>
-          <Route path="dashboard" element={<EventDashboard/>} />
-          <Route path="guests" element={<GuestsList/>} />
-          <Route path="dashboard" element={<EventDashboard/>} />
+        <Route path="/events" element={<Events />}>
+          <Route path="dashboard" element={<EventDashboard />} />
+          <Route path="guests" element={<GuestsList />} />
+          <Route path="dashboard" element={<EventDashboard />} />
         </Route>
-        
+
         <Route path="/videoEdit" element={<WeddingVideo />} />
         <Route path="/cardEdit" element={<WeddingCard />} />
         <Route path="/imageEdit" element={<WeddingImage />} />

@@ -1,37 +1,43 @@
 import React from "react";
 import "./SideConfiguration.css";
-import { fontFamilies } from "../../../App";
 
-export default function SideConfiguration({
-  isSample,
-  setIsSample,
-  texts,
-  setTexts,
-}) {
+export default function SideConfiguration({ texts, setTexts, handleSubmit }) {
   const deleteText = (id) => {
     setTexts(texts.filter((val) => val.id !== id));
   };
+
   const hideText = (details) => {
     const others = texts.filter((val) => val.id !== details.id);
     details.hidden = !details.hidden;
     setTexts([...others, details]);
   };
 
+  const handleFinalProcessing = (e) => {
+    e.preventDefault();
+    handleSubmit(e, false);
+  };
+
   return (
     <div className="configuration">
-      <h2>Text Configuration</h2>
       <div className="NoText">
-        <input
-          type="checkbox"
-          id="sample"
-          checked={isSample}
-          onChange={(e) => setIsSample(JSON.parse(e.target.checked))}
-        />
-        <label htmlFor="sample" id="sample">
-          Generate Sample Images
-        </label>
+        <button
+          type="button"
+          className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"
+          onClick={(e) => handleSubmit(e, true)}
+        >
+          Start Sample Processing
+        </button>
+
+        <button
+          type="button"
+          className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"
+          onClick={(e) => handleFinalProcessing(e)}
+        >
+          Start Final Processing
+        </button>
       </div>
 
+      <h2>Text Configuration</h2>
       {texts.length > 0 ? (
         texts?.map(
           ({
@@ -48,13 +54,9 @@ export default function SideConfiguration({
             backgroundColor,
             hidden,
           }) => (
-            <div
-              key={id}
-              className="context-menu"
-              style={{ position: "relative" }}
-            >
-              <div className='flex gap-8 items-center'>
-                <span>Text Id : {id}</span>
+            <div key={id} className="context-menu relative">
+              <div className="flex gap-8 items-center">
+                <span className="text-sm">Text Id : {id}</span>
                 <span className="flex gap-3">
                   {hidden ? (
                     <label
@@ -81,7 +83,7 @@ export default function SideConfiguration({
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="size-6"
+                        className="size-5"
                       >
                         <path
                           strokeLinecap="round"
@@ -120,7 +122,7 @@ export default function SideConfiguration({
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="size-6"
+                        className="size-5"
                       >
                         <path
                           strokeLinecap="round"
@@ -137,7 +139,7 @@ export default function SideConfiguration({
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
                       stroke="currentColor"
-                      className="size-6"
+                      className="size-5"
                     >
                       <path
                         strokeLinecap="round"

@@ -4,12 +4,12 @@ import { Outlet } from 'react-router-dom';
 const EventLayout = () => {
     const [currentStep, setCurrentStep] = useState(1);
   return (
-    <div className='h-full w-full flex flex-col items-center justify-center p-4'>
-       <ol className="flex justify-between items-center w-full mb-6">
+    <div className='h-full flex flex-col items-center justify-center p-4'>
+       <ol className="flex justify-between items-center w-[80vw] mb-6">
         <li className={`flex-1 ${currentStep >= 1 ? 'text-blue-600' : 'text-gray-500'} relative`}>
           <div className={`flex items-center justify-center w-10 h-10 ${currentStep >= 1 ? 'bg-blue-100' : 'bg-gray-100'} rounded-full`}>
             <svg className={`w-4 h-4 ${currentStep >= 1 ? 'text-blue-600' : 'text-gray-500'}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5.917 5.724 10.5 15 1.5" />
             </svg>
           </div>
           <div className={`absolute top-1/2 left-10 right-0 h-1 ${currentStep >= 2 ? 'bg-blue-100' : 'bg-gray-100'}`}></div>
@@ -46,7 +46,7 @@ const EventLayout = () => {
           </div>
         </li>
       </ol>
-      <div className="border-4 border-dashed border-gray-200 rounded-lg h-[83vh] w-full ">
+      <div className="h-[83vh] w-full flex justify-center">
           {/* components */}
           <Outlet />
         </div>
