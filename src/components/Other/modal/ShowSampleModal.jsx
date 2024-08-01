@@ -31,7 +31,7 @@ export default function ShowSampleModal({ data, showGuestList, setShowGuestList 
                 </svg>
               </span>
             </div>
-            <div className="container mx-auto mt-8">
+            <div className="container mx-auto mt-8 h-96 overflow-y-auto">
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>

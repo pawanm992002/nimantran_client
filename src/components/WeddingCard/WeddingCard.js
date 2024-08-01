@@ -148,14 +148,17 @@ export default function WeddingVideo() {
       let scalingFont = Math.min(scalingW, scalingH);
 
       if (!pdfFile) {
+        setIsLoading(false);
         return toast.error("Please Upload the PDF");
       }
       
       if (!texts) {
+        setIsLoading(false)
         return toast.error("Add the Text Box");
       }
 
       if (!guestNames && !isSample) {
+        setIsLoading(false);
         return toast.error("Please Enter Guest List");
       }
       

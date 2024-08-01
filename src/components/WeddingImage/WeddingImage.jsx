@@ -169,14 +169,18 @@ export default function WeddingImage() {
       let scalingFont = Math.min(scalingW, scalingH);
 
       if (!video) {
+        setIsLoading(false);
         return toast.error("Please Upload the Video");
       }
 
       if (!texts) {
+        setIsLoading(false);
         return toast.error("Add the Text Box");
       }
 
       if (!guestNames && !isSample) {
+        setIsLoading(false);
+        console.log("...........................")
         return toast.error("Please Enter Guest List");
       }
 
@@ -195,18 +199,24 @@ export default function WeddingImage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+      
+      setIsLoading(false);
       setProcessedVideoUrls(response.data.videoUrls);
       setZipUrl(response.data.zipUrl);
+      navigate(`/event/mediaGrid?eventId=${eventId}`)
     } catch (error) {
+      setIsLoading(false);
       toast.error("Something Went Wrong");
     }
-    setIsLoading(false);
   };
 
   return (
     <div className="main">
       <ShowSampleModal showGuestList={showGuestList} setShowGuestList={setShowGuestList} data={jsonData} />
+
+      {
+        console.log("............", isLoading)
+      }
 
       {isLoading && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 z-[99]">

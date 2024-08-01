@@ -188,6 +188,7 @@ export default function WeddingVideo() {
       toast.error("Something Went Wrong");
     }
     setIsLoading(false)
+    navigate(`/event/mediaGrid?eventId=${eventId}`)
   };
   return (
     <div className="main">

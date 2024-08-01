@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const CreateEvent = () => {
+  const navigate = useNavigate();
   const [eventName, setEventName] = useState("");
   const [dateOfOrganising, setDateOfOrganising] = useState("");
   const [location, setLocation] = useState("");
+  const [editType, setEditType] = useState("imageEdit");
   const [customerQuery, setCustomerQuery] = useState("");
   const [customerSuggestions, setCustomerSuggestions] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
-  
 
   const token = localStorage.getItem("token");
 
@@ -20,9 +22,10 @@ const CreateEvent = () => {
         eventName,
         dateOfOrganising,
         location,
+        editType,
       };
 
-      await axios.post(
+      const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/events/create-event/${selectedCustomerId}`,
         eventData,
         {
@@ -34,7 +37,7 @@ const CreateEvent = () => {
       );
 
       toast.success("Event created successfully");
-      // setCurrentStep(2);
+      navigate(`/event/${editType}?eventId=${response?.data?.data?._id}`);
     } catch (error) {
       console.error("Error creating event:", error);
       toast.error("Error creating event");
@@ -69,10 +72,12 @@ const CreateEvent = () => {
   }, [customerQuery]);
 
   return (
-    <>
-
+    <div>
       <h2 className="text-3xl font-semibold mb-6 text-center">Create Event</h2>
-      <form onSubmit={handleCreateEvent} className="max-w-3xl mx-auto border bg-white p-6 rounded-lg shadow-lg">
+      <form
+        onSubmit={handleCreateEvent}
+        className="mx-auto border bg-white p-6 rounded-lg shadow-lg w-80"
+      >
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700">
             Event Name <span className="text-red-600">*</span>
@@ -81,7 +86,7 @@ const CreateEvent = () => {
             type="text"
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
             required
           />
         </div>
@@ -93,7 +98,7 @@ const CreateEvent = () => {
             type="text"
             value={customerQuery}
             onChange={(e) => setCustomerQuery(e.target.value)}
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
           />
           {customerSuggestions.length > 0 && (
             <ul className="mt-2 border border-gray-300 rounded-md bg-white shadow-lg max-h-40 overflow-y-auto">
@@ -121,7 +126,7 @@ const CreateEvent = () => {
             type="date"
             value={dateOfOrganising}
             onChange={(e) => setDateOfOrganising(e.target.value)}
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
             required
           />
         </div>
@@ -133,11 +138,24 @@ const CreateEvent = () => {
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
             required
           />
         </div>
-        
+        <div className="mb-6">
+          <label className="block text-lg font-medium text-gray-700">
+            What do want to Edit ?<span className="text-red-600">*</span>
+          </label>
+          <select
+            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+            onClick={(e) => setEditType(e.target.value)}
+          >
+            <option value="imageEdit">Image Edit</option>
+            <option value="videoEdit">Video Edit</option>
+            <option value="cardEdit">Pdf Edit</option>
+          </select>
+        </div>
+
         <div className="flex justify-end">
           <button
             type="submit"
@@ -147,7 +165,7 @@ const CreateEvent = () => {
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 
