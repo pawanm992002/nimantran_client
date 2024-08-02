@@ -8,7 +8,6 @@ import {
   faFileArrowDown,
   faFileArrowUp,
   faSquarePlus,
-  faVideo,
 } from "@fortawesome/free-solid-svg-icons";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -179,8 +178,10 @@ export default function WeddingVideo() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       setProcessedVideoUrls(response.data.videoUrls);
       setZipUrl(response.data.zipUrl);
+      navigate(`/event/mediaGrid?eventId=${eventId}`)
     } catch (error) {
       toast.error("Something Went Wrong");
     }

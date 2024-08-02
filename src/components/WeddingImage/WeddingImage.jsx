@@ -14,6 +14,7 @@ import TextEditor from "../Other/TextEditor/TextEditor";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
+import Loader from "../Other/Loader/Loader";
 
 export default function WeddingImage() {
   const token = localStorage.getItem("token");
@@ -180,7 +181,6 @@ export default function WeddingImage() {
 
       if (!guestNames && !isSample) {
         setIsLoading(false);
-        console.log("...........................")
         return toast.error("Please Enter Guest List");
       }
 
@@ -200,31 +200,21 @@ export default function WeddingImage() {
         }
       );
       
-      setIsLoading(false);
       setProcessedVideoUrls(response.data.videoUrls);
       setZipUrl(response.data.zipUrl);
       navigate(`/event/mediaGrid?eventId=${eventId}`)
     } catch (error) {
-      setIsLoading(false);
       toast.error("Something Went Wrong");
     }
+    setIsLoading(false);
   };
 
   return (
     <div className="main">
       <ShowSampleModal showGuestList={showGuestList} setShowGuestList={setShowGuestList} data={jsonData} />
 
-      {
-        console.log("............", isLoading)
-      }
-
       {isLoading && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 z-[99]">
-          <div className="w-16 h-16 border-4 border-t-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
-          <p className="mt-4 text-white text-lg">
-            Please wait while its Proccessing
-          </p>
-        </div>
+        <Loader text="Please wait while its Loading" />
       )}
 
       <div className="mainContainer">
