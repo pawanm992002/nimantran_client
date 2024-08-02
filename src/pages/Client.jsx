@@ -95,7 +95,7 @@ const Client = () => {
             </div>
           </div>
         </header>
-        <div className="border-4 border-dashed border-gray-200 rounded-lg h-[80vh]">
+        <div className="  rounded-lg h-[80vh]">
           {/* components */}
           <Outlet />
         </div>

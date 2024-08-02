@@ -10,6 +10,26 @@ const ClientDashboard = () => {
   const [purchaseRequestModal, showPurchaseRequestModal] = useState(false);
   const [adminCredits, setAdminCredits] = useState(0);
   const [requests, setRequests] = useState([]);
+  const [error, setError] = useState({ mobile: '', password: '' });
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+    }
+  };
+  const handleMobileChange = (e) => {
+    const mobileRegex = /^\d{10}$/;
+    const isValid = mobileRegex.test(e.target.value);
+
+    if (isValid) {
+
+      setError((prevError) => ({ ...prevError, mobile: '' }));
+    } else {
+
+      setError((prevError) => ({ ...prevError, mobile: 'Not a valid mobile number' }));
+    }
+  };
+
 
   const nameRef = useRef("");
   const mobileRef = useRef("");
@@ -158,7 +178,7 @@ const ClientDashboard = () => {
                     <th className="py-2 px-4 border-b">User ID</th>
                     <th className="py-2 px-4 border-b">Credits</th>
                     <th className="py-2 px-4 border-b">Status</th>
-                   
+
                   </tr>
                 </thead>
                 <tbody >
@@ -168,7 +188,7 @@ const ClientDashboard = () => {
                         <td className="py-2 text-center px-4 border-b">{request.user.name}</td>
                         <td className="py-2 text-center px-4 border-b">{request.credits}</td>
                         <td className="py-2 text-center px-4 border-b">{request.status}</td>
-                       
+
                       </tr>
                     ))
                   ) : (
@@ -206,8 +226,13 @@ const ClientDashboard = () => {
                     type="text"
                     ref={mobileRef}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    onKeyPress={handleKeyPress}
+                    onChange={(e) => handleMobileChange(e)}
+
                     required
                   />
+                  {error.mobile && <p className="text-red-500 text-sm mt-1">{error.mobile}</p>}
+
                 </div>
                 <div className="mb-4">
                   <label className="block mb-2">Password:</label>
@@ -215,6 +240,7 @@ const ClientDashboard = () => {
                     type="password"
                     ref={passwordRef}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+
                     required
                   />
                 </div>
