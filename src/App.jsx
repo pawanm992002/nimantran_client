@@ -87,12 +87,12 @@ const App = () => {
           <Route path="eventlist" element={<EventsList />} />
           <Route path="credits" element={<ClientCredits />} />
         </Route>
-        <Route path="/Event" element={<EventLayout />}>
+        <Route path="/event" element={<EventLayout />}>
           <Route path="createEvent" element={<CreateEvent />} />
           <Route path="imageEdit" element={<WeddingImage />} />
-          
-        <Route path="videoEdit" element={<WeddingVideo />} />
-        <Route path="cardEdit" element={<WeddingCard />} />
+
+          <Route path="videoEdit" element={<WeddingVideo />} />
+          <Route path="cardEdit" element={<WeddingCard />} />
         </Route>
 
         <Route path="/customer" element={<Customer />}>

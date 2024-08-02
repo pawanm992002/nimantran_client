@@ -1,12 +1,13 @@
 import React, { useRef } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import {useNavigate} from 'react-router-dom' 
 
 const EditEventModal = ({ customerId, show, onClose, event, onEventUpdated }) => {
   const eventNameRef = useRef(event?.eventName || '');
   const dateOfOrganisingRef = useRef(event ? new Date(event.dateOfOrganising).toISOString().split('T')[0] : '');
   const locationRef = useRef(event?.location || '');
-
+  const navigate = useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
@@ -73,6 +74,13 @@ const EditEventModal = ({ customerId, show, onClose, event, onEventUpdated }) =>
             />
           </div>
           <div className="flex justify-end">
+          <button
+              type="button"
+              onClick={()=>navigate('')}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg mr-2"
+            >
+              Edit Media
+            </button>
             <button
               type="button"
               onClick={onClose}
