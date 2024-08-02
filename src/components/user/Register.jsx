@@ -2,15 +2,26 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faEye,
+    faEyeSlash
+} from "@fortawesome/free-solid-svg-icons";
 const Register = () => {
     const [mobile, setMobile] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState({ mobile: '', password: '' });
     const [role, setRole] = useState('client'); // default role for registration
     const [clientId, setClientId] = useState('');
-    const navigate = useNavigate();
+    const [togglePassword, settogglePassword] = useState(false)
 
+    const navigate = useNavigate();
+    const handleKeyPress = (event) => {
+        const charCode = event.which ? event.which : event.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            event.preventDefault();
+        }
+    };
     const handleMobileChange = (e) => {
         const mobileRegex = /^\d{10}$/;
         const isValid = mobileRegex.test(e.target.value);
@@ -75,23 +86,29 @@ const Register = () => {
                                 placeholder="Enter your mobile number"
                                 value={mobile}
                                 onChange={(e) => handleMobileChange(e)}
+                                onKeyPress={handleKeyPress}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
                             />
                             {error.mobile && <p className="text-red-500 text-sm mt-1">{error.mobile}</p>}
                         </div>
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                            <input
-                                type="password"
-                                id="password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    validatePassword(e.target.value);
-                                }}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
-                            />
+                            <div className=' relative'>
+                                <input
+                                    type={`${togglePassword ? "text" : "password"}`}
+                                    id="password"
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        validatePassword(e.target.value);
+                                    }}
+
+                                    className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none ${error.password ? 'focus:ring-red-500 focus:border-red-500' : 'focus:ring-blue-500 focus:border-blue-500'
+                                        } sm:text-sm transition duration-150 ease-in-out`}
+                                />
+                                <span className=' absolute bottom-2 right-2.5 cursor-pointer text-blue-500' onClick={() => settogglePassword(prev => !prev)}>{togglePassword ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />}</span>
+                            </div>
                             {error.password && <p className="text-red-500 text-sm mt-1">{error.password}</p>}
                         </div>
                         <div>
