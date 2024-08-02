@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import EditEventModal from "./EditEventModal";
+import {useNavigate} from 'react-router-dom' 
 
 const EventsList = () => {
   const [customers, setCustomers] = useState([]);
@@ -10,7 +11,7 @@ const EventsList = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [customerId, setCustomerId] = useState(null);
   const token = localStorage.getItem("token");
-
+   const navigate = useNavigate();
   const fetchEvents = async () => {
     try {
       setLoading(true);
@@ -115,7 +116,14 @@ const EventsList = () => {
             {customers?.map((customer) =>
               customer.events.map((event) => (
                 <tr key={event._id} className="hover:bg-gray-100">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" 
+                    onClick={()=> {
+                      (event.guests.length !== 0) ?
+                      navigate(`/event/mediaGrid?eventId=${event._id}`)
+                      :
+                      navigate(`/event/${event.editType}?eventId=${event._id}`)
+                    }
+                  }>
                     {event.eventName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

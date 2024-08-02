@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Outlet } from 'react-router-dom';
+import { Outlet,useNavigate } from 'react-router-dom';
 
 const EventLayout = () => {
     const [currentStep, setCurrentStep] = useState(1);

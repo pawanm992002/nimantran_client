@@ -14,6 +14,7 @@ import EventsList from "./components/events/EventsList";
 import "./App.css";
 import "./tailwind.css";
 
+
 import Customer from "./pages/Customer";
 import Profile from "./components/customer/Profile";
 import EditProfileCustomer from "./components/customer/EditProfileCustomer";
@@ -88,7 +89,7 @@ const App = () => {
           <Route path="eventlist" element={<EventsList />} />
           <Route path="credits" element={<ClientCredits />} />
         </Route>
-        <Route path="/Event" element={<EventLayout />}>
+        <Route path="/event" element={<EventLayout />}>
           <Route path="createEvent" element={<CreateEvent />} />
           <Route path="imageEdit" element={<WeddingImage />} />
           <Route path="videoEdit" element={<WeddingVideo />} />
