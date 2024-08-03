@@ -133,6 +133,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     },
   ];
 
+  
   return (
     openContextMenuId === property.id && (
       <div className="flex items-center px-4 py-1 bg-white shadow-md space-x-4 m-2 rounded-md">
