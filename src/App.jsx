@@ -32,6 +32,7 @@ import GuestsList from "./components/events/GuestsList";
 import CreateEvent from "./pages/CreateEvent";
 import EventLayout from "./pages/EventLayout";
 import MediaGrid from "./components/mediaGrid/MediaGrid";
+import InvitationTracker from "./components/events/InvitationTracker";
 
 export const fontFamilies = [
   "Josefin Slab",
@@ -94,6 +95,8 @@ const App = () => {
           <Route path="videoEdit" element={<WeddingVideo />} />
           <Route path="cardEdit" element={<WeddingCard />} />
           <Route path="mediaGrid" element={<MediaGrid />} />
+          <Route path="invitationTracker" element={<InvitationTracker />} />
+
         </Route>
 
         <Route path="/customer" element={<Customer />}>
