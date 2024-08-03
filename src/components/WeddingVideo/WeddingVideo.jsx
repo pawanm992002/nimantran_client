@@ -38,6 +38,7 @@ export default function WeddingVideo() {
   const [onHover4, setOnHover4] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
+  const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [jsonData, setJsonData] = useState([
     {
       name: "Random 1",
@@ -197,6 +198,8 @@ export default function WeddingVideo() {
         showGuestList={showGuestList}
         setShowGuestList={setShowGuestList}
         data={jsonData}
+        CountModelOpenNumber={CountModelOpenNumber}
+        Type={"Image"}
       />
 
       {isLoading && (
@@ -224,6 +227,7 @@ export default function WeddingVideo() {
               onChange={handleGuestNamesChange}
               onMouseOver={() => setOnHover1(true)}
               onMouseOut={() => setOnHover1(false)}
+              onClick={() => setCountModelOpenNumber(1)}
             >
               <div className="tooltip" style={{ display: onHover1 && "flex" }}>
                 Upload CSV file of Texts
@@ -336,7 +340,7 @@ export default function WeddingVideo() {
         </div>
         {video && (
           <SideConfiguration
-          handleSubmit={handleSubmit}
+            handleSubmit={handleSubmit}
             texts={texts}
             setTexts={setTexts}
           />

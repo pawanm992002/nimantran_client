@@ -29,6 +29,7 @@ export default function WeddingVideo() {
       navigate("/login");
     }
   }, []);
+  const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -131,7 +132,7 @@ export default function WeddingVideo() {
         },
       });
     }
-    
+
     setShowGuestList(true);
   };
 
@@ -150,9 +151,9 @@ export default function WeddingVideo() {
         setIsLoading(false);
         return toast.error("Please Upload the PDF");
       }
-      
+
       if (!texts) {
-        setIsLoading(false)
+        setIsLoading(false);
         return toast.error("Add the Text Box");
       }
 
@@ -160,7 +161,7 @@ export default function WeddingVideo() {
         setIsLoading(false);
         return toast.error("Please Enter Guest List");
       }
-      
+
       formData.append("pdf", pdfFileObj);
       formData.append("guestNames", guestNames);
       formData.append("textProperty", JSON.stringify(texts));
@@ -181,16 +182,22 @@ export default function WeddingVideo() {
 
       setProcessedVideoUrls(response.data.videoUrls);
       setZipUrl(response.data.zipUrl);
-      navigate(`/event/mediaGrid?eventId=${eventId}`)
+      navigate(`/event/mediaGrid?eventId=${eventId}`);
     } catch (error) {
       toast.error("Something Went Wrong");
     }
-    setIsLoading(false)
+    setIsLoading(false);
   };
   return (
     <div className="main">
       {/* <h2 className="heading">Wedding Invitation Editor</h2> */}
-      <ShowSampleModal showGuestList={showGuestList} setShowGuestList={setShowGuestList} data={jsonData} />
+      <ShowSampleModal
+        showGuestList={showGuestList}
+        setShowGuestList={setShowGuestList}
+        data={jsonData}
+        CountModelOpenNumber={CountModelOpenNumber}
+        Type={"Card"}
+      />
 
       {isLoading && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 z-[99]">
@@ -216,6 +223,7 @@ export default function WeddingVideo() {
               onChange={handleGuestNamesChange}
               onMouseOver={() => setOnHover1(true)}
               onMouseOut={() => setOnHover1(false)}
+              onClick={() => setCountModelOpenNumber(1)}
             >
               <div className="tooltip" style={{ display: onHover1 && "flex" }}>
                 Upload CSV file of Texts
@@ -249,10 +257,7 @@ export default function WeddingVideo() {
                 >
                   Download All Videos in Zip
                 </div>
-                <a
-                  href={zipUrl}
-                  download="processed_videos.zip"
-                >
+                <a href={zipUrl} download="processed_videos.zip">
                   <FontAwesomeIcon icon={faFileArrowDown} />
                 </a>
               </label>
