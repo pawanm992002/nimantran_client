@@ -50,10 +50,6 @@ export default function WeddingImage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
 
-  const [scaling, setScaling] = useState({
-    width: 1,
-    height: 1,
-  });
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -62,7 +58,7 @@ export default function WeddingImage() {
     w: 0,
     h: 0,
   });
-  const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
+  // const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [zipUrl, setZipUrl] = useState("");
 
   const createTextDiv = () => {
@@ -118,7 +114,6 @@ export default function WeddingImage() {
   };
 
   const takeTextDetails = (details) => {
-    console.log("wwwwwwwwwwwwwwww", details);
     const others = texts.filter((val) => val?.id !== details?.id);
     setTexts([...others, details]);
   };
@@ -137,7 +132,7 @@ export default function WeddingImage() {
         },
       });
     }
-    
+
     setShowGuestList(true);
   };
 
@@ -199,10 +194,10 @@ export default function WeddingImage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      
-      setProcessedVideoUrls(response.data.videoUrls);
+
+      // setProcessedVideoUrls(response.data.videoUrls);
       setZipUrl(response.data.zipUrl);
-      navigate(`/event/mediaGrid?eventId=${eventId}`)
+      navigate(`/event/mediaGrid?eventId=${eventId}`);
     } catch (error) {
       toast.error("Something Went Wrong");
     }
@@ -211,21 +206,24 @@ export default function WeddingImage() {
 
   return (
     <div className="main">
-      <ShowSampleModal showGuestList={showGuestList} setShowGuestList={setShowGuestList} data={jsonData} />
+      <ShowSampleModal
+        showGuestList={showGuestList}
+        setShowGuestList={setShowGuestList}
+        data={jsonData}
+      />
 
-      {isLoading && (
-        <Loader text="Please wait while its Loading" />
-      )}
+      {isLoading && <Loader text="Please wait while its Loading" />}
 
       <div className="mainContainer">
-        {texts.map((val, i) => (
+        {openContextMenuId && (
           <TextEditor
-            key={i}
-            property={val}
+            property={texts
+              ?.filter((val) => val.id === openContextMenuId)
+              ?.at(0)}
             openContextMenuId={openContextMenuId}
             takeTextDetails={takeTextDetails}
           />
-        ))}
+        )}
         <div className="main-wrapper">
           <form className="sidebar">
             <label
@@ -253,17 +251,6 @@ export default function WeddingImage() {
               </div>
               <FontAwesomeIcon icon={faSquarePlus} />
             </label>
-            {/* <button
-              type="submit"
-              className="custom-file-upload"
-              onMouseOver={() => setOnHover3(true)}
-              onMouseOut={() => setOnHover3(false)}
-            >
-              <div className="tooltip" style={{ display: onHover3 && "flex" }}>
-                Start Processesing
-              </div>
-              <FontAwesomeIcon icon={faVideo} />
-            </button> */}
 
             {zipUrl && (
               <label
@@ -361,7 +348,7 @@ export default function WeddingImage() {
           />
         )}
       </div>
-      {processedVideoUrls.length > 0 && (
+      {/* {processedVideoUrls.length > 0 && (
         <h2 className="heading">Processed Images</h2>
       )}
       {processedVideoUrls.length > 0 && (
@@ -383,7 +370,7 @@ export default function WeddingImage() {
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 }

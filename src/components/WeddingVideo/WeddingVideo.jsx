@@ -208,15 +208,15 @@ export default function WeddingVideo() {
         </div>
       )}
       <div className="mainContainer">
-        {texts.map((val, i) => (
+      {openContextMenuId && (
           <TextEditor
-            key={i}
-            property={val}
+            property={texts
+              ?.filter((val) => val.id === openContextMenuId)
+              ?.at(0)}
             openContextMenuId={openContextMenuId}
             takeTextDetails={takeTextDetails}
-            comp={"video"}
           />
-        ))}
+        )}
         <div className="main-wrapper">
           <form className="sidebar" onSubmit={handleSubmit}>
             <label
