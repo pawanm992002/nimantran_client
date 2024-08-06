@@ -55,6 +55,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     setFontFamily(property.fontFamily);
     setStartTime(property.startTime);
     setDuration(property.duration);
+    setSelectedTransition(property.transition);
   }, [openContextMenuId, property]);
 
   const handleStyleChange = (e) => {

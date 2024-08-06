@@ -48,11 +48,6 @@ export default function WeddingVideo() {
       mobileNumber: "412658126",
     },
   ]);
-
-  const [scaling, setScaling] = useState({
-    width: 1,
-    height: 1,
-  });
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -188,7 +183,7 @@ export default function WeddingVideo() {
       toast.error("Something Went Wrong");
     }
     setIsLoading(false)
-    navigate(`/event/mediaGrid?eventId=${eventId}`)
+    // navigate(`/event/mediaGrid?eventId=${eventId}`)
   };
   return (
     <div className="main">
@@ -208,13 +203,14 @@ export default function WeddingVideo() {
         </div>
       )}
       <div className="mainContainer">
-      {openContextMenuId && (
+      {texts.length > 0 && openContextMenuId && (
           <TextEditor
             property={texts
               ?.filter((val) => val.id === openContextMenuId)
               ?.at(0)}
             openContextMenuId={openContextMenuId}
             takeTextDetails={takeTextDetails}
+            comp="video"
           />
         )}
         <div className="main-wrapper">

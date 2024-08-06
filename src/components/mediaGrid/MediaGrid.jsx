@@ -22,7 +22,7 @@ const MediaGrid = () => {
     try {
       console.log("me", guest);
       const { data } = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/whatsapp/individual`,
+        `${process.env.REACT_APP_BACKEND_URL}/whatsapp/individual?eventId=${eventId}`,
         guest,
         {
           headers: { Authorization: `Bearer ${token}` },
