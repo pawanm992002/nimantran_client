@@ -135,7 +135,6 @@ export default function WeddingImage() {
     }
 
     setShowGuestList(true);
-
   };
 
   const sendIndividualInvite = async (info) => {
@@ -207,7 +206,13 @@ export default function WeddingImage() {
 
   return (
     <div className="main">
-      <ShowSampleModal showGuestList={showGuestList} setShowGuestList={setShowGuestList} data={jsonData} CountModelOpenNumber={CountModelOpenNumber} Type={"Image"} />
+      <ShowSampleModal
+        showGuestList={showGuestList}
+        setShowGuestList={setShowGuestList}
+        data={jsonData}
+        CountModelOpenNumber={CountModelOpenNumber}
+        Type={"Image"}
+      />
 
       {isLoading && <Loader text="Please wait while its Loading" />}
 
