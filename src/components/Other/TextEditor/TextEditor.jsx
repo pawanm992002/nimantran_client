@@ -46,6 +46,18 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     selectedTransition,
   ]);
 
+  useEffect(() => {
+    setBackgroundColor(property.backgroundColor);
+    setFontSize(property.fontSize);
+    setFontColor(property.fontColor);
+    setFontWeight(property.fontWeight);
+    setFontStyle(property.fontStyle);
+    setFontFamily(property.fontFamily);
+    setStartTime(property.startTime);
+    setDuration(property.duration);
+    setSelectedTransition(property.transition);
+  }, [openContextMenuId, property]);
+
   const handleStyleChange = (e) => {
     const { name, value } = e.target;
     if (name === "fontColor") {
@@ -133,7 +145,6 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     },
   ];
 
-  
   return (
     openContextMenuId === property.id && (
       <div className="flex items-center px-4 py-1 bg-white shadow-md space-x-4 m-2 rounded-md">
@@ -221,21 +232,23 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
           </button>
         </div>
 
-        {comp === "video" && <div className="h-9 flex items-center bg-gray-100 rounded-md">
-          <select
-            className="h-9 outline-none p-2 rounded-md w-48"
-            name="transition"
-            value={JSON.stringify(selectedTransition)}
-            onChange={handleStyleChange}
-            title="Select transition"
-          >
-            {transitionArray.map((transition, i) => (
-              <option value={JSON.stringify(transition)} key={i}>
-                {transition.type}
-              </option>
-            ))}
-          </select>
-        </div>}
+        {comp === "video" && (
+          <div className="h-9 flex items-center bg-gray-100 rounded-md">
+            <select
+              className="h-9 outline-none p-2 rounded-md w-48"
+              name="transition"
+              value={JSON.stringify(selectedTransition)}
+              onChange={handleStyleChange}
+              title="Select transition"
+            >
+              {transitionArray.map((transition, i) => (
+                <option value={JSON.stringify(transition)} key={i}>
+                  {transition.type}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {comp === "video" && (
           <div className="h-9 flex items-center bg-gray-100 rounded-md">
