@@ -38,6 +38,7 @@ export default function WeddingVideo() {
   const [onHover4, setOnHover4] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
+  const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [jsonData, setJsonData] = useState([
     {
       name: "Random 1",
@@ -48,11 +49,6 @@ export default function WeddingVideo() {
       mobileNumber: "412658126",
     },
   ]);
-
-  const [scaling, setScaling] = useState({
-    width: 1,
-    height: 1,
-  });
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -188,6 +184,7 @@ export default function WeddingVideo() {
       toast.error("Something Went Wrong");
     }
     setIsLoading(false)
+    // navigate(`/event/mediaGrid?eventId=${eventId}`)
   };
   return (
     <div className="main">
@@ -196,6 +193,8 @@ export default function WeddingVideo() {
         showGuestList={showGuestList}
         setShowGuestList={setShowGuestList}
         data={jsonData}
+        CountModelOpenNumber={CountModelOpenNumber}
+        Type={"Image"}
       />
 
       {isLoading && (
@@ -207,15 +206,16 @@ export default function WeddingVideo() {
         </div>
       )}
       <div className="mainContainer">
-        {texts.map((val, i) => (
+      {texts.length > 0 && openContextMenuId && (
           <TextEditor
-            key={i}
-            property={val}
+            property={texts
+              ?.filter((val) => val.id === openContextMenuId)
+              ?.at(0)}
             openContextMenuId={openContextMenuId}
             takeTextDetails={takeTextDetails}
-            comp={"video"}
+            comp="video"
           />
-        ))}
+        )}
         <div className="main-wrapper">
           <form className="sidebar" onSubmit={handleSubmit}>
             <label
@@ -223,6 +223,7 @@ export default function WeddingVideo() {
               onChange={handleGuestNamesChange}
               onMouseOver={() => setOnHover1(true)}
               onMouseOut={() => setOnHover1(false)}
+              onClick={() => setCountModelOpenNumber(1)}
             >
               <div className="tooltip" style={{ display: onHover1 && "flex" }}>
                 Upload CSV file of Texts
@@ -335,7 +336,7 @@ export default function WeddingVideo() {
         </div>
         {video && (
           <SideConfiguration
-          handleSubmit={handleSubmit}
+            handleSubmit={handleSubmit}
             texts={texts}
             setTexts={setTexts}
           />
