@@ -49,6 +49,7 @@ export default function WeddingImage() {
   const [selectedText, setSelectedText] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
+  const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
 
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
@@ -134,6 +135,7 @@ export default function WeddingImage() {
     }
 
     setShowGuestList(true);
+
   };
 
   const sendIndividualInvite = async (info) => {
@@ -195,7 +197,6 @@ export default function WeddingImage() {
         }
       );
 
-      // setProcessedVideoUrls(response.data.videoUrls);
       setZipUrl(response.data.zipUrl);
       navigate(`/event/mediaGrid?eventId=${eventId}`);
     } catch (error) {
@@ -206,11 +207,7 @@ export default function WeddingImage() {
 
   return (
     <div className="main">
-      <ShowSampleModal
-        showGuestList={showGuestList}
-        setShowGuestList={setShowGuestList}
-        data={jsonData}
-      />
+      <ShowSampleModal showGuestList={showGuestList} setShowGuestList={setShowGuestList} data={jsonData} CountModelOpenNumber={CountModelOpenNumber} Type={"Image"} />
 
       {isLoading && <Loader text="Please wait while its Loading" />}
 
@@ -231,6 +228,7 @@ export default function WeddingImage() {
               onChange={handleGuestNamesChange}
               onMouseOver={() => setOnHover1(true)}
               onMouseOut={() => setOnHover1(false)}
+              onClick={() => setCountModelOpenNumber(1)}
             >
               <div className="tooltip" style={{ display: onHover1 && "flex" }}>
                 Upload CSV file of Texts
