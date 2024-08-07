@@ -29,6 +29,7 @@ export default function WeddingVideo() {
       navigate("/login");
     }
   }, []);
+  const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -194,6 +195,8 @@ export default function WeddingVideo() {
         showGuestList={showGuestList}
         setShowGuestList={setShowGuestList}
         data={jsonData}
+        CountModelOpenNumber={CountModelOpenNumber}
+        Type={"Card"}
       />
 
       {isLoading && (
@@ -221,6 +224,7 @@ export default function WeddingVideo() {
               onChange={handleGuestNamesChange}
               onMouseOver={() => setOnHover1(true)}
               onMouseOut={() => setOnHover1(false)}
+              onClick={() => setCountModelOpenNumber(1)}
             >
               <div className="tooltip" style={{ display: onHover1 && "flex" }}>
                 Upload CSV file of Texts
