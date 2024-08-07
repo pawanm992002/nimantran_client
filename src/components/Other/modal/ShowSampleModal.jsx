@@ -1,20 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-export default function ShowSampleModal({ data, showGuestList, setShowGuestList, CountModelOpenNumber, Type }) {
+export default function ShowSampleModal({
+  data,
+  showGuestList,
+  setShowGuestList,
+  CountModelOpenNumber,
+  Type,
+}) {
   const headers = Object.keys(data?.at(0));
 
   const CalculateCost = () => {
     if (Type === "Image") {
-      return (`Total Guest * Cost Per Image : ${(data.length).toFixed(2)} * 0.25 = ${data.length * 0.25}`);
+      return `Total Guest * Cost Per Image : ${data.length.toFixed(
+        2
+      )} * 0.25 = ${data.length * 0.25}`;
     } else if (Type === "video") {
-      return (`Total Guest * Cost Per Image : ${(data.length).toFixed(2)} * 0.50 = ${data.length * 0.50}`);
-    }
-    else {
-      return (`Total Guest * Cost Per Image : ${(data.length).toFixed(2)} * 1.00 = ${data.length * 1.00}`);
+      return `Total Guest * Cost Per Image : ${data.length.toFixed(
+        2
+      )} * 0.50 = ${data.length * 0.5}`;
+    } else {
+      return `Total Guest * Cost Per Image : ${data.length.toFixed(
+        2
+      )} * 1.00 = ${data.length * 1.0}`;
       ///type cards
     }
-  }
-
+  };
 
   const cost = CalculateCost();
   return (
@@ -90,19 +100,25 @@ export default function ShowSampleModal({ data, showGuestList, setShowGuestList,
                 />
               </svg>
             </span>
-            <span>{CountModelOpenNumber <= 0 ? `This is the Sample Format for Processing Files` : `${cost}`}</span>
+            <span>
+              {CountModelOpenNumber <= 0
+                ? `This is the Sample Format for Processing Files`
+                : `${cost}`}
+            </span>
           </div>
-          {CountModelOpenNumber <= 0 && (<div className="flex items-center justify-center mt-3">
-            <a
-              href="/sample.csv"
-              download="sample.csv"
-              type="button"
-              className="text-slate-50 rounded-md m-1 bg-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"
-            // onClick={() => setShowModal(false)}
-            >
-              Download Sample
-            </a>
-          </div>)}
+          {CountModelOpenNumber <= 0 && (
+            <div className="flex items-center justify-center mt-3">
+              <a
+                href="/sample.csv"
+                download="sample.csv"
+                type="button"
+                className="text-slate-50 rounded-md m-1 bg-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"
+                // onClick={() => setShowModal(false)}
+              >
+                Download Sample
+              </a>
+            </div>
+          )}
         </div>
       </div>
     )

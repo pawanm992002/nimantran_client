@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './styles/RequestCredit.css'; // Assuming you save the CSS in this file
+import React, { useState } from "react";
+import axios from "axios";
+import "./styles/RequestCredit.css"; // Assuming you save the CSS in this file
 
 const RequestCredit = () => {
   const [credits, setCredits] = useState(0);
 
   const requestCredit = async () => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('/api/users/purchase-request-from-client', { credits }, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      alert('Credits purchased');
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "/api/users/purchase-request-from-client",
+        { credits },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      alert("Credits purchased");
     } catch (error) {
       console.error(error);
-      alert('Error buying credits');
+      alert("Error buying credits");
     }
   };
 

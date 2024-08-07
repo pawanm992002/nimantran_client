@@ -1,13 +1,21 @@
-import React, { useRef } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import {useNavigate} from 'react-router-dom' 
+import React, { useRef } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const EditEventModal = ({ customerId, show, onClose, event, onEventUpdated }) => {
-  const eventNameRef = useRef(event?.eventName || '');
-  const dateOfOrganisingRef = useRef(event ? new Date(event.dateOfOrganising).toISOString().split('T')[0] : '');
-  const locationRef = useRef(event?.location || '');
-const navigate = useNavigate();
+const EditEventModal = ({
+  customerId,
+  show,
+  onClose,
+  event,
+  onEventUpdated,
+}) => {
+  const eventNameRef = useRef(event?.eventName || "");
+  const dateOfOrganisingRef = useRef(
+    event ? new Date(event.dateOfOrganising).toISOString().split("T")[0] : ""
+  );
+  const locationRef = useRef(event?.location || "");
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
@@ -50,7 +58,7 @@ const navigate = useNavigate();
             <input
               type="text"
               name="eventName"
-              defaultValue={event?.eventName || ''}
+              defaultValue={event?.eventName || ""}
               ref={eventNameRef}
               className="w-full px-4 py-2 border rounded-lg"
             />
@@ -60,7 +68,11 @@ const navigate = useNavigate();
             <input
               type="date"
               name="dateOfOrganising"
-              defaultValue={event ? new Date(event.dateOfOrganising).toISOString().split('T')[0] : ''}
+              defaultValue={
+                event
+                  ? new Date(event.dateOfOrganising).toISOString().split("T")[0]
+                  : ""
+              }
               ref={dateOfOrganisingRef}
               className="w-full px-4 py-2 border rounded-lg"
             />
@@ -70,15 +82,17 @@ const navigate = useNavigate();
             <input
               type="text"
               name="location"
-              defaultValue={event?.location || ''}
+              defaultValue={event?.location || ""}
               ref={locationRef}
               className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
           <div className="flex justify-end">
-          <button
+            <button
               type="button"
-              onClick={()=>navigate(`/event/${event.editType}?eventId=${event._id}`)}
+              onClick={() =>
+                navigate(`/event/${event.editType}?eventId=${event._id}`)
+              }
               className="px-4 py-2 bg-red-500 text-white rounded-lg mr-2"
             >
               Edit Media
@@ -90,7 +104,10 @@ const navigate = useNavigate();
             >
               Cancel
             </button>
-            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+            >
               Save
             </button>
           </div>

@@ -96,7 +96,7 @@ const DraggableResizableDiv = ({
     property.page,
     property.hidden,
     property.backgroundColor,
-    property.fontWeight
+    property.fontWeight,
   ]);
 
   // useEffect(() => {
@@ -111,7 +111,9 @@ const DraggableResizableDiv = ({
     const checkVisibility = () => {
       if (videoRef.current) {
         const currentTime = videoRef.current.currentTime;
-        setVisible(currentTime >= property.startTime && currentTime <= property.duration);
+        setVisible(
+          currentTime >= property.startTime && currentTime <= property.duration
+        );
       }
     };
 

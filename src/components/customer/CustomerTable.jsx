@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 
 const CustomerTable = () => {
   const token = localStorage.getItem("token");
@@ -42,9 +42,10 @@ const CustomerTable = () => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredCustomers = (clientInfo?.customers || []).filter((customer) =>
-    customer?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCustomers = (clientInfo?.customers || []).filter(
+    (customer) =>
+      customer?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredRequests = (clientInfo?.receiveRequests || []).filter(

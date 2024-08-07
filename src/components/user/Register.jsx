@@ -2,19 +2,57 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 const Register = () => {
   const [mobile, setMobile] = useState("");
-  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState({ mobile: "", password: "" });
   const [role, setRole] = useState("client"); // default role for registration
   const [clientId, setClientId] = useState("");
+  const [togglePassword, settogglePassword] = useState(false);
+
   const navigate = useNavigate();
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+    }
+  };
+  const handleMobileChange = (e) => {
+    const mobileRegex = /^\d{10}$/;
+    const isValid = mobileRegex.test(e.target.value);
+
+    if (isValid) {
+      setMobile(e.target.value);
+      setError((prevError) => ({ ...prevError, mobile: "" }));
+    } else {
+      setMobile(e.target.value);
+      setError((prevError) => ({
+        ...prevError,
+        mobile: "Not a valid mobile number",
+      }));
+    }
+  };
+
+  const validatePassword = (value) => {
+    if (value.length < 6) {
+      setError((prevError) => ({
+        ...prevError,
+        password: "Password must be at least 6 characters long",
+      }));
+    } else {
+      setError((prevError) => ({ ...prevError, password: "" }));
+    }
+  };
 
   const registerUser = async (event) => {
     event.preventDefault();
+    if (error.mobile || error.password) {
+      return; // Exit the function if there are errors
+    }
     try {
-      const user = { mobile, password, role, name };
+      const user = { mobile, password, role };
       if (role === "customer") {
         user.clientId = clientId;
       }
@@ -30,7 +68,13 @@ const Register = () => {
       toast.success(data?.message);
       navigate("/login");
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response) {
+        // Handle API response error
+        toast.error(error.response.data.message);
+      } else {
+        // Handle other errors (network error, timeout, etc.)
+        toast.error("An error occurred. Please try again later.");
+      }
     }
   };
 
@@ -49,22 +93,6 @@ const Register = () => {
             </h2>
             <div>
               <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                placeholder="Enter your Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
-              />
-            </div>
-            <div>
-              <label
                 htmlFor="mobile"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -72,12 +100,17 @@ const Register = () => {
               </label>
               <input
                 type="text"
+                inputMode="numeric"
                 id="mobile"
                 placeholder="Enter your mobile number"
                 value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
+                onChange={(e) => handleMobileChange(e)}
+                onKeyPress={handleKeyPress}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
               />
+              {error.mobile && (
+                <p className="text-red-500 text-sm mt-1">{error.mobile}</p>
+              )}
             </div>
             <div>
               <label
@@ -86,14 +119,36 @@ const Register = () => {
               >
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
-              />
+              <div className=" relative">
+                <input
+                  type={`${togglePassword ? "text" : "password"}`}
+                  id="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    validatePassword(e.target.value);
+                  }}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none ${
+                    error.password
+                      ? "focus:ring-red-500 focus:border-red-500"
+                      : "focus:ring-blue-500 focus:border-blue-500"
+                  } sm:text-sm transition duration-150 ease-in-out`}
+                />
+                <span
+                  className=" absolute bottom-2 right-2.5 cursor-pointer text-blue-500"
+                  onClick={() => settogglePassword((prev) => !prev)}
+                >
+                  {togglePassword ? (
+                    <FontAwesomeIcon icon={faEye} />
+                  ) : (
+                    <FontAwesomeIcon icon={faEyeSlash} />
+                  )}
+                </span>
+              </div>
+              {error.password && (
+                <p className="text-red-500 text-sm mt-1">{error.password}</p>
+              )}
             </div>
             <div>
               <label

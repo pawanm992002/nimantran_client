@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import EditEventModal from "./EditEventModal";
-import {useNavigate} from 'react-router-dom' 
+import { useNavigate } from "react-router-dom";
 
 const EventsList = () => {
   const [customers, setCustomers] = useState([]);
@@ -11,7 +11,7 @@ const EventsList = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [customerId, setCustomerId] = useState(null);
   const token = localStorage.getItem("token");
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const fetchEvents = async () => {
     try {
       setLoading(true);
@@ -67,9 +67,9 @@ const EventsList = () => {
   return (
     <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
       {loading ? (
-         <div className="flex h-full w-full justify-center items-center">
-         <div className="spinner"></div> {/* Spinner */}
-       </div>
+        <div className="flex h-full w-full justify-center items-center">
+          <div className="spinner"></div> {/* Spinner */}
+        </div>
       ) : (
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 sticky top-0">
@@ -116,14 +116,16 @@ const EventsList = () => {
             {customers?.map((customer) =>
               customer.events.map((event) => (
                 <tr key={event._id} className="hover:bg-gray-100">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" 
-                    onClick={()=> {
-                      (event.guests.length !== 0) ?
-                      navigate(`/event/mediaGrid?eventId=${event._id}`)
-                      :
-                      navigate(`/event/${event.editType}?eventId=${event._id}`)
-                    }
-                  }>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    onClick={() => {
+                      event.guests.length !== 0
+                        ? navigate(`/event/mediaGrid?eventId=${event._id}`)
+                        : navigate(
+                            `/event/${event.editType}?eventId=${event._id}`
+                          );
+                    }}
+                  >
                     {event.eventName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
