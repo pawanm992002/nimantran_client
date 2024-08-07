@@ -23,7 +23,6 @@ const EventLayout = () => {
   }, [location.pathname]);
   return (
     <div className="h-full flex flex-col items-center justify-center p-4">
-      {console.log(currentStep)}
       <ol className="flex justify-between items-center w-[80vw] mb-6">
         <li
           className={`flex-1 ${

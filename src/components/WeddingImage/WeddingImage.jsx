@@ -59,7 +59,6 @@ export default function WeddingImage() {
     w: 0,
     h: 0,
   });
-  // const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [zipUrl, setZipUrl] = useState("");
 
   const createTextDiv = () => {
@@ -197,11 +196,12 @@ export default function WeddingImage() {
       );
 
       setZipUrl(response.data.zipUrl);
+      setIsLoading(false);
       navigate(`/event/mediaGrid?eventId=${eventId}`);
     } catch (error) {
       toast.error("Something Went Wrong");
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
