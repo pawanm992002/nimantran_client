@@ -1,5 +1,5 @@
 // DraggableResizableDiv.js
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
