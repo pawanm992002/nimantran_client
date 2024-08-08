@@ -13,9 +13,9 @@ const Client = () => {
       navigate("/login");
     }
   }, []);
-   const handleLogout = () => {
+  const handleLogout = () => {
     localStorage.clear();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -23,7 +23,12 @@ const Client = () => {
       <aside className="w-64 bg-gray-100">
         <div className="px-4">
           <div className="flex items-center mb-4">
-            <img className="w-44 cursor-pointer" src="/nimantran logo.png" alt="" onClick={()=>navigate('/client/dashboard')} />
+            <img
+              className="w-44 cursor-pointer"
+              src="/nimantran logo.png"
+              alt=""
+              onClick={() => navigate("/client/dashboard")}
+            />
           </div>
           <nav className="space-y-2 pt-5">
             <Link
@@ -72,7 +77,6 @@ const Client = () => {
       </aside>
       <main className="flex-1 p-6 bg-white">
         <header className="flex items-center justify-end mb-6">
-         
           <div className="flex items-center">
             <div className="flex items-center">
               {/* <img className="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Profile" /> */}
@@ -80,13 +84,21 @@ const Client = () => {
                 P
               </span>
               <div className="h-full flex items-center justify-center">
-          <div
-            className="bg-black text-white text-center mx-2 py-2 px-4 rounded-lg cursor-pointer"
-            onClick={handleLogout}
-          >
-            Logout
-          </div>
-        </div>
+                <div
+                  className="bg-black text-white text-center mx-2 py-2 px-4 rounded-lg cursor-pointer"
+                  onClick={() => navigate("/event/createEvent")}
+                >
+                  Create Event
+                </div>
+              </div>
+              <div className="h-full flex items-center justify-center">
+                <div
+                  className="bg-black text-white text-center mx-2 py-2 px-4 rounded-lg cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </div>
+              </div>
             </div>
           </div>
         </header>
