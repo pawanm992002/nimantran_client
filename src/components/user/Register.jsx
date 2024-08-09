@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 const Register = () => {
   const [mobile, setMobile] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState({ mobile: "", password: "" });
   const [role, setRole] = useState("client"); // default role for registration
@@ -52,7 +53,7 @@ const Register = () => {
       return; // Exit the function if there are errors
     }
     try {
-      const user = { mobile, password, role };
+      const user = { mobile, password, role, name };
       if (role === "customer") {
         user.clientId = clientId;
       }
@@ -91,6 +92,22 @@ const Register = () => {
             <h2 className="text-2xl font-bold text-gray-900 text-center">
               Registration
             </h2>
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                placeholder="Enter your Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+              />
+            </div>
             <div>
               <label
                 htmlFor="mobile"

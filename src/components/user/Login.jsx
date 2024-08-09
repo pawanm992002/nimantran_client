@@ -46,9 +46,9 @@ const Login = () => {
 
   const loginUser = async (event) => {
     event.preventDefault();
-    if (error.mobile || error.password) {
-      return; // Exit the function if there are errors
-    }
+    // if (error.mobile || error.password) {
+    //   return; // Exit the function if there are errors
+    // }
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/users/login`,
@@ -81,7 +81,7 @@ const Login = () => {
       if (data.role === "client") {
         navigate(`/client/dashboard`);
       } else if (data.role === "customer") {
-        navigate("/customer");
+        navigate(`/customer/profile?customerId=${response?.data?.data?._id}`);
       }
     } catch (error) {
       if (error.response) {
