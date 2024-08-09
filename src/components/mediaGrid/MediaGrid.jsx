@@ -98,6 +98,7 @@ const MediaGrid = () => {
                     {media.name} - Your Image is here
                   </div>
                 )}
+
                 {mediaItems.editType === "videoEdit" && (
                   <div className="bg-slate-300 min-h-32 h-auto rounded-md w-full p-9 flex items-center pb-4">
                     {media.name} - Your Video is here
@@ -193,6 +194,7 @@ const MediaGrid = () => {
                   {mediaItems.editType === "imageEdit" && (
                     <img
                       src={selectedMedia.link}
+                      alt={selectedMedia.name}
                       className="max-h-[80vh] max-w-[80vw]"
                     />
                   )}

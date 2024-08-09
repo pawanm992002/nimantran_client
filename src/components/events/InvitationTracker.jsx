@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 // import { Worker, Viewer } from "pdfjs-dist";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
+import { useSearchParams } from "react-router-dom";
+import { SiPanasonic } from "react-icons/si";
 const Model = ({ handleClose, mediaItems = "imageEdit" }) => {
   const close = () => {
     handleClose();
@@ -72,47 +74,77 @@ const InvitationTracker = () => {
   const handleClose = () => {
     setOpenModel(false);
   };
-  const [data, setdata] = useState([
-    { number: "7978984387", name: "Ravi", status: "Completed" },
-    { number: "8978984387", name: "Raju", status: "Pending" },
-    { number: "9978984387", name: "Rajan", status: "Failed" },
-  ]);
-  useEffect(() => {
-    const fetchData = async () => {
-      await axios
-        .get()
-        .then((res) => {
-          console.log(res.data);
-          if (!res.data.length === 0) {
-            setdata(res.data);
-          } else {
-            Toaster("No Data Found", {
-              icon: "⚠️",
-            });
-            setdata([]);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+  const [data, setdata] = useState([]);
+  const token = localStorage.getItem("token");
+  const [params] = useSearchParams();
+  const eventId = params.get("eventId");
+
+  const fetchData = async () => {
     try {
-      fetchData();
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/whatsapp/all?eventId=${eventId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const transformedData = response.data.data.flatMap((item) => {
+        if (item.sid.length === 0) {
+          // If sid is empty, add "none" for status and time
+          return [
+            {
+              name: item.name,
+              mobileNumber: item.mobileNumber,
+              status: "not sent",
+              time: "-",
+              link: item.link,
+            },
+          ];
+        } else {
+          return item.sid.map((sidItem) => {
+            const dateCreated = new Date(sidItem.dateCreated);
+            const formattedTime = `${
+              dateCreated.getHours() % 12 || 12
+            }:${String(dateCreated.getMinutes()).padStart(2, "0")} ${
+              dateCreated.getHours() >= 12 ? "PM" : "AM"
+            }`;
+            const formattedDate = `${String(dateCreated.getDate()).padStart(
+              2,
+              "0"
+            )}/${String(dateCreated.getMonth() + 1).padStart(2, "0")}/${String(
+              dateCreated.getFullYear() % 100
+            ).padStart(2, "0")}`;
+
+            return {
+              name: item.name,
+              mobileNumber: item.mobileNumber,
+              status: sidItem.status,
+              time: `${formattedTime} ${formattedDate}`,
+              link: item.link,
+            };
+          });
+        }
+      });
+
+      setdata(transformedData);
+      console.log(data);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching data:", error);
     }
+  };
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const [selectedStatus, setSelectedStatus] = useState("All");
   const handleFiltersStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   };
-  console.log(selectedStatus);
+
   const filteredData =
     selectedStatus === "All"
       ? data
-      : data.filter((item) => item.status === selectedStatus);
-
+      : data.filter((item) => item.status === selectedStatus.toLowerCase());
+  console.log(data);
   return (
     <div className="container mx-auto">
       <table className="min-w-full border-collapse">
@@ -138,16 +170,20 @@ const InvitationTracker = () => {
                 </option>
               </select>
             </th>
+            <th className="border px-4 py-2 box-border">Time</th>
             <th className="border px-4 py-2 box-border">Preview</th>
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((row, index) => (
+          {filteredData?.map((row, index) => (
             <tr key={index}>
-              <td className="border px-4 py-2 box-border">{row.name}</td>
-              <td className="border px-4 py-2 box-border">{row.number}</td>
+              <td className="border px-4 py-2 box-border">{row?.name}</td>
+              <td className="border px-4 py-2 box-border">
+                {row?.mobileNumber}
+              </td>
 
-              <td className="border px-4 py-2 box-border">{row.status}</td>
+              <td className="border px-4 py-2 box-border">{row?.status}</td>
+              <td className="border px-4 py-2 box-border">{row?.time}</td>
               <td className="border px-4 py-2 box-border">
                 <button
                   className="bg-gray-500 px-4 rounded-sm py-0.5 text-gray-100"
