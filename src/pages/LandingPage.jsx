@@ -1,5 +1,4 @@
 import React from "react";
-import { FaPaintBrush, FaBullhorn, FaGlobe, FaPenFancy } from "react-icons/fa";
 import ServiceCard from "../components/Landingpage/ServiceCard";
 import { useNavigate } from "react-router-dom";
 const LandingPage = () => {
@@ -34,22 +33,18 @@ const LandingPage = () => {
           <ServiceCard
             title="Brand Design"
             description="Logos, logo marks, logo types, brand identity & more!"
-            icon={<FaPaintBrush />}
           />
           <ServiceCard
             title="Graphic Design"
             description="Business cards, letterheads, brochures, presentations, & more!"
-            icon={<FaPenFancy />}
           />
           <ServiceCard
             title="Social Media Design"
             description="Social media posts, stories, videos, reels & more!"
-            icon={<FaBullhorn />}
           />
           <ServiceCard
             title="Web Design"
             description="E-commerce, professional, blogging websites & more!"
-            icon={<FaGlobe />}
           />
         </div>
       </section>

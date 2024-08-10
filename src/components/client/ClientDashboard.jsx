@@ -41,8 +41,7 @@ const ClientDashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(data);
-      setRequests(data?.data || []);
+      setRequests(data?.data);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch requests");
     }
@@ -104,6 +103,7 @@ const ClientDashboard = () => {
 
       toast.success("Request Sent Successfully");
       fetchClientDetails();
+      fetchRequests()
       handleModalPurchaseRequest();
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to request credits");
@@ -150,25 +150,25 @@ const ClientDashboard = () => {
             Request for Credits
           </button>
           <div className="m-8">
-            <h2 className="text-2xl font-semibold mb-4">Requests</h2>
+            <h2 className="text-2xl font-semibold mb-4">Requests To Admin</h2>
             <div className="overflow-y-auto no-scrollbar border" style={{ height: '40vh' }}>
               <table className="min-w-full  bg-white border border-gray-200">
                 <thead className="bg-gray-200 sticky top-[-1px]">
                   <tr>
-                    <th className="py-2 px-4 border-b">User ID</th>
+                    {/* <th className="py-2 px-4 border-b">By</th> */}
                     <th className="py-2 px-4 border-b">Credits</th>
                     <th className="py-2 px-4 border-b">Status</th>
-                   
+                    <th className="py-2 px-4 border-b">Date</th>
                   </tr>
                 </thead>
                 <tbody >
                   {requests.length > 0 ? (
                     requests.map((request) => (
                       <tr key={request._id}>
-                        <td className="py-2 text-center px-4 border-b">{request.user.name}</td>
-                        <td className="py-2 text-center px-4 border-b">{request.credits}</td>
-                        <td className="py-2 text-center px-4 border-b">{request.status}</td>
-                       
+                        {/* <td className="py-2 text-center px-4 border-b">{request.user.name}</td> */}
+                        <td className="py-2 text-center px-4 border-b">{request?.credits}</td>
+                        <td className="py-2 text-center px-4 border-b">{request?.status}</td>
+                        <td className="py-2 text-center px-4 border-b">{new Date(request?.createdAt).toLocaleString()}</td>
                       </tr>
                     ))
                   ) : (

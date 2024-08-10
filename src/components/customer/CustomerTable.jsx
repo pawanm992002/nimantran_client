@@ -1,11 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CustomerTable = () => {
   const token = localStorage.getItem("token");
   const [clientInfo, setClientInfo] = useState({});
+  const [customerRequests, setCustomerRequests] = useState([]);
   const [customerId, setCustomerId] = useState("");
   const [creditModal, showCreditModal] = useState(false);
   const [credits, setCredits] = useState(0);
@@ -23,6 +24,24 @@ const CustomerTable = () => {
         }
       );
       setClientInfo(data?.data);
+      console.log(data.data);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
+  const fetchCustomersRequest = async () => {
+    setLoading(true); // Start loading
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/client/my-customer-requests`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setCustomerRequests(data?.data);
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -31,8 +50,12 @@ const CustomerTable = () => {
   };
 
   useEffect(() => {
-    fetchClientDetails();
-  }, []);
+    if (tableSwitch) {
+      fetchClientDetails();
+    } else {
+      fetchCustomersRequest();
+    }
+  }, [tableSwitch]);
 
   const handleTab = (isCustomerTab) => {
     setTableSwitch(isCustomerTab);
@@ -42,35 +65,34 @@ const CustomerTable = () => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredCustomers = (clientInfo?.customers || []).filter(
+  const filteredCustomers = (clientInfo?.customers || [])?.filter(
     (customer) =>
       customer?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredRequests = (clientInfo?.receiveRequests || []).filter(
-    (request) =>
-      request?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request?._id?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredRequests = (clientInfo || [])?.filter(
+  //   (request) =>
+  //     request?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     request?._id?.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   const transferCredits = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
+      const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/client/transfer-credits`,
         { customerId, credits: parseInt(credits) },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success("Credits transferred");
+      toast.success(data.message);
       fetchClientDetails();
       handleModalCredits(customerId);
     } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data);
     }
   };
 
@@ -97,7 +119,7 @@ const CustomerTable = () => {
               }`}
               onClick={() => handleTab(true)}
             >
-              My Users
+              Customers List
             </button>
             <button
               className={`px-6 py-2 text-lg font-semibold rounded-lg ${
@@ -107,7 +129,7 @@ const CustomerTable = () => {
               }`}
               onClick={() => handleTab(false)}
             >
-              User Requests
+              Customers Requests
             </button>
           </div>
           <input
@@ -134,7 +156,7 @@ const CustomerTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredCustomers.map((customer) => (
+                {filteredCustomers?.map((customer) => (
                   <tr
                     key={customer._id}
                     className="even:bg-gray-100 odd:bg-white cursor-pointer hover:bg-slate-200"
@@ -165,7 +187,7 @@ const CustomerTable = () => {
             <table className="w-full table-auto h-full border-collapse">
               <thead className="bg-gray-200">
                 <tr>
-                  <th className="px-4 py-2">ID</th>
+                  <th className="px-4 py-2">Request By</th>
                   <th className="px-4 py-2">Mobile</th>
                   <th className="px-4 py-2">Date</th>
                   <th className="px-4 py-2">Credits</th>
@@ -173,19 +195,19 @@ const CustomerTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredRequests.map((request) => (
+                {customerRequests?.map((request) => (
                   <tr
                     key={request._id}
                     className="even:bg-gray-100 odd:bg-white"
                   >
-                    <td className="px-4 py-2">{request._id}</td>
-                    <td className="px-4 py-2">{request.mobile}</td>
-                    <td className="px-4 py-2">
-                      {new Date(request.date).toLocaleDateString()}
+                    <td className="px-4 py-2 text-center">{request?.user?.name}</td>
+                    <td className="px-4 py-2 text-center">{request?.user?.mobile}</td>
+                    <td className="px-4 py-2 text-center">
+                      {new Date(request.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-2">{request.credits}</td>
+                    <td className="px-4 py-2 text-center">{request.credits}</td>
                     <td
-                      className={`px-4 py-2 ${
+                      className={`px-4 py-2 text-center ${
                         request.status === "pending"
                           ? "text-yellow-600"
                           : request.status === "accepted"

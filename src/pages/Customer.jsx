@@ -14,11 +14,11 @@ const Customer = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("hello")
     if (location.pathname === `/customer` && customerId) {
       navigate(`/customer/profile?customerId=${customerId}`);
     }
   }, [location.pathname, customerId, navigate]);
+
   return (
     <div className="bg-white rounded-lg p-5">
       <div className="flex justify-between items-center border-b pb-4">

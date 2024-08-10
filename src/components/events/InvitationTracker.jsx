@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 // import { Worker, Viewer } from "pdfjs-dist";
 import axios from "axios";
-import { Toaster } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
-import { SiPanasonic } from "react-icons/si";
 const Model = ({ handleClose, mediaItems = "imageEdit" }) => {
   const close = () => {
     handleClose();

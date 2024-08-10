@@ -46,7 +46,7 @@ const Client = () => {
                 currentPath === "/client/customers" ? "bg-gray-200" : ""
               }`}
             >
-              <span className="mr-2">👥</span> End Users
+              <span className="mr-2">👥</span> My Customers
             </Link>
             <Link
               to="/client/eventlist"

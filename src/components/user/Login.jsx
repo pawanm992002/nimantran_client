@@ -46,9 +46,9 @@ const Login = () => {
 
   const loginUser = async (event) => {
     event.preventDefault();
-    // if (error.mobile || error.password) {
-    //   return; // Exit the function if there are errors
-    // }
+    if (error.mobile || error.password) {
+      return; // Exit the function if there are errors
+    }
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/users/login`,
