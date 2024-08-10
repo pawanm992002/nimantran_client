@@ -8,28 +8,19 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import Loader from "../Other/Loader/Loader";
+import WhatsappModal from "../Other/WhatsappModal/WhatsappModal";
 
 const MediaGrid = () => {
   const token = localStorage.getItem("token");
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
-  const [selectedMedia, setSelectedMedia] = useState(null);
   const [mediaItems, setMediaItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const individualWhatsuppInvite = async (guest) => {
-    try {
-      console.log("me", guest);
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/whatsapp/individual?eventId=${eventId}`,
-        guest,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-    } catch (error) {}
-  };
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedWhatsapp, setSelectedWhatsapp] = useState("");
+  const [selectedMedia, setSelectedMedia] = useState("");
+  const [sendMedia, setSendMedia] = useState("");
 
   const fetchGuestsMedia = async () => {
     try {
@@ -49,15 +40,6 @@ const MediaGrid = () => {
   useEffect(() => {
     fetchGuestsMedia();
   }, []);
-  const handleOpen = (media) => {
-    setSelectedMedia(media);
-  };
-
-  const handleClose = () => {
-    setSelectedMedia(null);
-  };
-
-  useEffect(() => {}, []);
 
   return (
     <div className="App">
@@ -65,8 +47,23 @@ const MediaGrid = () => {
         <Loader text="Please wait while its Loading" />
       ) : (
         <>
+          {openModal && (
+            <WhatsappModal
+              setOpenModal={setOpenModal}
+              selectedWhatsapp={selectedWhatsapp}
+              eventId={eventId}
+              sendMedia={sendMedia}
+            />
+          )}
           <div className="flex space-x-4 p-4 bg-white shadow-lg rounded-lg">
-            <button className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none">
+            <button
+              className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
+              onClick={() => {
+                setOpenModal(true);
+                setSelectedWhatsapp("all");
+                setSendMedia("");
+              }}
+            >
               <svg
                 className="w-5 h-5 mr-2"
                 fill="currentColor"
@@ -114,7 +111,7 @@ const MediaGrid = () => {
                 <div className="absolute inset-0 flex gap-3 justify-end p-1">
                   {/* View Button */}
                   <button
-                    onClick={() => handleOpen(media)}
+                    onClick={() => setSelectedMedia(media)}
                     className="hover:bg-slate-200 text-[#570000] font-semibold rounded-full h-8 align-middle p-1"
                   >
                     <svg
@@ -160,7 +157,11 @@ const MediaGrid = () => {
                   </a>
                   {/* send to Whatsupp button */}
                   <button
-                    onClick={() => individualWhatsuppInvite(media)}
+                    onClick={() => {
+                      setOpenModal(true);
+                      setSelectedWhatsapp(media.mobileNumber);
+                      setSendMedia(media.link);
+                    }}
                     className="hover:bg-slate-200 text-[#570000] font-semibold rounded-full h-8 align-middle p-1"
                   >
                     <svg
@@ -186,7 +187,7 @@ const MediaGrid = () => {
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
                 <div className="bg-white p-4 rounded-lg">
                   <button
-                    onClick={handleClose}
+                    onClick={() => setSelectedMedia("")}
                     className="absolute top-4 right-4 text-black bg-gray-200 hover:bg-gray-300 rounded-full flex justify-center items-center w-8 h-8"
                   >
                     &times;

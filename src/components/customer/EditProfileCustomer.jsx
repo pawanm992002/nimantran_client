@@ -60,7 +60,7 @@ const EditProfileCustomer = () => {
         }
       );
       toast.success("Customer details updated successfully");
-      navigate("/customer/profile");
+      navigate(`/customer/profile?customerId=${customerId}`);
     } catch (error) {
       console.error("Error updating customer details:", error);
       toast.error("Error updating customer details");

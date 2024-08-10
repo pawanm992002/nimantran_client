@@ -3,7 +3,7 @@ import { fontFamilies } from "../../../App";
 
 const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
   const [backgroundColor, setBackgroundColor] = useState(
-    property.backgroundColor
+    property?.backgroundColor
   );
   const [selectedTransition, setSelectedTransition] = useState(
     property?.transition
@@ -18,10 +18,10 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
 
   useEffect(() => {
     takeTextDetails({
-      id: property.id,
-      text: property.text,
-      position: property.position,
-      size: property.size,
+      id: property?.id,
+      text: property?.text,
+      position: property?.position,
+      size: property?.size,
       fontColor: fontColor,
       fontSize: fontSize,
       fontFamily: fontFamily,
@@ -31,8 +31,8 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       duration: duration,
       backgroundColor: backgroundColor,
       transition: selectedTransition,
-      hidden: property.hidden,
-      page: property.page,
+      hidden: property?.hidden,
+      page: property?.page,
     });
   }, [
     fontColor,
@@ -47,15 +47,15 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
   ]);
 
   useEffect(() => {
-    setBackgroundColor(property.backgroundColor);
-    setFontSize(property.fontSize);
-    setFontColor(property.fontColor);
-    setFontWeight(property.fontWeight);
-    setFontStyle(property.fontStyle);
-    setFontFamily(property.fontFamily);
-    setStartTime(property.startTime);
-    setDuration(property.duration);
-    setSelectedTransition(property.transition);
+    setBackgroundColor(property?.backgroundColor);
+    setFontSize(property?.fontSize);
+    setFontColor(property?.fontColor);
+    setFontWeight(property?.fontWeight);
+    setFontStyle(property?.fontStyle);
+    setFontFamily(property?.fontFamily);
+    setStartTime(property?.startTime);
+    setDuration(property?.duration);
+    setSelectedTransition(property?.transition);
   }, [openContextMenuId, property]);
 
   const handleStyleChange = (e) => {
@@ -146,7 +146,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
   ];
 
   return (
-    openContextMenuId === property.id && (
+    openContextMenuId === property?.id && (
       <div className="flex items-center px-4 py-1 bg-white shadow-md space-x-4 m-2 rounded-md">
         <div>
           <label>

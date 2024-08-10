@@ -48,7 +48,7 @@ const DraggableResizableDiv = ({
   };
   const handleDrag = (e, data) => {
     setPosition({ x: data.x, y: data.y });
-    if (Math.abs(videoCenter - size.width / 2 - data.x) < 2) {
+    if (Math.abs(videoCenter - size?.width / 2 - data.x) < 2) {
       setIsAtCenter(true);
     } else {
       setIsAtCenter(false);
@@ -62,17 +62,17 @@ const DraggableResizableDiv = ({
   };
 
   const handleResize = (e, { size }) => {
-    setSize({ width: size.width, height: size.height });
+    setSize({ width: size?.width, height: size?.height });
   };
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    setOpenContextMenuId(property.id);
+    setOpenContextMenuId(property?.id);
   };
 
   useEffect(() => {
     takeTextDetails({
-      id: property.id,
+      id: property?.id,
       text,
       position,
       size,
@@ -157,8 +157,8 @@ const DraggableResizableDiv = ({
           }}
         ></div>
         <ResizableBox
-          width={size.width}
-          height={size.height}
+          width={size?.width}
+          height={size?.height}
           minConstraints={[50, 20]}
           maxConstraints={[500, 300]}
           onResizeStop={handleResize}

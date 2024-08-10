@@ -136,23 +136,6 @@ export default function WeddingImage() {
     setShowGuestList(true);
   };
 
-  const sendIndividualInvite = async (info) => {
-    try {
-      const token = localStorage.getItem("token");
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/users/sendIndividualInvite`,
-        { senderName: "sender", mobile: "6367703375" },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      console.log("hhhhhh", data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const handleSubmit = async (event, isSample) => {
     event.preventDefault();
     setIsLoading(true);
