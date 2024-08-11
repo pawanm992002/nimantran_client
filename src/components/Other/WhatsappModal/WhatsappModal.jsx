@@ -45,7 +45,6 @@ const WhatsappModal = ({
 
   const individualWhatsuppPersonalInvite = async () => {
     try {
-      console.log("............. 1");
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/whatsapp/individualPersonal?eventId=${eventId}`,
         {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -15,6 +15,8 @@ const MediaGrid = () => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
+  const navigate = useNavigate();
+
   const [mediaItems, setMediaItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
@@ -85,6 +87,27 @@ const MediaGrid = () => {
                 <path d="M19 11h-4v-1h1c.554 0 1-.446 1-1s-.446-1-1-1h-1v-1h-2v4h4v1h-1c-.554 0-1 .446-1 1v3c0 .554.446 1 1 1h2v-2h-2v-1h2v-3c0-.554-.446-1-1-1zm-4 7h-10v-12h2v-2h-3c-.553 0-1 .447-1 1v14c0 .553.447 1 1 1h11c.553 0 1-.447 1-1v-2h-2v1zm-8-8h2v6h2v-6h2v-2h-6v2z" />
               </svg>
               Download Zip File
+            </button>
+            <button style={{marginLeft: 'auto'}}
+              onClick={() =>
+                navigate(`/event/invitationTracker?eventId=${eventId}`)
+              }
+            >
+              next Page
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6 inline-block ml-2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                />
+              </svg>
             </button>
           </div>
           <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
