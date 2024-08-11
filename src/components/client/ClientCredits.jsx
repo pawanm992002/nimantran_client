@@ -13,33 +13,33 @@ const Transactions = () => {
     setSearchTerm(event.target.value);
   };
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/transictions/get-client-transaction?areaOfUse=${tableSwitch}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setTransactions(response.data);
-      } catch (err) {
-        setError(
-          err.response
-            ? err.response.data.message
-            : "Server error. Please try again later."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/transictions/get-client-transaction?areaOfUse=${tableSwitch}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setTransactions(response.data);
+    } catch (err) {
+      setError(
+        err.response
+          ? err.response.data.message
+          : "Server error. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTransactions();
   }, [token, tableSwitch]);
 
   const filteredTransactions = transactions.filter((transaction) => {
-    return transaction.recieverId.name
+    return transaction?.recieverId?.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
   });
@@ -87,14 +87,14 @@ const Transactions = () => {
         </div>
       ) : (
         <div>
-          {filteredTransactions.length === 0 ? (
-            <div>No Transactions yet</div>
-          ) : (
+          {transactions.length === 0 ? (
+            <div>No Transactions yet {console.log("..........")}</div>
+          ) : tableSwitch === "transfer" ? (
             <div className="overflow-x-auto h-[55vh]">
               <table className="min-w-full bg-white">
                 <thead className="bg-gray-200 sticky top-0">
                   <tr>
-                    {transactions.length > 0 && !transactions[0].eventId ? (
+                    {transactions?.length > 0 && !transactions[0]?.eventId ? (
                       <th className="text-left p-4">Receiver</th>
                     ) : (
                       <th className="text-left p-4">Event</th>
@@ -106,15 +106,50 @@ const Transactions = () => {
                 </thead>
                 <tbody>
                   {filteredTransactions.map((transaction) => (
-                    <tr key={transaction._id} className="hover:bg-gray-100">
-                      <td className="p-4">{transaction.recieverId.name}</td>
-                      <td className="p-4">{transaction.amount}</td>
+                    <tr key={transaction?._id} className="hover:bg-gray-100">
+                      <td className="p-4">{transaction?.recieverId?.name}</td>
+                      <td className="p-4">{transaction?.amount}</td>
                       <td className="p-4">
                         {new Date(
-                          transaction.transactionDate
+                          transaction?.transactionDate
                         ).toLocaleDateString()}
                       </td>
-                      <td className="p-4">{transaction.status}</td>
+                      <td className="p-4">{transaction?.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="overflow-x-auto h-[55vh]">
+              <table className="min-w-full bg-white">
+                <thead className="bg-gray-200 sticky top-0">
+                  <tr>
+                    {transactions?.length > 0 && tableSwitch === "spend" ? (
+                      <th className="text-left p-4">Event</th>
+                    ) : (
+                      <th className="text-left p-4">Receiver</th>
+                    )}
+                    <th className="text-left p-4">Amount</th>
+                    <th className="text-left p-4">Date</th>
+                    <th className="text-left p-4">Status</th>
+                    {tableSwitch === "spend" && (
+                      <th className="text-left p-4">Media Edit</th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions?.map((transaction) => (
+                    <tr key={transaction?._id} className="hover:bg-gray-100">
+                      <td className="p-4">{transaction?.eventId?.eventName}</td>
+                      <td className="p-4">{transaction?.amount}</td>
+                      <td className="p-4">
+                        {new Date(
+                          transaction?.transactionDate
+                        ).toLocaleDateString()}
+                      </td>
+                      <td className="p-4">{transaction?.status}</td>
+                      {tableSwitch === "spend" && <td className="p-4">{transaction?.areaOfUse}</td>}
                     </tr>
                   ))}
                 </tbody>

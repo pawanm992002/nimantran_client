@@ -23,7 +23,7 @@ const EventLayout = () => {
   }, [location.pathname]);
   return (
     <div className="h-full flex flex-col items-center justify-center p-4">
-      <ol className="flex justify-between items-center w-[80vw] mb-6">
+      <ol className="flex justify-between items-center w-[80vw] mb-3">
         <li
           className={`flex-1 ${
             currentStep >= 1 ? "text-blue-600" : "text-gray-500"
@@ -170,7 +170,7 @@ const EventLayout = () => {
           </div>
         </li>
       </ol>
-      <div className="h-[83vh] w-full flex justify-center">
+      <div className="w-full flex justify-center">
         {/* components */}
         <Outlet />
       </div>

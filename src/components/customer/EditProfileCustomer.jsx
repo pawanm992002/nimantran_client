@@ -13,7 +13,6 @@ const EditProfileCustomer = () => {
   const [formData, setFormData] = useState({
     name: "",
     mobile: "",
-    email: "",
     gender: "",
     dateOfBirth: "",
     location: "",
@@ -79,7 +78,6 @@ const EditProfileCustomer = () => {
             {[
               { label: "Name", name: "name", type: "text" },
               { label: "Mobile", name: "mobile", type: "tel" },
-              { label: "Email", name: "email", type: "email" },
               { label: "Gender", name: "gender", type: "text" },
               { label: "Date of Birth", name: "dateOfBirth", type: "date" },
               { label: "Location", name: "location", type: "text" },

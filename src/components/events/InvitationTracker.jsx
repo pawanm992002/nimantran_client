@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Model = ({ handleClose, mediaItems = "imageEdit", media }) => {
   const close = () => {
     handleClose();
   };
-  console.log(media)
+  console.log(media);
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
       <div className="bg-white p-4 rounded-lg relative">
@@ -103,54 +104,16 @@ const InvitationTracker = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(
+      const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/whatsapp/all?eventId=${eventId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      const transformedData = response.data.data.flatMap((item) => {
-        if (item.sid.length === 0) {
-          // If sid is empty, add "none" for status and time
-          return [
-            {
-              name: item.name,
-              mobileNumber: item.mobileNumber,
-              status: "not sent",
-              time: "-",
-              link: item.link,
-            },
-          ];
-        } else {
-          return item.sid.map((sidItem) => {
-            const dateCreated = new Date(sidItem.dateCreated);
-            const formattedTime = `${
-              dateCreated.getHours() % 12 || 12
-            }:${String(dateCreated.getMinutes()).padStart(2, "0")} ${
-              dateCreated.getHours() >= 12 ? "PM" : "AM"
-            }`;
-            const formattedDate = `${String(dateCreated.getDate()).padStart(
-              2,
-              "0"
-            )}/${String(dateCreated.getMonth() + 1).padStart(2, "0")}/${String(
-              dateCreated.getFullYear() % 100
-            ).padStart(2, "0")}`;
 
-            return {
-              name: item.name,
-              mobileNumber: item.mobileNumber,
-              status: sidItem.status,
-              time: `${formattedTime} ${formattedDate}`,
-              link: item.link,
-            };
-          });
-        }
-      });
-
-      setData(transformedData);
-      console.log(response.data.data);
+      setData(data?.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      toast.error(error?.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
@@ -170,6 +133,7 @@ const InvitationTracker = () => {
       ? data
       : data.filter((item) => item.status === selectedStatus.toLowerCase());
   const [Media, setMedia] = useState();
+
   const handleViewClick = (mediaLink) => {
     setMedia(mediaLink);
 
@@ -180,8 +144,8 @@ const InvitationTracker = () => {
       <table className="min-w-full border-collapse">
         <thead className="bg-gray-100 text-gray-600 text-left">
           <tr>
-            <th className="border px-4 py-2 box-border">Name</th>
-            <th className="border px-4 py-2 box-border">Number</th>
+            <th className="border px-4 py-2 box-border">From</th>
+            <th className="border px-4 py-2 box-border">To</th>
             <th className="border px-4 py-2 box-border">
               <label>Status : </label>
               <select
@@ -189,22 +153,19 @@ const InvitationTracker = () => {
                 onChange={(e) => handleFiltersStatusChange(e)}
               >
                 <option value="All">All</option>
-                <option value="Completed" className="text-green-500">
-                  Completed
+                <option value="sended" className="text-yellow-500">
+                  sended
                 </option>
-                <option value="Pending" className="text-yellow-500">
-                  Pending
+                <option value="notSended" className="text-red-500">
+                  notSended
                 </option>
-                <option value="Failed" className="text-red-500">
-                  Failed
-                </option>
-                <option value="Not Sent" className="text-gray-500">
-                  Not Sent
+                <option value="queued" className="text-gray-500">
+                  queued
                 </option>
               </select>
             </th>
-            <th className="border px-4 py-2 box-border">Time</th>
-            <th className="border px-4 py-2 box-border">Preview</th>
+            <th className="border px-4 py-2 box-border">Date</th>
+            {/* <th className="border px-4 py-2 box-border">Preview</th> */}
           </tr>
         </thead>
         <tbody>
@@ -217,20 +178,20 @@ const InvitationTracker = () => {
           ) : (
             filteredData?.map((row, index) => (
               <tr key={index}>
-                <td className="border px-4 py-2 box-border">{row?.name}</td>
-                <td className="border px-4 py-2 box-border">
-                  {row?.mobileNumber}
-                </td>
+                <td className="border px-4 py-2 box-border">{row?.from}</td>
+                <td className="border px-4 py-2 box-border">{row?.to}</td>
                 <td className="border px-4 py-2 box-border">{row?.status}</td>
-                <td className="border px-4 py-2 box-border">{row?.time}</td>
                 <td className="border px-4 py-2 box-border">
+                  {new Date(row?.date).toLocaleString()}
+                </td>
+                {/* <td className="border px-4 py-2 box-border">
                   <button
                     className="bg-gray-500 px-4 rounded-sm py-0.5 text-gray-100"
                     onClick={() => handleViewClick(row.link)}
                   >
                     View
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))
           )}
