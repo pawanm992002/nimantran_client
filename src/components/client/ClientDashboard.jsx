@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const ClientDashboard = () => {
   const token = localStorage.getItem("token");
@@ -11,14 +12,76 @@ const ClientDashboard = () => {
   const [adminCredits, setAdminCredits] = useState(0);
   const [requests, setRequests] = useState([]);
 
+  const today = new Date();
+  const eighteenYearsAgo = new Date(
+    today.getFullYear() - 18,
+    today.getMonth(),
+    today.getDate()
+  );
   const nameRef = useRef("");
   const mobileRef = useRef("");
   const passwordRef = useRef("");
   const emailRef = useRef("");
   const genderRef = useRef("");
-  const dateOfBirthRef = useRef("");
+  const dateOfBirthRef = useRef(null);
   const locationRef = useRef("");
 
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [mobileError, setMobileError] = useState("");
+  const [dateOfBirthError, setDateOfBirthError] = useState("");
+
+  const [togglePassword, settogglePassword] = useState(false);
+
+  // Validation functions
+  const validateName = (name) => {
+    const nameRegex = /^[a-zA-Z\s]+$/; // Only allow letters and spaces
+    if (!name.trim()) {
+      setNameError("Name is required");
+    } else if (name.length < 3 || name.length > 20) {
+      setNameError("Name must be between 3 and 20 characters");
+    } else if (!nameRegex.test(name)) {
+      setNameError("Name must contain only letters and spaces");
+    } else {
+      setNameError("");
+    }
+  };
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      setEmailError("Email is required");
+    } else if (!emailRegex.test(email)) {
+      setEmailError("Invalid email format");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!password.trim()) {
+      setPasswordError("Password is required");
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
+      );
+    } else {
+      setPasswordError("");
+    }
+  };
+  const validateMobile = (mobile) => {
+    const mobileRegex = /^\d{10}$/;
+    if (!mobile.trim()) {
+      setMobileError("Mobile number is required");
+    } else if (!mobileRegex.test(mobile)) {
+      setMobileError("Invalid mobile number format");
+    } else {
+      setMobileError("");
+    }
+  };
+  // Fetch functions
   const fetchClientDetails = async () => {
     try {
       const { data } = await axios.get(
@@ -29,7 +92,9 @@ const ClientDashboard = () => {
       );
       setClientInfo(data?.data);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to fetch client details");
+      toast.error(
+        error.response?.data?.message || "Failed to fetch client details"
+      );
     }
   };
 
@@ -54,6 +119,27 @@ const ClientDashboard = () => {
 
   const handleModalCreateCustomer = () => {
     showCreateCustomerModal(!createCustomerModal);
+
+    if (dateOfBirthRef.current) {
+      const today = new Date();
+      const eighteenYearsAgo = new Date(
+        today.getFullYear() - 18,
+        today.getMonth(),
+        today.getDate()
+      );
+      const selectedDate = new Date(dateOfBirthRef.current.value);
+
+      if (selectedDate >= eighteenYearsAgo) {
+        dateOfBirthRef.current.min = eighteenYearsAgo
+          .toISOString()
+          .split("T")[0];
+        setDateOfBirthError("");
+      } else {
+        setDateOfBirthError(
+          "You must be at least 18 years old to create an account."
+        );
+      }
+    }
   };
 
   const handleModalPurchaseRequest = () => {
@@ -85,7 +171,9 @@ const ClientDashboard = () => {
       fetchClientDetails();
       handleModalCreateCustomer();
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to create customer");
+      toast.error(
+        error?.response?.data?.message || "Failed to create customer"
+      );
       handleModalCreateCustomer(); // Close modal even if the request fails
     }
   };
@@ -103,13 +191,37 @@ const ClientDashboard = () => {
 
       toast.success("Request Sent Successfully");
       fetchClientDetails();
-      fetchRequests()
+      fetchRequests();
       handleModalPurchaseRequest();
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to request credits");
+      toast.error(
+        error?.response?.data?.message || "Failed to request credits"
+      );
       handleModalPurchaseRequest(); // Close modal even if the request fails
     }
   };
+
+  const handleKeyPress = (event) => {
+    const charCode = event.which || event.keyCode;
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  };
+
+  const handleCreditsChange = (e) => {
+    setAdminCredits(e.target.value);
+  };
+
+  const [selectedStatus, setSelectedStatus] = useState("All");
+
+  const handleFiltersStatusChange = (e) => {
+    setSelectedStatus(e.target.value);
+  };
+
+  const filteredData =
+    selectedStatus === "All"
+      ? requests
+      : requests.filter((item) => item.status === selectedStatus.toLowerCase());
 
   return (
     <>
@@ -151,29 +263,56 @@ const ClientDashboard = () => {
           </button>
           <div className="m-8">
             <h2 className="text-2xl font-semibold mb-4">Requests To Admin</h2>
-            <div className="overflow-y-auto no-scrollbar border" style={{ height: '40vh' }}>
+            <div
+              className="overflow-y-auto no-scrollbar border"
+              style={{ height: "40vh" }}
+            >
               <table className="min-w-full  bg-white border border-gray-200">
                 <thead className="bg-gray-200 sticky top-[-1px]">
                   <tr>
-                    {/* <th className="py-2 px-4 border-b">By</th> */}
                     <th className="py-2 px-4 border-b">Credits</th>
-                    <th className="py-2 px-4 border-b">Status</th>
+                    <th className="py-2 px-4 border-b">
+                      <label>Status : </label>
+                      <select
+                        className="border px-4 py-1  box-border rounded-md bg-gray-300"
+                        onChange={(e) => handleFiltersStatusChange(e)}
+                      >
+                        <option value="All">All</option>
+                        <option value="Completed" className="text-green-500">
+                          Completed
+                        </option>
+                        <option value="Pending" className="text-yellow-500">
+                          Pending
+                        </option>
+                        <option value="Failed" className="text-red-500">
+                          Failed
+                        </option>
+                      </select>
+                    </th>
                     <th className="py-2 px-4 border-b">Date</th>
                   </tr>
                 </thead>
-                <tbody >
+                <tbody>
                   {requests.length > 0 ? (
-                    requests.map((request) => (
+                    filteredData.map((request) => (
                       <tr key={request._id}>
-                        {/* <td className="py-2 text-center px-4 border-b">{request.user.name}</td> */}
-                        <td className="py-2 text-center px-4 border-b">{request?.credits}</td>
-                        <td className="py-2 text-center px-4 border-b">{request?.status}</td>
-                        <td className="py-2 text-center px-4 border-b">{new Date(request?.createdAt).toLocaleString()}</td>
+                        <td className="py-2 text-center px-4 border-b">
+                          {request?.credits}
+                        </td>
+                        <td className="py-2 text-center px-4 border-b">
+                          {request?.status}
+                        </td>
+                        <td className="py-2 text-center px-4 border-b">
+                          {new Date(request?.createdAt).toLocaleString()}
+                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td className="py-2 px-4 border-b text-center" colSpan="5">
+                      <td
+                        className="py-2 px-4 border-b text-center"
+                        colSpan="5"
+                      >
                         No requests found
                       </td>
                     </tr>
@@ -198,7 +337,10 @@ const ClientDashboard = () => {
                     ref={nameRef}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     required
+                    onBlur={(e) => validateName(e.target.value)}
+                    onChange={(e) => validateName(e.target.value)}
                   />
+                  {nameError && <p className="text-red-500">{nameError}</p>}
                 </div>
                 <div className="mb-4">
                   <label className="block mb-2">Mobile:</label>
@@ -207,16 +349,37 @@ const ClientDashboard = () => {
                     ref={mobileRef}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     required
+                    onBlur={(e) => validateMobile(e.target.value)}
+                    onChange={(e) => validateMobile(e.target.value)}
+                    onKeyPress={handleKeyPress}
                   />
+                  {mobileError && <p className="text-red-500">{mobileError}</p>}
                 </div>
                 <div className="mb-4">
                   <label className="block mb-2">Password:</label>
-                  <input
-                    type="password"
-                    ref={passwordRef}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      type={togglePassword ? "text" : "password"}
+                      ref={passwordRef}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      required
+                      onBlur={(e) => validatePassword(e.target.value)}
+                      onChange={(e) => validatePassword(e.target.value)}
+                    />
+                    <span
+                      className=" absolute bottom-2 right-2.5 cursor-pointer text-blue-500 "
+                      onClick={() => settogglePassword((prev) => !prev)}
+                    >
+                      {togglePassword ? (
+                        <FontAwesomeIcon icon={faEye} />
+                      ) : (
+                        <FontAwesomeIcon icon={faEyeSlash} />
+                      )}
+                    </span>
+                  </div>
+                  {passwordError && (
+                    <p className="text-red-500">{passwordError}</p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block mb-2">Email:</label>
@@ -225,7 +388,10 @@ const ClientDashboard = () => {
                     ref={emailRef}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     required
+                    onBlur={(e) => validateEmail(e.target.value)}
+                    onChange={(e) => validateEmail(e.target.value)}
                   />
+                  {emailError && <p className="text-red-500">{emailError}</p>}
                 </div>
                 <div className="mb-4">
                   <label className="block mb-2">Gender:</label>
@@ -248,6 +414,9 @@ const ClientDashboard = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     required
                   />
+                  {dateOfBirthError && (
+                    <p className="text-red-500">{dateOfBirthError}</p>
+                  )}
                 </div>
                 <div className="mb-4 col-span-2">
                   <label className="block mb-2">Location:</label>
@@ -270,6 +439,9 @@ const ClientDashboard = () => {
                 <button
                   type="submit"
                   className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                  disabled={
+                    nameError || emailError || passwordError || mobileError
+                  }
                 >
                   Create
                 </button>
@@ -278,7 +450,6 @@ const ClientDashboard = () => {
           </div>
         </div>
       )}
-
       {purchaseRequestModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-lg p-8 w-1/3">
@@ -289,7 +460,8 @@ const ClientDashboard = () => {
                 <input
                   type="number"
                   value={adminCredits}
-                  onChange={(e) => setAdminCredits(e.target.value)}
+                  onChange={(e) => handleCreditsChange(e)}
+                  onKeyPress={handleKeyPress}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   required
                   min={1}
