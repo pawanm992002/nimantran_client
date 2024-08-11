@@ -106,6 +106,7 @@ const CustomerTable = () => {
     navigate(`/customer/profile?customerId=${id}`);
   };
 
+   
   return (
     <div>
       <div className="rounded-lg p-6 flex-3 max-w-full h-[70vh]">
@@ -200,8 +201,12 @@ const CustomerTable = () => {
                     key={request._id}
                     className="even:bg-gray-100 odd:bg-white"
                   >
-                    <td className="px-4 py-2 text-center">{request?.user?.name}</td>
-                    <td className="px-4 py-2 text-center">{request?.user?.mobile}</td>
+                    <td className="px-4 py-2 text-center">
+                      {request?.user?.name}
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      {request?.user?.mobile}
+                    </td>
                     <td className="px-4 py-2 text-center">
                       {new Date(request.createdAt).toLocaleDateString()}
                     </td>

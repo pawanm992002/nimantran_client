@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-// import { Worker, Viewer } from "pdfjs-dist";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
-const Model = ({ handleClose, mediaItems = "imageEdit" }) => {
+
+const Model = ({ handleClose, mediaItems = "imageEdit", media }) => {
   const close = () => {
     handleClose();
   };
-
+  console.log(media)
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
       <div className="bg-white p-4 rounded-lg relative">
@@ -67,18 +67,42 @@ const Model = ({ handleClose, mediaItems = "imageEdit" }) => {
   );
 };
 
+const SkeletonLoader = () => {
+  return (
+    <tr>
+      <td className="border px-4 py-2 box-border">
+        <div className="animate-pulse bg-gray-300 h-4 w-32 rounded"></div>
+      </td>
+      <td className="border px-4 py-2 box-border">
+        <div className="animate-pulse bg-gray-300 h-4 w-24 rounded"></div>
+      </td>
+      <td className="border px-4 py-2 box-border">
+        <div className="animate-pulse bg-gray-300 h-4 w-20 rounded"></div>
+      </td>
+      <td className="border px-4 py-2 box-border">
+        <div className="animate-pulse bg-gray-300 h-4 w-24 rounded"></div>
+      </td>
+      <td className="border px-4 py-2 box-border">
+        <div className="animate-pulse bg-gray-300 h-4 w-16 rounded"></div>
+      </td>
+    </tr>
+  );
+};
+
 const InvitationTracker = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [OpenModel, setOpenModel] = useState(false);
   const handleClose = () => {
     setOpenModel(false);
   };
-  const [data, setdata] = useState([]);
+  const [data, setData] = useState([]);
   const token = localStorage.getItem("token");
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
 
   const fetchData = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/whatsapp/all?eventId=${eventId}`,
         {
@@ -123,12 +147,15 @@ const InvitationTracker = () => {
         }
       });
 
-      setdata(transformedData);
-      console.log(data);
+      setData(transformedData);
+      console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -142,7 +169,12 @@ const InvitationTracker = () => {
     selectedStatus === "All"
       ? data
       : data.filter((item) => item.status === selectedStatus.toLowerCase());
-  console.log(data);
+  const [Media, setMedia] = useState();
+  const handleViewClick = (mediaLink) => {
+    setMedia(mediaLink);
+
+    setOpenModel(true);
+  };
   return (
     <div className="container mx-auto">
       <table className="min-w-full border-collapse">
@@ -153,7 +185,7 @@ const InvitationTracker = () => {
             <th className="border px-4 py-2 box-border">
               <label>Status : </label>
               <select
-                className="border px-4 py-1  box-border rounded-md"
+                className="border px-4 py-1  box-border rounded-md "
                 onChange={(e) => handleFiltersStatusChange(e)}
               >
                 <option value="All">All</option>
@@ -166,6 +198,9 @@ const InvitationTracker = () => {
                 <option value="Failed" className="text-red-500">
                   Failed
                 </option>
+                <option value="Not Sent" className="text-gray-500">
+                  Not Sent
+                </option>
               </select>
             </th>
             <th className="border px-4 py-2 box-border">Time</th>
@@ -173,28 +208,35 @@ const InvitationTracker = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredData?.map((row, index) => (
-            <tr key={index}>
-              <td className="border px-4 py-2 box-border">{row?.name}</td>
-              <td className="border px-4 py-2 box-border">
-                {row?.mobileNumber}
-              </td>
-
-              <td className="border px-4 py-2 box-border">{row?.status}</td>
-              <td className="border px-4 py-2 box-border">{row?.time}</td>
-              <td className="border px-4 py-2 box-border">
-                <button
-                  className="bg-gray-500 px-4 rounded-sm py-0.5 text-gray-100"
-                  onClick={() => setOpenModel(true)}
-                >
-                  View
-                </button>
-              </td>
-            </tr>
-          ))}
+          {isLoading ? (
+            <>
+              <SkeletonLoader />
+              <SkeletonLoader />
+              <SkeletonLoader />
+            </>
+          ) : (
+            filteredData?.map((row, index) => (
+              <tr key={index}>
+                <td className="border px-4 py-2 box-border">{row?.name}</td>
+                <td className="border px-4 py-2 box-border">
+                  {row?.mobileNumber}
+                </td>
+                <td className="border px-4 py-2 box-border">{row?.status}</td>
+                <td className="border px-4 py-2 box-border">{row?.time}</td>
+                <td className="border px-4 py-2 box-border">
+                  <button
+                    className="bg-gray-500 px-4 rounded-sm py-0.5 text-gray-100"
+                    onClick={() => handleViewClick(row.link)}
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
-      {OpenModel && <Model handleClose={handleClose} />}
+      {OpenModel && <Model handleClose={handleClose} media={Media} />}
     </div>
   );
 };

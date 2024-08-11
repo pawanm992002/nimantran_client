@@ -117,7 +117,7 @@ const EventsList = () => {
               customer.events.map((event) => (
                 <tr key={event._id} className="hover:bg-gray-100">
                   <td
-                    className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-pointer"
                     onClick={() => {
                       event.guests.length !== 0
                         ? navigate(`/event/mediaGrid?eventId=${event._id}`)
