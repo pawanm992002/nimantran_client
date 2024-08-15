@@ -128,7 +128,7 @@ const EventLayout = () => {
           ></div>
         </li>
         <li
-          className={`flex-1 ${
+          className={`flex ${
             currentStep >= 4 ? "text-blue-600" : "text-gray-500"
           } relative`}
         >
@@ -155,19 +155,6 @@ const EventLayout = () => {
               currentStep >= 4 ? "bg-blue-100" : "bg-gray-100"
             } z-[-1]`}
           ></div>
-        </li>
-        <li className="flex text-gray-500 relative">
-          <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full">
-            <svg
-              className="w-4 h-4 text-gray-500"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 18 20"
-            >
-              <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2ZM7 2h4v3H7V2Zm5.7 8.289-3.975 3.857a1 1 0 0 1-1.393 0L5.3 12.182a1.002 1.002 0 1 1 1.4-1.436l1.328 1.289 3.28-3.181a1 1 0 1 1 1.392 1.435Z" />
-            </svg>
-          </div>
         </li>
       </ol>
       <div className="w-full flex justify-center">

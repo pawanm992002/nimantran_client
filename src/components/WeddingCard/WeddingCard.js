@@ -164,9 +164,10 @@ export default function WeddingVideo() {
       }
 
       formData.append("pdf", pdfFileObj);
-      formData.append("guestNames", guestNames);
+      // formData.append("guestNames", guestNames);
       formData.append("textProperty", JSON.stringify(texts));
       formData.append("scalingFont", scalingFont);
+      formData.append("guestNames", JSON.stringify(jsonData));
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
       formData.append("isSample", isSample);
@@ -181,9 +182,13 @@ export default function WeddingVideo() {
         }
       );
 
-      setProcessedVideoUrls(response.data.videoUrls);
-      setZipUrl(response.data.zipUrl);
-      navigate(`/event/mediaGrid?eventId=${eventId}`);
+      setIsLoading(false);
+      if(isSample) {
+        setProcessedVideoUrls(response?.data?.videoUrls);
+        setZipUrl(response.data.zipUrl);
+      } else {
+        navigate(`/event/mediaGrid?eventId=${eventId}`);
+      }
     } catch (error) {
       toast.error("Something Went Wrong");
     }
@@ -328,7 +333,7 @@ export default function WeddingVideo() {
                   padding: pdfFile && "5px",
                 }}
               >
-                <input type="file" accept="pdf/*" />
+                <input type="file" accept="application/pdf,application/vnd.ms-excel" />
                 <div className="upload-content">
                   <h2
                     className="upload-button"
@@ -354,8 +359,8 @@ export default function WeddingVideo() {
                   style={{
                     position: "relative",
                     display: "inline-block",
-                    width: "60vw",
-                    maxHeight: "calc(var(--contentMaxHeight) - 90px)",
+                    width: "65vw",
+                    maxHeight: "var(--contentMaxHeight)",
                     overflow: "hidden",
                     position: "relative",
                   }}
@@ -378,7 +383,7 @@ export default function WeddingVideo() {
                         } = props;
                         return (
                           <div
-                            style={{ width: "100%", height: "100%" }}
+                            // style={{ width: "100%", height: "100%" }}
                             id="pdfPage"
                             ref={parentRef}
                           >

@@ -112,11 +112,7 @@ export default function WeddingVideo() {
     setVideo(event.target.files[0]);
   };
 
-  // text-1: dc8add, text-2: cdab8f
-  console.log("rrrrrrrrrrrrrr", texts);
-
   const takeTextDetails = (details) => {
-    console.log("rrrrrrrrrrrr 2", details);
     const others = texts.filter((val) => val?.id !== details?.id);
     setTexts([...others, details]);
   };
@@ -166,7 +162,7 @@ export default function WeddingVideo() {
       }
 
       formData.append("video", video);
-      formData.append("guestNames", guestNames);
+      formData.append("guestNames", JSON.stringify(jsonData));
       formData.append("textProperty", JSON.stringify(texts));
       formData.append("scalingFont", scalingFont);
       formData.append("scalingW", scalingW);
@@ -182,8 +178,12 @@ export default function WeddingVideo() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setProcessedVideoUrls(response.data.videoUrls);
-      setZipUrl(response.data.zipUrl);
+      if(isSample) {
+        setProcessedVideoUrls(response?.data?.videoUrls);
+        setZipUrl(response.data.zipUrl);
+      } else {
+        navigate(`/event/mediaGrid?eventId=${eventId}`);
+      }
     } catch (error) {
       toast.error("Something Went Wrong");
     }

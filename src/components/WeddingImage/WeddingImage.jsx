@@ -50,6 +50,7 @@ export default function WeddingImage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
+  const [processedVideoUrls, setProcessedVideoUrls] = useState([])
 
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
@@ -165,6 +166,7 @@ export default function WeddingImage() {
       formData.append("video", video);
       formData.append("guestNames", guestNames);
       formData.append("textProperty", JSON.stringify(texts));
+      formData.append("guestNames", JSON.stringify(jsonData));
       formData.append("scalingFont", scalingFont);
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
@@ -178,9 +180,13 @@ export default function WeddingImage() {
         }
       );
 
-      setZipUrl(response.data.zipUrl);
       setIsLoading(false);
-      navigate(`/event/mediaGrid?eventId=${eventId}`);
+      if(isSample) {
+        setZipUrl(response.data.zipUrl);
+        setProcessedVideoUrls(response?.data?.videoUrls);
+      } else {
+        navigate(`/event/mediaGrid?eventId=${eventId}`);
+      }
     } catch (error) {
       toast.error("Something Went Wrong");
       setIsLoading(false);
@@ -415,7 +421,7 @@ export default function WeddingImage() {
           />
         )}
       </div>
-      {/* {processedVideoUrls.length > 0 && (
+      {processedVideoUrls.length > 0 && (
         <h2 className="heading">Processed Images</h2>
       )}
       {processedVideoUrls.length > 0 && (
@@ -428,16 +434,10 @@ export default function WeddingImage() {
                 controls
                 style={{ maxHeight: "400px", padding: "20px" }}
               />
-              <button
-                className="sendButton"
-                onClick={() => sendIndividualInvite(url)}
-              >
-                Send
-              </button>
             </div>
           ))}
         </div>
-      )} */}
+      )}
     </div>
   );
 }

@@ -28,9 +28,6 @@ const CustomerDashboard = () => {
                         <Link to="/client/customers" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
                             <span className="mr-2">🤵🏻</span> Customers
                         </Link>
-                        <Link to="/client/reports" className="flex items-center px-4 py-2 text-gray-700 rounded-md">
-                            <span className="mr-2">📊</span> Reports
-                        </Link>
                     </nav>
                     <div className="mt-6">
                         <h3 className="text-sm font-semibold text-gray-600 px-4">Your teams</h3>

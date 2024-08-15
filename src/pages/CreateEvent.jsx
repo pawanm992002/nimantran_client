@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import CreateCustomerJSX from "../components/Other/CreateCustomerModal/CreateCustomerModal";
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const CreateEvent = () => {
   const [customerQuery, setCustomerQuery] = useState("");
   const [customerSuggestions, setCustomerSuggestions] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
+  const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false)
 
   const token = localStorage.getItem("token");
 
@@ -91,9 +93,25 @@ const CreateEvent = () => {
           />
         </div>
         <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700">
-            Customer <span className="text-red-600">*</span>
+          <label className="flex justify-between text-lg font-medium text-gray-700">
+            <span> Customer <span className="text-red-600">*</span> </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+              onClick={() => setShowCreateCustomerModal(true)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
+              />
+            </svg>
           </label>
+
           <input
             type="text"
             value={customerQuery}
@@ -165,6 +183,7 @@ const CreateEvent = () => {
           </button>
         </div>
       </form>
+      <CreateCustomerJSX showModal={showCreateCustomerModal} setShowModal={setShowCreateCustomerModal} />
     </div>
   );
 };

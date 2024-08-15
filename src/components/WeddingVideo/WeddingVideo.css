@@ -30,7 +30,7 @@
   flex-wrap: wrap;
   gap: 10px;
   width: 86vw;
-  padding: 8px;
+  /* padding: 8px; */
   border: 1px solid black;
   justify-content: space-between;
   margin: auto;
@@ -65,7 +65,7 @@
   /* max-width: 600px; */
   display: flex;
   /* justify-content: center; */
-  width: 60vw;
+  width: 65vw;
   flex-direction: column;
   min-height: var(--contentMaxHeight);
   
@@ -191,8 +191,8 @@ input[type="file"] {
 .videoContainer {
   text-align: center;
   position: relative;
-  width: fit-content;
-  height: fit-content;
+  width: max-content;
+  height: max-content;
   display: inline-block;
   /* border: 1px solid black; */
   margin: 8px auto;
@@ -222,7 +222,7 @@ video {
   overflow-x: auto;
   gap: 10px;
   /* background: #edf4cb; */
-  background: #b4f2f3;
+  background: #ea7373;
   margin: 10px;
   flex: 1;
   border-radius: 5px;

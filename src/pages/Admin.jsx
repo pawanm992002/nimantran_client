@@ -55,14 +55,6 @@ const Admin = () => {
             >
               <span className="mr-2">💲</span> Credits
             </Link>
-            <Link
-              to="/admin/reports"
-              className={`flex items-center px-4 py-2 text-gray-700 rounded-md ${
-                currentPath === "/admin/reports" ? "bg-gray-200" : ""
-              }`}
-            >
-              <span className="mr-2">📊</span> Reports
-            </Link>
           </nav>
         </div>
       </aside>

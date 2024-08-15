@@ -97,7 +97,6 @@ const App = () => {
           <Route path="cardEdit" element={<WeddingCard />} />
           <Route path="mediaGrid" element={<MediaGrid />} />
           <Route path="invitationTracker" element={<InvitationTracker />} />
-
         </Route>
 
         <Route path="/customer" element={<Customer />}>
