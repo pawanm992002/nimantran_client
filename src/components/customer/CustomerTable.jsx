@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const CustomerTable = () => {
   const token = localStorage.getItem("token");
@@ -13,6 +15,8 @@ const CustomerTable = () => {
   const [tableSwitch, setTableSwitch] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true); // Loading state
+  const [sortByDate, setsortByDate] = useState(true); // Sorting state for date
+  const [sortByCredits, setsortByCredits] = useState(false); // Sorting state for credits
 
   const fetchClientDetails = async () => {
     setLoading(true); // Start loading
@@ -24,7 +28,6 @@ const CustomerTable = () => {
         }
       );
       setClientInfo(data?.data);
-      console.log(data.data);
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -71,11 +74,40 @@ const CustomerTable = () => {
       customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // const filteredRequests = (clientInfo || [])?.filter(
-  //   (request) =>
-  //     request?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     request?._id?.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
+  const filteredRequestsCustomers = customerRequests.filter((customer) => {
+    return (
+      customer?.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer?.user?.mobile.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const sortByDateFn = (requests, ascending = true) => {
+    return requests.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return ascending ? dateA - dateB : dateB - dateA;
+    });
+  };
+
+  const sortByCreditsFn = (requests, ascending = true) => {
+    return requests.sort((a, b) => {
+      return ascending ? a.credits - b.credits : b.credits - a.credits;
+    });
+  };
+
+  const handleSortToggle = (type) => {
+    if (type === "date") {
+      setsortByDate(!sortByDate);
+      setsortByCredits(false); // Ensure credit sort is disabled when date is toggled
+    } else if (type === "credits") {
+      setsortByCredits(!sortByCredits);
+      setsortByDate(false); // Ensure date sort is disabled when credits are toggled
+    }
+  };
+
+  const sortedRequests = sortByCredits
+    ? sortByCreditsFn(filteredRequestsCustomers, sortByCredits)
+    : sortByDateFn(filteredRequestsCustomers, sortByDate);
 
   const transferCredits = async (e) => {
     e.preventDefault();
@@ -106,7 +138,6 @@ const CustomerTable = () => {
     navigate(`/customer/profile?customerId=${id}`);
   };
 
-   
   return (
     <div>
       <div className="rounded-lg p-6 flex-3 max-w-full h-[70vh]">
@@ -190,13 +221,39 @@ const CustomerTable = () => {
                 <tr>
                   <th className="px-4 py-2">Request By</th>
                   <th className="px-4 py-2">Mobile</th>
-                  <th className="px-4 py-2">Date</th>
-                  <th className="px-4 py-2">Credits</th>
+                  <th className="px-4 py-2">
+                    Date
+                    <button
+                      className="mx-1 bg-gray-300 px-2 rounded-md"
+                      onClick={() => handleSortToggle("date")}
+                    >
+                      <FontAwesomeIcon
+                        icon={faArrowRightArrowLeft}
+                        className={`rotate-90 ${
+                          sortByDate ? "transform rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                  </th>
+                  <th className="px-4 py-2">
+                    Credits
+                    <button
+                      className="mx-1 bg-gray-300 px-2 rounded-md"
+                      onClick={() => handleSortToggle("credits")}
+                    >
+                      <FontAwesomeIcon
+                        icon={faArrowRightArrowLeft}
+                        className={`rotate-90 ${
+                          sortByCredits ? "transform rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                  </th>
                   <th className="px-4 py-2">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {customerRequests?.map((request) => (
+                {sortedRequests?.map((request) => (
                   <tr
                     key={request._id}
                     className="even:bg-gray-100 odd:bg-white"
@@ -231,31 +288,35 @@ const CustomerTable = () => {
       </div>
       {creditModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-8 w-1/3">
-            <h3 className="text-2xl mb-4">Transfer Credits</h3>
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4">Transfer Credits</h2>
             <form onSubmit={transferCredits}>
               <div className="mb-4">
-                <label className="block mb-2">Credits:</label>
+                <label
+                  htmlFor="credits"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Credits
+                </label>
                 <input
                   type="number"
+                  id="credits"
                   value={credits}
                   onChange={(e) => setCredits(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  required
-                  min={1}
+                  className="mt-1 px-4 py-2 w-full border border-gray-300 rounded-lg"
                 />
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end space-x-4">
                 <button
                   type="button"
-                  onClick={handleModalCredits}
+                  onClick={() => showCreditModal(false)}
                   className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
                 >
                   Transfer
                 </button>

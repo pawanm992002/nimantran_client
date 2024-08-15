@@ -43,8 +43,20 @@ const Transactions = () => {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
   });
+  const filteredCreditSpendingTransactions = transactions.filter(
+    (transaction) => {
+      return transaction?.eventId?.eventName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    }
+  );
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex h-full w-full justify-center items-center">
+        <div className="spinner"></div> {/* Spinner */}
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -139,7 +151,7 @@ const Transactions = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions?.map((transaction) => (
+                  {filteredCreditSpendingTransactions.reverse()?.map((transaction) => (
                     <tr key={transaction?._id} className="hover:bg-gray-100">
                       <td className="p-4">{transaction?.eventId?.eventName}</td>
                       <td className="p-4">{transaction?.amount}</td>
@@ -149,7 +161,9 @@ const Transactions = () => {
                         ).toLocaleDateString()}
                       </td>
                       <td className="p-4">{transaction?.status}</td>
-                      {tableSwitch === "spend" && <td className="p-4">{transaction?.areaOfUse}</td>}
+                      {tableSwitch === "spend" && (
+                        <td className="p-4">{transaction?.areaOfUse}</td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
