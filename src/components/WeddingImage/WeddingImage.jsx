@@ -15,7 +15,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import Loader from "../Other/Loader/Loader";
-
+import { debounce } from "lodash";
 export default function WeddingImage() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ export default function WeddingImage() {
       text: `Edit Text - ${count}`,
       backgroundColor: "none",
       hidden: false,
-      transition: { type: "none", options: null },
+    
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
@@ -186,6 +186,87 @@ export default function WeddingImage() {
       setIsLoading(false);
     }
   };
+   // useEffect(() => {     
+  //   console.log(i)
+
+  //   var debouncedFetch = debounce(async () => {
+  //     try {
+  //       const response = await axios.post(
+  //         `${process.env.REACT_APP_BACKEND_URL}/texts/save`,
+  //         texts[i],
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //         console.log(response.data);
+  //       } catch (error) {
+  //         console.error("Error saving texts:", error);
+  //       }
+  //     }, 5000);
+  //       debouncedFetch()
+  // return () => {
+  //   debouncedFetch.cancel();
+  // };
+  //   }, [texts]);
+
+  //   useEffect(() => {     
+     
+  //     setI(i+1)
+  //   }, [texts.length]);
+  
+  useEffect(() => {     
+    console.log(texts)
+      if(texts.length !== 0 ){
+    var debouncedFetch = debounce(async () => {
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+            {texts},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+          console.log(response.data);
+        } catch (error) {
+          console.error("Error saving texts:", error);
+        }
+      }, 10000);
+        debouncedFetch()
+      return () => {
+        debouncedFetch.cancel();
+      };
+    }
+    }, [texts]);
+    
+
+    useEffect(() => {
+
+      var getText = async () => {
+
+      try {
+        var response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        // console.log(response.data[0].texts);
+        setTexts(response.data[0].texts)
+        console.log(texts)
+        return response.data[0].texts;
+          
+        } catch (error) {
+          console.error("Error getting texts:", error);
+        }
+      }
+      getText();
+      
+
+    }, [])
+     
+
+
 
   return (
     <div className="main">

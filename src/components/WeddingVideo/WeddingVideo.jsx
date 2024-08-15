@@ -14,6 +14,7 @@ import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import TextEditor from "../Other/TextEditor/TextEditor";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { debounce } from "lodash";
 
 export default function WeddingVideo() {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ export default function WeddingVideo() {
       text: `Edit Text - ${count}`,
       backgroundColor: "none",
       hidden: false,
-      transition: { type: "none", options: null },
+      transition: { type: "none", options:null },
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
@@ -189,6 +190,59 @@ export default function WeddingVideo() {
     setIsLoading(false)
     // navigate(`/event/mediaGrid?eventId=${eventId}`)
   };
+
+  
+  useEffect(() => {     
+    console.log(texts)
+    if(texts.length !== 0 ){
+    var debouncedFetch = debounce(async () => {
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+            {texts},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+          console.log(response.data);
+        } catch (error) {
+          console.error("Error saving texts:", error);
+        }
+      }, 10000);
+        debouncedFetch()
+      return () => {
+        debouncedFetch.cancel();
+      };}
+    }, [texts]);
+    
+ 
+    useEffect(() => {
+
+      var getText = async () => {
+
+      try {
+        var response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        // console.log(response.data[0].texts);
+        setTexts(response.data[0].texts)
+        console.log(texts)
+        return response.data[0].texts;
+          
+        } catch (error) {
+          console.error("Error getting texts:", error);
+        }
+      }
+      getText();
+      
+
+    }, [])
+     
+
   return (
     <div className="main">
       {/* <h2 className="heading">Wedding Invitation Editor</h2> */}
