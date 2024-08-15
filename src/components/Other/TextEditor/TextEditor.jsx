@@ -1,5 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { fontFamilies } from "../../../App";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faRotateLeft,
+  faCircleChevronDown,
+} from "@fortawesome/free-solid-svg-icons";
+const DropDownMenu = ({ fontFamilies, select, setSelectedFont }) => {
+  const [toggleState, settoggleState] = useState(false);
+  console.log(fontFamilies);
+  return (
+    <div className="" onClick={() => settoggleState(!toggleState)}>
+      <div className="bg-gray-100 py-1 px-2 rounded-md flex  gap-x-2 justify-between">
+        <div style={{ fontFamily: select }}>{select}</div>
+        <div>
+          <FontAwesomeIcon
+            icon={faCircleChevronDown}
+            className={`${
+              toggleState ? "rotate-180" : ""
+            } transition-all duration-300`}
+          />
+        </div>
+      </div>
+
+      <div
+        className={`bg-gray-100 py-1 px-2 rounded-md flex  gap-x-2 justify-between absolute z-50 mt-2 ${
+          toggleState ? "visible" : "hidden"
+        }  transition-all duration-300`}
+      >
+        <ul className="bg-gray-100 px-2 max-h-96 overflow-y-scroll rounded-b-md gap-y-1">
+          {fontFamilies.map((fontFamily) => (
+            <li
+              key={fontFamily}
+              className="bg-gray-100 cursor-pointer "
+              style={{ fontFamily: fontFamily }}
+              onClick={() => setSelectedFont(fontFamily)}
+            >
+              {fontFamily}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
 const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
   const [backgroundColor, setBackgroundColor] = useState(
@@ -76,6 +119,8 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       setDuration(parseFloat(value));
     } else if (name === "backgroundColor") {
       setBackgroundColor(value);
+    } else if (name === "reset") {
+      setBackgroundColor("none");
     } else if (name === "transition") {
       setSelectedTransition(JSON.parse(value));
     }
@@ -150,7 +195,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       <div className="flex items-center px-4 py-1 bg-white shadow-md space-x-4 m-2 rounded-md">
         <div>
           <label>
-            <select
+            {/* <select
               className="h-9 outline-none w-32 p-2 rounded-md"
               name="family"
               value={fontFamily}
@@ -163,7 +208,12 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
                   {val}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <DropDownMenu
+              fontFamilies={fontFamilies}
+              select={fontFamily}
+              setSelectedFont={setFontFamily}
+            />
           </label>
         </div>
         <div className="flex h-9 rounded-md m-2">
@@ -206,6 +256,15 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             onChange={handleStyleChange}
             title="Set background color"
           />
+          <div>
+            <button
+              className="bg-white border rounded size-9 mr-2"
+              name="reset"
+              onClick={handleStyleChange}
+            >
+              <FontAwesomeIcon icon={faRotateLeft} />
+            </button>
+          </div>
         </div>
         <div className="h-9 flex items-center">
           <button

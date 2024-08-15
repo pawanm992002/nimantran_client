@@ -140,7 +140,7 @@ const DraggableResizableDiv = ({
         className="draggable-container"
         onClick={handleContextMenu}
         style={{
-          zIndex: openContextMenuId === property.id ? 50 : 1,
+          zIndex: openContextMenuId === property.id ? 10 : 1,
           display: property.hidden ? "none" : "inline-block",
         }}
       >
