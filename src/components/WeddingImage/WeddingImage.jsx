@@ -50,7 +50,8 @@ export default function WeddingImage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
-  const [processedVideoUrls, setProcessedVideoUrls] = useState([])
+  const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
+  const [showPreview, setShowPreview] = useState(false);
 
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
@@ -78,10 +79,9 @@ export default function WeddingImage() {
       position: { x: 0, y: 0 },
       size: { width: 200, height: 100 },
       startTime: 0,
-      text: `Edit Text - ${count}`,
+      text: `{name}`,
       backgroundColor: "none",
       hidden: false,
-    
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
@@ -181,9 +181,10 @@ export default function WeddingImage() {
       );
 
       setIsLoading(false);
-      if(isSample) {
+      if (isSample) {
         setZipUrl(response.data.zipUrl);
         setProcessedVideoUrls(response?.data?.videoUrls);
+        setShowPreview(true);
       } else {
         navigate(`/event/mediaGrid?eventId=${eventId}`);
       }
@@ -192,87 +193,49 @@ export default function WeddingImage() {
       setIsLoading(false);
     }
   };
-   // useEffect(() => {     
-  //   console.log(i)
 
-  //   var debouncedFetch = debounce(async () => {
-  //     try {
-  //       const response = await axios.post(
-  //         `${process.env.REACT_APP_BACKEND_URL}/texts/save`,
-  //         texts[i],
-  //         {
-  //           headers: { Authorization: `Bearer ${token}` },
-  //         }
-  //       );
+  // useEffect(() => {
+  //   if (texts.length !== 0) {
+  //     var debouncedFetch = debounce(async () => {
+  //       try {
+  //         const response = await axios.post(
+  //           `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+  //           { texts },
+  //           {
+  //             headers: { Authorization: `Bearer ${token}` },
+  //           }
+  //         );
   //         console.log(response.data);
   //       } catch (error) {
   //         console.error("Error saving texts:", error);
   //       }
-  //     }, 5000);
-  //       debouncedFetch()
-  // return () => {
-  //   debouncedFetch.cancel();
-  // };
-  //   }, [texts]);
+  //     }, 10000);
+  //     debouncedFetch();
+  //     return () => {
+  //       debouncedFetch.cancel();
+  //     };
+  //   }
+  // }, [texts]);
 
-  //   useEffect(() => {     
-     
-  //     setI(i+1)
-  //   }, [texts.length]);
-  
-  useEffect(() => {     
-    console.log(texts)
-      if(texts.length !== 0 ){
-    var debouncedFetch = debounce(async () => {
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-            {texts},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-          console.log(response.data);
-        } catch (error) {
-          console.error("Error saving texts:", error);
-        }
-      }, 10000);
-        debouncedFetch()
-      return () => {
-        debouncedFetch.cancel();
-      };
-    }
-    }, [texts]);
-    
-
-    useEffect(() => {
-
-      var getText = async () => {
-
-      try {
-        var response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        // console.log(response.data[0].texts);
-        setTexts(response.data[0].texts)
-        console.log(texts)
-        return response.data[0].texts;
-          
-        } catch (error) {
-          console.error("Error getting texts:", error);
-        }
-      }
-      getText();
-      
-
-    }, [])
-     
-
-
+  // useEffect(() => {
+  //   var getText = async () => {
+  //     try {
+  //       var response = await axios.get(
+  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //       // console.log(response.data[0].texts);
+  //       setTexts(response.data[0].texts);
+  //       console.log(texts);
+  //       return response.data[0].texts;
+  //     } catch (error) {
+  //       console.error("Error getting texts:", error);
+  //     }
+  //   };
+  //   getText();
+  // }, []);
 
   return (
     <div className="main">
@@ -306,7 +269,7 @@ export default function WeddingImage() {
               onClick={() => setCountModelOpenNumber(1)}
             >
               <div className="tooltip" style={{ display: onHover1 && "flex" }}>
-                Upload CSV file of Texts
+                Upload Guest List
               </div>
               <input type="file" accept="text/*" />
               <FontAwesomeIcon icon={faFileArrowUp} />
@@ -389,7 +352,7 @@ export default function WeddingImage() {
                     width: "100%",
                     maxHeight: "var(--contentMaxHeight)",
                     margin: "0px",
-                    objectFit: 'contain'
+                    objectFit: "contain",
                   }}
                   id="videoPlayer"
                 />
@@ -422,21 +385,37 @@ export default function WeddingImage() {
           />
         )}
       </div>
-      {processedVideoUrls.length > 0 && (
-        <h2 className="heading">Processed Images</h2>
-      )}
-      {processedVideoUrls.length > 0 && (
-        <div className="processed_videos_container">
-          {processedVideoUrls.map((url, index) => (
-            <div className="EditName" key={index}>
-              <span> {url.name} </span>
-              <img
-                src={url.link}
-                controls
-                style={{ maxHeight: "400px", padding: "20px" }}
-              />
+
+      {showPreview && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
+          <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
+            {/* Close Button */}
+            <button
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+              onClick={() => setShowPreview(false)}
+            >
+              &times;
+            </button>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <h2 className="text-2xl font-semibold mb-4">Image Gallery</h2>
+
+              {/* Horizontal Scrollable Container */}
+              <div className="flex space-x-4 overflow-x-auto p-2">
+                {/* Example Cards */}
+                {processedVideoUrls.map((val) => (
+                  <div key={val} className="w-[250px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]">
+                    <img
+                      src={val.link}
+                      alt={`Image ${val}`}
+                      className="rounded-lg"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       )}
     </div>

@@ -23,14 +23,6 @@ const DraggableResizableDiv = ({
   const [visible, setVisible] = useState(true);
   const [isAtCenter, setIsAtCenter] = useState(false);
 
-  const transitions = [
-    { type: "none", options: null },
-    {
-      type: "slide",
-      options: { left: 0, right: 0, top: 0, bottom: 0, duration: 0 },
-    },
-  ];
-
   const changeTransition = (e, dif) => {
     let obj = {
       type: "slide",
@@ -47,7 +39,9 @@ const DraggableResizableDiv = ({
     setSelectedTranstion(obj);
   };
   const handleDrag = (e, data) => {
-    setPosition({ x: data.x, y: data.y });
+    if(data.x >= 0 && data.y >= 0) {
+      setPosition({ x: data.x, y: data.y });
+    }
     if (Math.abs(videoCenter - size?.width / 2 - data.x) < 2) {
       setIsAtCenter(true);
     } else {
@@ -56,9 +50,6 @@ const DraggableResizableDiv = ({
     const a = setTimeout(() => {
       setIsAtCenter(false);
     }, 3000);
-    // return () => {
-    //   clearInterval(a)
-    // }
   };
 
   const handleResize = (e, { size }) => {
@@ -99,13 +90,6 @@ const DraggableResizableDiv = ({
     property.fontWeight,
   ]);
 
-  // useEffect(() => {
-  //   document.addEventListener("click", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("click", handleClickOutside);
-  //   };
-  // }, []);
-
   useEffect(() => {
     // try {
     const checkVisibility = () => {
@@ -140,7 +124,7 @@ const DraggableResizableDiv = ({
         className="draggable-container"
         onClick={handleContextMenu}
         style={{
-          zIndex: openContextMenuId === property.id ? 10 : 1,
+          zIndex: openContextMenuId === property.id ? 40 : 1,
           display: property.hidden ? "none" : "inline-block",
         }}
       >
@@ -159,8 +143,8 @@ const DraggableResizableDiv = ({
         <ResizableBox
           width={size?.width}
           height={size?.height}
-          minConstraints={[50, 20]}
-          maxConstraints={[500, 300]}
+          minConstraints={[100, 40]}
+          maxConstraints={[400, 250]}
           onResizeStop={handleResize}
           className="resizable-box"
         >
@@ -188,79 +172,6 @@ const DraggableResizableDiv = ({
             />
           </div>
         </ResizableBox>
-        {/* {openContextMenuId === property.id && (
-          <div className="context-menu" style={{ top: 100, left: 20 }}>
-            {comp === "video" && (
-              <div>
-                <label>
-                  Transition:
-                  <select
-                    className="context-property"
-                    name="transition"
-                    value={JSON.stringify(selectedTranstion)}
-                    onChange={(e) =>
-                      setSelectedTranstion(JSON.parse(e.target.value))
-                    }
-                  >
-                    {transitions?.map((val) => (
-                      <option value={JSON.stringify(val)}> {val.type} </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            )}
-
-            {selectedTranstion.type === "slide" && (
-              <div>
-                <label>
-                  Duration:{" "}
-                  <input
-                    className="context-property"
-                    type="number"
-                    value={selectedTranstion?.options?.duration}
-                    onChange={(e) => changeTransition(e, "duration")}
-                  />
-                </label>
-                <label>
-                  Left :
-                  <input
-                    className="context-property"
-                    type="number"
-                    value={selectedTranstion?.options?.left}
-                    onChange={(e) => changeTransition(e, "left")}
-                  />
-                </label>
-                <label>
-                  Right :
-                  <input
-                    className="context-property"
-                    type="number"
-                    value={selectedTranstion?.options?.right}
-                    onChange={(e) => changeTransition(e, "right")}
-                  />
-                </label>
-                <label>
-                  Top :
-                  <input
-                    className="context-property"
-                    type="number"
-                    value={selectedTranstion?.options?.top}
-                    onChange={(e) => changeTransition(e, "top")}
-                  />
-                </label>
-                <label>
-                  bottom :
-                  <input
-                    className="context-property"
-                    type="number"
-                    value={selectedTranstion?.options?.bottom}
-                    onChange={(e) => changeTransition(e, "bottom")}
-                  />
-                </label>
-              </div>
-            )}
-          </div>
-        )} */}
         {isAtCenter && (
           <div
             className="dotted-center-line"

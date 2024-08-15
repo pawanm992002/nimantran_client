@@ -57,11 +57,7 @@ export default function WeddingVideo() {
       mobileNumber: "412658126",
     },
   ]);
-
-  // const [scaling, setScaling] = useState({
-  //   width: 1,
-  //   height: 1,
-  // });
+  const [showPreview, setShowPreview] = useState(false)
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -98,7 +94,7 @@ export default function WeddingVideo() {
       position: { x: 0, y: 0 },
       size: { width: 150, height: 80 },
       startTime: 0,
-      text: `Edit Text - ${count}`,
+      text: `{name}`,
       backgroundColor: "none",
       hidden: false,
       page: currentPage,
@@ -186,6 +182,7 @@ export default function WeddingVideo() {
       if(isSample) {
         setProcessedVideoUrls(response?.data?.videoUrls);
         setZipUrl(response.data.zipUrl);
+        setShowPreview(true);
       } else {
         navigate(`/event/mediaGrid?eventId=${eventId}`);
       }
@@ -195,59 +192,58 @@ export default function WeddingVideo() {
     setIsLoading(false);
   };
 
-  useEffect(() => {     
-    console.log(texts)
-    if(texts.length !== 0 ){
-    var debouncedFetch = debounce(async () => {
+  // useEffect(() => {     
+  //   console.log(texts)
+  //   if(texts.length !== 0 ){
+  //   var debouncedFetch = debounce(async () => {
    
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-            {texts},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-          console.log(response.data);
-        } catch (error) {
-          console.error("Error saving texts:", error);
-        }
-      }, 10000);
-        debouncedFetch()
-      return () => {
-        debouncedFetch.cancel();
-      };}
-    }, [texts]);
+  //     try {
+  //       const response = await axios.post(
+  //         `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+  //           {texts},
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //         console.log(response.data);
+  //       } catch (error) {
+  //         console.error("Error saving texts:", error);
+  //       }
+  //     }, 10000);
+  //       debouncedFetch()
+  //     return () => {
+  //       debouncedFetch.cancel();
+  //     };}
+  //   }, [texts]);
  
-    useEffect(() => {
+  //   useEffect(() => {
 
-      var getText = async () => {
+  //     var getText = async () => {
 
-      try {
-        var response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        // console.log(response.data[0].texts);
-        setTexts(response.data[0].texts)
-        console.log(texts)
-        return response.data[0].texts;
+  //     try {
+  //       var response = await axios.get(
+  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+  //         {},
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //       // console.log(response.data[0].texts);
+  //       setTexts(response.data[0].texts)
+  //       console.log(texts)
+  //       return response.data[0].texts;
           
-        } catch (error) {
-          console.error("Error getting texts:", error);
-        }
-      }
-      getText();
+  //       } catch (error) {
+  //         console.error("Error getting texts:", error);
+  //       }
+  //     }
+  //     getText();
       
 
-    }, [])
+  //   }, [])
      
   return (
     <div className="main">
-      {/* <h2 className="heading">Wedding Invitation Editor</h2> */}
       <ShowSampleModal
         showGuestList={showGuestList}
         setShowGuestList={setShowGuestList}
@@ -284,7 +280,7 @@ export default function WeddingVideo() {
               onClick={() => setCountModelOpenNumber(1)}
             >
               <div className="tooltip" style={{ display: onHover1 && "flex" }}>
-                Upload CSV file of Texts
+                Upload Guest List
               </div>
               <input type="file" accept="text/*" />
               <FontAwesomeIcon icon={faFileArrowUp} />
@@ -367,7 +363,7 @@ export default function WeddingVideo() {
                 >
                   <Worker workerUrl={pdfjsWorker}>
                     <Viewer
-                      defaultScale="PageFit"
+                      // defaultScale="PageFit"
                       fileUrl={pdfFile}
                       plugins={[defaultLayoutPluginInstance]}
                       initialPage={currentPage - 1}
@@ -379,11 +375,10 @@ export default function WeddingVideo() {
                           canvasLayer,
                           textLayer,
                           annotationLayer,
-                          scale,
                         } = props;
                         return (
                           <div
-                            // style={{ width: "100%", height: "100%" }}
+                            style={{ width: "100%", height: "100%" }}
                             id="pdfPage"
                             ref={parentRef}
                           >
@@ -428,17 +423,37 @@ export default function WeddingVideo() {
           />
         )}
       </div>
+      {showPreview && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
+          <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
+            {/* Close Button */}
+            <button
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+              onClick={() => setShowPreview(false)}
+            >
+              &times;
+            </button>
 
-      {processedVideoUrls.length > 0 && (
-        <h2 className="heading">Processed Cards</h2>
-      )}
-      {processedVideoUrls.length > 0 && (
-        <div className="processed_videos_container">
-          {processedVideoUrls.map((url, index) => (
-            <div key={index} className="processed_videos">
-              <embed src={url.link} style={{ height: "500px" }} />
+            {/* Modal Content */}
+            <div className="p-6">
+              <h2 className="text-2xl font-semibold mb-4">Previews</h2>
+
+              {/* Horizontal Scrollable Container */}
+              <div className="flex space-x-4 overflow-x-auto p-2">
+                {processedVideoUrls.map((val) => (
+                  <div key={val} className="min-w-[250px] bg-gray-200 rounded-lg shadow-lg overflow-y-scroll max-h-[460px]">
+                    <Worker workerUrl={pdfjsWorker}>
+                    <Viewer
+                      fileUrl={val.link}
+                      scrollMode="Page"
+                      // plugins={[defaultLayoutPluginInstance]}
+                    />
+                  </Worker>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       )}
     </div>

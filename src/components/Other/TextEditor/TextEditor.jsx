@@ -195,20 +195,6 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       <div className="flex items-center px-4 py-1 bg-white shadow-md space-x-4 m-2 rounded-md">
         <div>
           <label>
-            {/* <select
-              className="h-9 outline-none w-32 p-2 rounded-md"
-              name="family"
-              value={fontFamily}
-              onChange={handleStyleChange}
-              style={{ fontFamily: fontFamily }}
-              title="Select font family"
-            >
-              {fontFamilies.map((val, i) => (
-                <option key={i} style={{ fontFamily: val }} value={val}>
-                  {val}
-                </option>
-              ))}
-            </select> */}
             <DropDownMenu
               fontFamilies={fontFamilies}
               select={fontFamily}
@@ -236,6 +222,8 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               style={{ background: fontColor }}
               title="Set font color"
             ></span>
+            A
+          </label>
             <input
               type="color"
               name="fontColor"
@@ -244,8 +232,6 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               onChange={handleStyleChange}
               style={{ display: "none" }}
             />
-            A
-          </label>
         </div>
         <div className="h-9 flex items-center bg-gray-100">
           <input

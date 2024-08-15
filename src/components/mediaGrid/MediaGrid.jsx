@@ -77,7 +77,7 @@ const MediaGrid = () => {
               Send to All on WhatsApp
             </button>
 
-            <button className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none">
+            <a className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none" href={mediaItems.zipUrl} download >
               <svg
                 className="w-5 h-5 mr-2"
                 fill="currentColor"
@@ -87,7 +87,7 @@ const MediaGrid = () => {
                 <path d="M19 11h-4v-1h1c.554 0 1-.446 1-1s-.446-1-1-1h-1v-1h-2v4h4v1h-1c-.554 0-1 .446-1 1v3c0 .554.446 1 1 1h2v-2h-2v-1h2v-3c0-.554-.446-1-1-1zm-4 7h-10v-12h2v-2h-3c-.553 0-1 .447-1 1v14c0 .553.447 1 1 1h11c.553 0 1-.447 1-1v-2h-2v1zm-8-8h2v6h2v-6h2v-2h-6v2z" />
               </svg>
               Download Zip File
-            </button>
+            </a>
             <button style={{marginLeft: 'auto'}}
               onClick={() =>
                 navigate(`/event/invitationTracker?eventId=${eventId}`)
@@ -225,7 +225,7 @@ const MediaGrid = () => {
                   {mediaItems.editType === "videoEdit" && (
                     <video
                       src={selectedMedia.link}
-                      className="w-full h-auto"
+                      className="w-full h-auto max-h-[450px]"
                       controls
                     />
                   )}
@@ -241,26 +241,12 @@ const MediaGrid = () => {
                       }}
                     >
                       <Worker workerUrl={pdfjsWorker}>
-                        <Viewer
-                          fileUrl={selectedMedia.link}
-                          plugins={[defaultLayoutPluginInstance]}
-                          scrollMode="Page"
-                          renderPage={(props) => {
-                            const { canvasLayer, textLayer, annotationLayer } =
-                              props;
-                            return (
-                              <div
-                                style={{ width: "500px", height: "500px" }}
-                                id="pdfPage"
-                              >
-                                {canvasLayer.children}
-                                {textLayer.children}
-                                {annotationLayer.children}
-                              </div>
-                            );
-                          }}
-                        />
-                      </Worker>
+                    <Viewer
+                      fileUrl={selectedMedia.link}
+                      plugins={[defaultLayoutPluginInstance]}
+                      scrollMode="Page"
+                    />
+                  </Worker>
                     </div>
                   )}
                 </div>

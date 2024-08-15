@@ -25,7 +25,7 @@ export default function SideConfiguration({ texts, setTexts, handleSubmit }) {
           className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"
           onClick={(e) => handleSubmit(e, true)}
         >
-          Start Sample Processing
+          Show Preview
         </button>
 
         <button

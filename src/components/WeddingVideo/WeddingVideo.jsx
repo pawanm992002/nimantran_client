@@ -60,6 +60,8 @@ export default function WeddingVideo() {
   });
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [zipUrl, setZipUrl] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [videoDuration, setVideoDuration] = useState(1);
 
   const createTextDiv = () => {
     if (!video) {
@@ -77,10 +79,10 @@ export default function WeddingVideo() {
       position: { x: 0, y: 0 },
       size: { width: 200, height: 100 },
       startTime: 0,
-      text: `Edit Text - ${count}`,
+      text: `{name}`,
       backgroundColor: "none",
       hidden: false,
-      transition: { type: "none", options:null },
+      transition: { type: "none", options: null },
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
@@ -91,11 +93,11 @@ export default function WeddingVideo() {
     if (file) {
       const videoPlayer = document.getElementById("videoPlayer");
 
-      videoPlayer.addEventListener("resize", (ev) => {
-        // setScaling({
-        //   width: videoPlayer.videoWidth / videoPlayer.clientWidth,
-        //   height: videoPlayer.videoHeight / videoPlayer.clientHeight,
-        // });
+      // Listen for when the video's metadata has loaded
+      videoPlayer.addEventListener("loadedmetadata", () => {
+        setVideoDuration(videoPlayer.duration);
+
+        // You can also handle resize here if needed
         setResized({
           w: videoPlayer.clientWidth,
           h: videoPlayer.clientHeight,
@@ -105,6 +107,21 @@ export default function WeddingVideo() {
           h: videoPlayer.videoHeight,
         });
       });
+
+      // videoPlayer.addEventListener("resize", (ev) => {
+      //   // setScaling({
+      //   //   width: videoPlayer.videoWidth / videoPlayer.clientWidth,
+      //   //   height: videoPlayer.videoHeight / videoPlayer.clientHeight,
+      //   // });
+      //   setResized({
+      //     w: videoPlayer.clientWidth,
+      //     h: videoPlayer.clientHeight,
+      //   });
+      //   setOriginalSize({
+      //     w: videoPlayer.videoWidth,
+      //     h: videoPlayer.videoHeight,
+      //   });
+      // });
       const fileURL = URL.createObjectURL(file);
       videoPlayer.src = fileURL;
       videoPlayer.load();
@@ -138,7 +155,7 @@ export default function WeddingVideo() {
   const handleSubmit = async (event, isSample) => {
     event.preventDefault();
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const formData = new FormData();
 
       let resized = document.getElementById("videoPlayer");
@@ -147,21 +164,22 @@ export default function WeddingVideo() {
       let scalingFont = Math.min(scalingW, scalingH);
 
       if (!video) {
-        setIsLoading(false)
+        setIsLoading(false);
         return toast.error("Please Upload the Video");
       }
 
       if (!texts) {
-        setIsLoading(false)
+        setIsLoading(false);
         return toast.error("Add the Text Box");
       }
 
       if (!guestNames && !isSample) {
-        setIsLoading(false)
+        setIsLoading(false);
         return toast.error("Please Enter Guest List");
       }
 
       formData.append("video", video);
+      formData.append("videoDuration", videoDuration);
       formData.append("guestNames", JSON.stringify(jsonData));
       formData.append("textProperty", JSON.stringify(texts));
       formData.append("scalingFont", scalingFont);
@@ -178,74 +196,66 @@ export default function WeddingVideo() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if(isSample) {
+      if (isSample) {
         setProcessedVideoUrls(response?.data?.videoUrls);
         setZipUrl(response.data.zipUrl);
+        setShowPreview(true);
       } else {
         navigate(`/event/mediaGrid?eventId=${eventId}`);
       }
     } catch (error) {
       toast.error("Something Went Wrong");
     }
-    setIsLoading(false)
-    // navigate(`/event/mediaGrid?eventId=${eventId}`)
+    setIsLoading(false);
   };
 
-  
-  useEffect(() => {     
-    console.log(texts)
-    if(texts.length !== 0 ){
-    var debouncedFetch = debounce(async () => {
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-            {texts},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-          console.log(response.data);
-        } catch (error) {
-          console.error("Error saving texts:", error);
-        }
-      }, 10000);
-        debouncedFetch()
-      return () => {
-        debouncedFetch.cancel();
-      };}
-    }, [texts]);
-    
- 
-    useEffect(() => {
+  // useEffect(() => {
+  //   console.log(texts);
+  //   if (texts.length !== 0) {
+  //     var debouncedFetch = debounce(async () => {
+  //       try {
+  //         const response = await axios.post(
+  //           `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+  //           { texts },
+  //           {
+  //             headers: { Authorization: `Bearer ${token}` },
+  //           }
+  //         );
+  //         console.log(response.data);
+  //       } catch (error) {
+  //         console.error("Error saving texts:", error);
+  //       }
+  //     }, 10000);
+  //     debouncedFetch();
+  //     return () => {
+  //       debouncedFetch.cancel();
+  //     };
+  //   }
+  // }, [texts]);
 
-      var getText = async () => {
-
-      try {
-        var response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        // console.log(response.data[0].texts);
-        setTexts(response.data[0].texts)
-        console.log(texts)
-        return response.data[0].texts;
-          
-        } catch (error) {
-          console.error("Error getting texts:", error);
-        }
-      }
-      getText();
-      
-
-    }, [])
-     
+  // useEffect(() => {
+  //   var getText = async () => {
+  //     try {
+  //       var response = await axios.get(
+  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+  //         {},
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //       // console.log(response.data[0].texts);
+  //       setTexts(response.data[0].texts);
+  //       console.log(texts);
+  //       return response.data[0].texts;
+  //     } catch (error) {
+  //       console.error("Error getting texts:", error);
+  //     }
+  //   };
+  //   getText();
+  // }, []);
 
   return (
     <div className="main">
-      {/* <h2 className="heading">Wedding Invitation Editor</h2> */}
       <ShowSampleModal
         showGuestList={showGuestList}
         setShowGuestList={setShowGuestList}
@@ -263,7 +273,7 @@ export default function WeddingVideo() {
         </div>
       )}
       <div className="mainContainer">
-      {texts.length > 0 && openContextMenuId && (
+        {texts.length > 0 && openContextMenuId && (
           <TextEditor
             property={texts
               ?.filter((val) => val.id === openContextMenuId)
@@ -283,7 +293,7 @@ export default function WeddingVideo() {
               onClick={() => setCountModelOpenNumber(1)}
             >
               <div className="tooltip" style={{ display: onHover1 && "flex" }}>
-                Upload CSV file of Texts
+                Upload Guest List
               </div>
               <input type="file" accept="text/*" />
               <FontAwesomeIcon icon={faFileArrowUp} />
@@ -314,10 +324,7 @@ export default function WeddingVideo() {
                 >
                   Download All Videos in Zip
                 </div>
-                <a
-                  href={zipUrl}
-                  download="processed_videos.zip"
-                >
+                <a href={zipUrl} download="processed_videos.zip">
                   <FontAwesomeIcon icon={faFileArrowDown} />
                 </a>
               </label>
@@ -400,16 +407,39 @@ export default function WeddingVideo() {
         )}
       </div>
 
-      {processedVideoUrls.length > 0 && (
-        <h2 className="heading">Processed Videos</h2>
-      )}
-      {processedVideoUrls.length > 0 && (
-        <div className="processed_videos_container">
-          {processedVideoUrls.map((url, index) => (
-            <div key={index} className="processed_videos">
-              <video src={url.link} controls style={{ maxHeight: "400px" }} />
+      {showPreview && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
+          <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
+            {/* Close Button */}
+            <button
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+              onClick={() => setShowPreview(false)}
+            >
+              &times;
+            </button>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <h2 className="text-2xl font-semibold mb-4">Previews</h2>
+
+              {/* Horizontal Scrollable Container */}
+              <div className="flex space-x-4 overflow-x-auto p-2">
+                {processedVideoUrls.map((val) => (
+                  <div
+                    key={val}
+                    className="w-[250px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]"
+                  >
+                    <video
+                      controls
+                      src={val.link}
+                      alt={`Video ${val}`}
+                      className="rounded-lg"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       )}
     </div>

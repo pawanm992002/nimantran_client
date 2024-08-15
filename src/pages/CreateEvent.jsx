@@ -75,6 +75,7 @@ const CreateEvent = () => {
 
   return (
     <div>
+      {console.log("uuuuuuuuuuuuuuuu", )}
       <h2 className="text-3xl font-semibold mb-6 text-center">Create Event</h2>
       <form
         onSubmit={handleCreateEvent}
