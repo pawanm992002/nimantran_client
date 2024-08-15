@@ -387,8 +387,9 @@ export default function WeddingImage() {
                   style={{
                     backgroundColor: "#000",
                     width: "100%",
-                    maxHeight: "calc(var(--contentMaxHeight) - 90px)",
+                    maxHeight: "var(--contentMaxHeight)",
                     margin: "0px",
+                    objectFit: 'contain'
                   }}
                   id="videoPlayer"
                 />
