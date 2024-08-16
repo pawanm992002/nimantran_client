@@ -199,23 +199,10 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
               {passwordError && <p className="text-red-500">{passwordError}</p>}
             </div>
             <div className="mb-4">
-              <label className="block mb-2">Email:</label>
-              <input
-                type="email"
-                ref={emailRef}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                required
-                onBlur={(e) => validateEmail(e.target.value)}
-                onChange={(e) => validateEmail(e.target.value)}
-              />
-              {emailError && <p className="text-red-500">{emailError}</p>}
-            </div>
-            <div className="mb-4">
               <label className="block mb-2">Gender:</label>
               <select
                 ref={genderRef}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                required
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -229,7 +216,6 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
                 type="date"
                 ref={dateOfBirthRef}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                required
               />
               {dateOfBirthError && (
                 <p className="text-red-500">{dateOfBirthError}</p>
@@ -241,7 +227,6 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
                 type="text"
                 ref={locationRef}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                required
               />
             </div>
           </div>
