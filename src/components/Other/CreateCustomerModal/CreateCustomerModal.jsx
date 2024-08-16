@@ -203,6 +203,7 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
               <select
                 ref={genderRef}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                required
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
