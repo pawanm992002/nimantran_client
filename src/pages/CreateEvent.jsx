@@ -13,7 +13,7 @@ const CreateEvent = () => {
   const [customerQuery, setCustomerQuery] = useState("");
   const [customerSuggestions, setCustomerSuggestions] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
-  const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false)
+  const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -75,7 +75,6 @@ const CreateEvent = () => {
 
   return (
     <div>
-      {console.log("uuuuuuuuuuuuuuuu", )}
       <h2 className="text-3xl font-semibold mb-6 text-center">Create Event</h2>
       <form
         onSubmit={handleCreateEvent}
@@ -95,7 +94,9 @@ const CreateEvent = () => {
         </div>
         <div className="mb-6">
           <label className="flex justify-between text-lg font-medium text-gray-700">
-            <span> Customer <span className="text-red-600">*</span> </span>
+            <span>
+              Customer <span className="text-red-600">*</span>
+            </span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -125,8 +126,8 @@ const CreateEvent = () => {
                 <li
                   key={customer._id}
                   onClick={() => {
-                    setSelectedCustomerId(customer._id);
                     setCustomerQuery(customer.name);
+                    setSelectedCustomerId(customer._id);
                     setCustomerSuggestions([]);
                   }}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -139,7 +140,7 @@ const CreateEvent = () => {
         </div>
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700">
-            Date of Organising
+            Date of Organising <span className="text-red-600">*</span>
           </label>
           <input
             type="date"
@@ -151,7 +152,7 @@ const CreateEvent = () => {
         </div>
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700">
-            Location
+            Location <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -167,14 +168,14 @@ const CreateEvent = () => {
           </label>
           <select
             className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-            onClick={(e) => setEditType(e.target.value)}
+            onChange={(e) => setEditType(e.target.value)}
+            value={editType}
           >
             <option value="imageEdit">Image Edit</option>
             <option value="videoEdit">Video Edit</option>
             <option value="cardEdit">Pdf Edit</option>
           </select>
         </div>
-
         <div className="flex justify-end">
           <button
             type="submit"
@@ -184,7 +185,10 @@ const CreateEvent = () => {
           </button>
         </div>
       </form>
-      <CreateCustomerJSX showModal={showCreateCustomerModal} setShowModal={setShowCreateCustomerModal} />
+      <CreateCustomerJSX
+        showModal={showCreateCustomerModal}
+        setShowModal={setShowCreateCustomerModal}
+      />
     </div>
   );
 };
