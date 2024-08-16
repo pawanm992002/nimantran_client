@@ -15,8 +15,9 @@ const CustomerTable = () => {
   const [tableSwitch, setTableSwitch] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true); // Loading state
-  const [sortByDate, setsortByDate] = useState(true); // Sorting state for date
-  const [sortByCredits, setsortByCredits] = useState(false); // Sorting state for credits
+  const [sortByDate, setsortByDate] = useState(null); // Sorting state for date
+  const [sortByCredits, setsortByCredits] = useState(null); // Sorting state for credits
+  const [selectedStatus, setSelectedStatus] = useState("All");
 
   const fetchClientDetails = async () => {
     setLoading(true); // Start loading
@@ -81,7 +82,7 @@ const CustomerTable = () => {
     );
   });
 
-  const sortByDateFn = (requests, ascending = true) => {
+  const sortByDateFn = (requests, ascending) => {
     return requests.sort((a, b) => {
       const dateA = new Date(a.createdAt);
       const dateB = new Date(b.createdAt);
@@ -89,7 +90,7 @@ const CustomerTable = () => {
     });
   };
 
-  const sortByCreditsFn = (requests, ascending = true) => {
+  const sortByCreditsFn = (requests, ascending) => {
     return requests.sort((a, b) => {
       return ascending ? a.credits - b.credits : b.credits - a.credits;
     });
@@ -97,17 +98,22 @@ const CustomerTable = () => {
 
   const handleSortToggle = (type) => {
     if (type === "date") {
-      setsortByDate(!sortByDate);
-      setsortByCredits(false); // Ensure credit sort is disabled when date is toggled
+      const newSortByDate = sortByDate === null ? true : !sortByDate;
+      setsortByDate(newSortByDate);
+      setsortByCredits(null);
     } else if (type === "credits") {
-      setsortByCredits(!sortByCredits);
-      setsortByDate(false); // Ensure date sort is disabled when credits are toggled
+      const newSortByCredits = sortByCredits === null ? true : !sortByCredits;
+      setsortByCredits(newSortByCredits);
+      setsortByDate(null);
     }
   };
 
-  const sortedRequests = sortByCredits
-    ? sortByCreditsFn(filteredRequestsCustomers, sortByCredits)
-    : sortByDateFn(filteredRequestsCustomers, sortByDate);
+  const sortedRequests =
+    sortByCredits !== null
+      ? sortByCreditsFn(filteredRequestsCustomers, sortByCredits)
+      : sortByDate !== null
+      ? sortByDateFn(filteredRequestsCustomers, sortByDate)
+      : filteredRequestsCustomers;
 
   const transferCredits = async (e) => {
     e.preventDefault();
@@ -127,12 +133,26 @@ const CustomerTable = () => {
       toast.error(error?.response?.data);
     }
   };
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+    }
+  };
 
   const handleModalCredits = (Id) => {
     setCustomerId(Id);
     showCreditModal(!creditModal);
   };
-
+  const handleFiltersStatusChange = (e) => {
+    setSelectedStatus(e.target.value);
+  };
+  const filteredData =
+    selectedStatus === "All"
+      ? sortedRequests
+      : sortedRequests.filter(
+          (item) => item.status === selectedStatus.toLowerCase()
+        );
   const navigate = useNavigate();
   const handleCustomerProfile = (id) => {
     navigate(`/customer/profile?customerId=${id}`);
@@ -224,12 +244,12 @@ const CustomerTable = () => {
                   <th className="px-4 py-2">
                     Date
                     <button
-                      className="mx-1 bg-gray-300 px-2 rounded-md"
+                      className="mx-1"
                       onClick={() => handleSortToggle("date")}
                     >
                       <FontAwesomeIcon
                         icon={faArrowRightArrowLeft}
-                        className={`rotate-90 ${
+                        className={`rotate-90 text-sm ${
                           sortByDate ? "transform rotate-180" : ""
                         }`}
                       />
@@ -238,22 +258,39 @@ const CustomerTable = () => {
                   <th className="px-4 py-2">
                     Credits
                     <button
-                      className="mx-1 bg-gray-300 px-2 rounded-md"
+                      className="mx-1"
                       onClick={() => handleSortToggle("credits")}
                     >
                       <FontAwesomeIcon
                         icon={faArrowRightArrowLeft}
-                        className={`rotate-90 ${
+                        className={`rotate-90 text-sm ${
                           sortByCredits ? "transform rotate-180" : ""
                         }`}
                       />
                     </button>
                   </th>
-                  <th className="px-4 py-2">Status</th>
+                  <th className="px-4 py-2">
+                    <label>Status : </label>
+                    <select
+                      className="border px-4 py-1  box-border rounded-md bg-gray-300"
+                      onChange={(e) => handleFiltersStatusChange(e)}
+                    >
+                      <option value="All">All</option>
+                      <option value="Completed" className="text-green-500">
+                        Completed
+                      </option>
+                      <option value="Pending" className="text-yellow-500">
+                        Pending
+                      </option>
+                      <option value="Failed" className="text-red-500">
+                        Failed
+                      </option>
+                    </select>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {sortedRequests?.map((request) => (
+                {filteredData?.map((request) => (
                   <tr
                     key={request._id}
                     className="even:bg-gray-100 odd:bg-white"
@@ -303,6 +340,7 @@ const CustomerTable = () => {
                   id="credits"
                   value={credits}
                   onChange={(e) => setCredits(e.target.value)}
+                  onKeyPress={handleKeyPress}
                   className="mt-1 px-4 py-2 w-full border border-gray-300 rounded-lg"
                 />
               </div>

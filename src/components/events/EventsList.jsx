@@ -21,7 +21,7 @@ const EventsList = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setCustomers(response?.data?.data);
+      setCustomers(response?.data?.data.reverse());
       setLoading(false);
     } catch (error) {
       console.error("Error fetching events:", error);

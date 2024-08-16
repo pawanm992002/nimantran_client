@@ -10,7 +10,8 @@ const AdminDashboard = () => {
   const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [requests, setRequests] = useState([]);
-  
+  const [selectedStatus, setSelectedStatus] = useState("All");
+
   useEffect(() => {
     fetchRequests();
   }, []);
@@ -76,7 +77,13 @@ const AdminDashboard = () => {
       toast.error("Error accepting request");
     }
   };
-
+  const handleFiltersStatusChange = (e) => {
+    setSelectedStatus(e.target.value);
+  };
+  const filteredData =
+    selectedStatus === "All"
+      ? requests
+      : requests.filter((item) => item.status === selectedStatus.toLowerCase());
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
@@ -171,8 +178,8 @@ const AdminDashboard = () => {
       {/* Requests Table */}
       <div className="overflow-auto mt-6 h-[53vh] border">
         <table className="min-w-full  bg-white border border-gray-200 border-collapse rounded-lg shadow-md">
-          <thead className="sticky top-0" >
-            <tr >
+          <thead className="sticky top-0">
+            <tr>
               <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
                 User Name
               </th>
@@ -180,7 +187,22 @@ const AdminDashboard = () => {
                 Credits
               </th>
               <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
-                Status
+                <label>Status : </label>
+                <select
+                  className="border px-4 py-1  box-border rounded-md bg-gray-300"
+                  onChange={(e) => handleFiltersStatusChange(e)}
+                >
+                  <option value="All">All</option>
+                  <option value="Completed" className="text-green-500">
+                    Completed
+                  </option>
+                  <option value="Pending" className="text-yellow-500">
+                    Pending
+                  </option>
+                  <option value="Failed" className="text-red-500">
+                    Failed
+                  </option>
+                </select>
               </th>
               <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
                 Actions
@@ -188,7 +210,7 @@ const AdminDashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {requests.map((request) => (
+            {filteredData.map((request) => (
               <tr key={request._id}>
                 <td className="py-2 px-4 border-b text-center border-gray-200">
                   {request.user.name}
