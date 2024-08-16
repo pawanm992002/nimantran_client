@@ -1,12 +1,18 @@
 import axios from "axios";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faEyeSlash,
+  faWandMagicSparkles,
+} from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
 
 const CreateCustomerJSX = ({ showModal, setShowModal }) => {
   const token = localStorage.getItem("token");
   const [togglePassword, settogglePassword] = useState(false);
+  const [passwordGenerationCount, setPasswordGenerationCount] = useState(0);
+
   const nameRef = useRef("");
   const mobileRef = useRef("");
   const passwordRef = useRef("");
@@ -20,15 +26,13 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
   const [passwordError, setPasswordError] = useState("");
   const [mobileError, setMobileError] = useState("");
   const [dateOfBirthError, setDateOfBirthError] = useState("");
+  const [genderError, setGenderError] = useState("");
 
   const validateName = (name) => {
-    const nameRegex = /^[a-zA-Z\s]+$/;
     if (!name.trim()) {
       setNameError("Name is required");
     } else if (name.length < 3 || name.length > 20) {
       setNameError("Name must be between 3 and 20 characters");
-    } else if (!nameRegex.test(name)) {
-      setNameError("Name must contain only letters and spaces");
     } else {
       setNameError("");
     }
@@ -45,27 +49,6 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
         dateOfBirth: dateOfBirthRef.current.value,
         location: locationRef.current.value,
       };
-
-      if (dateOfBirthRef.current) {
-        const today = new Date();
-        const eighteenYearsAgo = new Date(
-          today.getFullYear() - 18,
-          today.getMonth(),
-          today.getDate()
-        );
-        const selectedDate = new Date(dateOfBirthRef.current.value);
-
-        if (selectedDate >= eighteenYearsAgo) {
-          dateOfBirthRef.current.min = eighteenYearsAgo
-            .toISOString()
-            .split("T")[0];
-          setDateOfBirthError("");
-        } else {
-          setDateOfBirthError(
-            "You must be at least 18 years old to create an account."
-          );
-        }
-      }
 
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/client/create-customer`,
@@ -84,29 +67,19 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
     }
   };
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) {
-      setEmailError("Email is required");
-    } else if (!emailRegex.test(email)) {
-      setEmailError("Invalid email format");
-    } else {
-      setEmailError("");
-    }
-  };
-
   const validatePassword = (password) => {
-    // const passwordRegex =
-    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    // if (!password.trim()) {
-    //   setPasswordError("Password is required");
-    // } else if (!passwordRegex.test(password)) {
-    //   setPasswordError(
-    //     "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
-    //   );
-    // } else {
-    setPasswordError("");
-    // }
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&()_+\-=\[\]{};:'",.<>?/\\|`~#])[A-Za-z\d@$!%*?&()_+\-=\#[\]{};:'",.<>?/\\|`~]{8,}$/;
+
+    if (!password.trim()) {
+      setPasswordError("Password is required");
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character"
+      );
+    } else {
+      setPasswordError("");
+    }
   };
 
   const validateMobile = (mobile) => {
@@ -114,34 +87,96 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
     if (!mobile.trim()) {
       setMobileError("Mobile number is required");
     } else if (!mobileRegex.test(mobile)) {
-      setMobileError("Invalid mobile number format");
+      setMobileError("Mobile number must be 10 digits");
     } else {
       setMobileError("");
+    }
+  };
+
+  const validateGender = (gender) => {
+    if (!gender.trim()) {
+      setGenderError("Gender is required");
+    } else if (!["Male", "Female", "Other"].includes(gender)) {
+      setGenderError("Gender must be Male, Female, or Other");
+    } else {
+      setGenderError("");
+    }
+  };
+
+  const validateDateOfBirth = (dob) => {
+    const today = new Date();
+    const birthDate = new Date(dob);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    if (age < 18) {
+      setDateOfBirthError(
+        "You must be at least 18 years old to create an account."
+      );
+    } else {
+      setDateOfBirthError("");
     }
   };
 
   const handleKeyPress = (event) => {
     const keyCode = event.keyCode || event.which;
     const keyValue = String.fromCharCode(keyCode);
-    if (/\+|-/.test(keyValue)) event.preventDefault();
+    if (!/[0-9]/.test(keyValue)) {
+      event.preventDefault();
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Call the passed-in createCustomer function with the form data
-    await createCustomer({
-      name: nameRef.current.value,
-      mobile: mobileRef.current.value,
-      email: emailRef.current.value,
-      password: passwordRef.current.value,
-      gender: genderRef.current.value,
-      dateOfBirth: dateOfBirthRef.current.value,
-      location: locationRef.current.value,
-    });
+    validateName(nameRef.current.value);
+    validateMobile(mobileRef.current.value);
+    validatePassword(passwordRef.current.value);
+    validateGender(genderRef.current.value);
+    validateDateOfBirth(dateOfBirthRef.current.value);
+
+    if (
+      !nameError &&
+      !mobileError &&
+      !passwordError &&
+      !genderError &&
+      !dateOfBirthError
+    ) {
+      await createCustomer();
+    }
   };
 
   if (!showModal) return null;
+
+  const generateRandomPassword = () => {
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const specialChars = "@$!%*?&()_+-=[]{};'\",./<>?/\\|`~#";
+
+    let password = "";
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+    for (let i = 0; i < 4; i++) {
+      const allChars = lowercase + uppercase + numbers + specialChars;
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+
+    return password
+      .split("")
+      .sort(() => 0.5 - Math.random())
+      .join("");
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -150,7 +185,9 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
             <div className="mb-4">
-              <label className="block mb-2">Name:</label>
+              <label className="block mb-2 after:content-['*'] after:ml-0.5 after:text-red-500">
+                Name:
+              </label>
               <input
                 type="text"
                 ref={nameRef}
@@ -162,20 +199,25 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
               {nameError && <p className="text-red-500">{nameError}</p>}
             </div>
             <div className="mb-4">
-              <label className="block mb-2">Mobile:</label>
+              <label className="block mb-2 after:content-['*'] after:ml-0.5 after:text-red-500">
+                Mobile:
+              </label>
               <input
-                type="text"
+                type="tel"
                 ref={mobileRef}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 required
+                onKeyPress={handleKeyPress}
                 onBlur={(e) => validateMobile(e.target.value)}
                 onChange={(e) => validateMobile(e.target.value)}
-                onKeyPress={handleKeyPress}
               />
+
               {mobileError && <p className="text-red-500">{mobileError}</p>}
             </div>
             <div className="mb-4">
-              <label className="block mb-2">Password:</label>
+              <label className="block mb-2 after:content-['*'] after:ml-0.5 after:text-red-500">
+                Password:
+              </label>
               <div className="relative">
                 <input
                   type={togglePassword ? "text" : "password"}
@@ -185,6 +227,24 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
                   onBlur={(e) => validatePassword(e.target.value)}
                   onChange={(e) => validatePassword(e.target.value)}
                 />
+                <span
+                  className="absolute bottom-2 right-9 cursor-pointer text-gray-400"
+                  onClick={() => {
+                    if (passwordGenerationCount < 5) {
+                      const generatedPassword = generateRandomPassword();
+                      passwordRef.current.value = generatedPassword;
+                      validatePassword(generatedPassword);
+                      setPasswordGenerationCount((prevCount) => prevCount + 1);
+                    } else {
+                      toast.error(
+                        "Password generation limit reached (5 times)"
+                      );
+                    }
+                  }}
+                >
+                  <FontAwesomeIcon icon={faWandMagicSparkles} />
+                </span>
+
                 <span
                   className="absolute bottom-2 right-2.5 cursor-pointer text-blue-500"
                   onClick={() => settogglePassword((prev) => !prev)}
@@ -199,30 +259,36 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
               {passwordError && <p className="text-red-500">{passwordError}</p>}
             </div>
             <div className="mb-4">
-              <label className="block mb-2">Gender:</label>
+              <label className="block mb-2 after:content-['*'] after:ml-0.5 after:text-red-500">
+                Gender:
+              </label>
               <select
                 ref={genderRef}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 required
+                onBlur={(e) => validateGender(e.target.value)}
+                onChange={(e) => validateGender(e.target.value)}
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
               </select>
+              {genderError && <p className="text-red-500">{genderError}</p>}
             </div>
             <div className="mb-4">
-              <label className="block mb-2">Date of Birth:</label>
+              <label className="block mb-2 ">Date of Birth:</label>
               <input
                 type="date"
                 ref={dateOfBirthRef}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                onChange={(e) => validateDateOfBirth(e.target.value)}
               />
               {dateOfBirthError && (
                 <p className="text-red-500">{dateOfBirthError}</p>
               )}
             </div>
-            <div className="mb-4 col-span-2">
+            <div className="mb-4">
               <label className="block mb-2">Location:</label>
               <input
                 type="text"
@@ -242,7 +308,14 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
             <button
               type="submit"
               className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-              disabled={nameError || emailError || passwordError || mobileError}
+              disabled={
+                nameError ||
+                emailError ||
+                passwordError ||
+                mobileError ||
+                genderError ||
+                dateOfBirthError
+              }
             >
               Create
             </button>
