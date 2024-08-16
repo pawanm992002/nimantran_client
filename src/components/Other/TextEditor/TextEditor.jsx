@@ -119,8 +119,6 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       setDuration(parseFloat(value));
     } else if (name === "backgroundColor") {
       setBackgroundColor(value);
-    } else if (name === "reset") {
-      setBackgroundColor("none");
     } else if (name === "transition") {
       setSelectedTransition(JSON.parse(value));
     }
@@ -246,7 +244,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             <button
               className="bg-white border rounded size-9 mr-2"
               name="reset"
-              onClick={handleStyleChange}
+              onClick={() => setBackgroundColor('none')}
             >
               <FontAwesomeIcon icon={faRotateLeft} />
             </button>
