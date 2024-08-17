@@ -72,7 +72,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="adminLogin" element={<AdminLogin />} />
+        <Route path="/adminLogin" element={<AdminLogin />} />
         <Route path="/admin" element={<Admin />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="userDetails" element={<UsersTable />} />

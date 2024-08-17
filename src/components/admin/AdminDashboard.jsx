@@ -7,7 +7,6 @@ const AdminDashboard = () => {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [requests, setRequests] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("All");
@@ -34,13 +33,13 @@ const AdminDashboard = () => {
   const createClient = async (e) => {
     e.preventDefault();
     try {
-      if (!mobile || !password || !name || !email) {
+      if (!mobile || !password || !name) {
         toast.error("Enter all necessary fields");
         return;
       }
       const { data } = await axios.post(
         `${process.env.REACT_APP_ADMIN}/create-client`,
-        { mobile, password, name, email },
+        { mobile, password, name },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -51,7 +50,6 @@ const AdminDashboard = () => {
         setMobile("");
         setPassword("");
         setName("");
-        setEmail("");
         fetchRequests(); // Fetch requests again after creating client
         return;
       }
@@ -74,6 +72,22 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error accepting request:", error);
+      toast.error("Error accepting request");
+    }
+  };
+  const handleRejectRequest = async (requestId) => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/admin/rejectCreditRequest/${requestId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (data?.success) {
+        toast.success(data.message);
+        fetchRequests(); // Refresh requests after accepting
+      }
+    } catch (error) {
       toast.error("Error accepting request");
     }
   };
@@ -114,18 +128,6 @@ const AdminDashboard = () => {
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700 mb-2">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="mb-4">
@@ -184,6 +186,9 @@ const AdminDashboard = () => {
                 User Name
               </th>
               <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
+                Date
+              </th>
+              <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
                 Credits
               </th>
               <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
@@ -213,7 +218,10 @@ const AdminDashboard = () => {
             {filteredData.map((request) => (
               <tr key={request._id}>
                 <td className="py-2 px-4 border-b text-center border-gray-200">
-                  {request.user.name}
+                  {request?.user?.name}
+                </td>
+                <td className="py-2 px-4 border-b text-center border-gray-200">
+                  {new Date(request.createdAt).toLocaleString()}
                 </td>
                 <td className="py-2 px-4 border-b text-center border-gray-200">
                   {request.credits}
@@ -223,12 +231,20 @@ const AdminDashboard = () => {
                 </td>
                 <td className="py-2 px-4 border-b text-center border-gray-200">
                   {request.status === "pending" && (
+                    <div>
                     <button
                       className="px-4 py-1 bg-blue-500 text-white rounded-lg"
                       onClick={() => handleAcceptRequest(request._id)}
                     >
                       Accept
                     </button>
+                    <button
+                      className="px-4 py-1 bg-blue-500 text-white rounded-lg ml-2"
+                      onClick={() => handleRejectRequest(request._id)}
+                    >
+                      Reject
+                    </button>
+                    </div>
                   )}
                 </td>
               </tr>

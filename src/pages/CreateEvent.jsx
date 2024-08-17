@@ -140,26 +140,24 @@ const CreateEvent = () => {
         </div>
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700">
-            Date of Organising <span className="text-red-600">*</span>
+            Date of Organising
           </label>
           <input
             type="date"
             value={dateOfOrganising}
             onChange={(e) => setDateOfOrganising(e.target.value)}
             className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-            required
           />
         </div>
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700">
-            Location <span className="text-red-600">*</span>
+            Location
           </label>
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-            required
           />
         </div>
         <div className="mb-6">

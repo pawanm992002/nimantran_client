@@ -28,9 +28,8 @@ const UsersTable = () => {
     }
   };
   const handleCustomerProfile = (id) => {
-    console.log(id);
     localStorage.setItem("customerId", id);
-    navigate(`/customer/profile`);
+    navigate(`/customer/profile?customerId=${id}`);
   };
 
   useEffect(() => {
@@ -76,9 +75,6 @@ const UsersTable = () => {
             <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
               Mobile
             </th>
-            <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
-              Email
-            </th>
             {activeTab === "customer" && (
               <>
                 <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
@@ -92,9 +88,6 @@ const UsersTable = () => {
                 </th>
               </>
             )}
-            <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
-              Role
-            </th>
             <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
               Credits
             </th>
@@ -113,9 +106,6 @@ const UsersTable = () => {
               <td className="py-2 px-4 border-b text-center border-gray-200">
                 {user.mobile}
               </td>
-              <td className="py-2 px-4 border-b text-center border-gray-200">
-                {user.email}
-              </td>
               {activeTab === "customer" && (
                 <>
                   <td className="py-2 px-4 border-b text-center border-gray-200">
@@ -129,9 +119,6 @@ const UsersTable = () => {
                   </td>
                 </>
               )}
-              <td className="py-2 px-4 border-b text-center border-gray-200">
-                {user.role}
-              </td>
               <td className="py-2 px-4 border-b text-center border-gray-200">
                 {user.credits}
               </td>
