@@ -221,15 +221,15 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               title="Set font color"
             ></span>
             A
-          </label>
             <input
               type="color"
               name="fontColor"
               id="fontColor"
               value={fontColor}
               onChange={handleStyleChange}
-              style={{ display: "none" }}
+              style={{ visibility: 'hidden', width: 0, height: 0 }}
             />
+          </label>
         </div>
         <div className="h-9 flex items-center bg-gray-100">
           <input

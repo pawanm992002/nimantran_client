@@ -84,6 +84,12 @@ const EventsList = () => {
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
+                Media Type
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Date of Organising
               </th>
               <th
@@ -127,6 +133,9 @@ const EventsList = () => {
                     }}
                   >
                     {event.eventName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {event.editType}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(event.dateOfOrganising).toLocaleDateString()}

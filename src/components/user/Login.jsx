@@ -4,12 +4,15 @@ import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import Loader from "../Other/Loader/Loader";
 
 const Login = () => {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState({ mobile: "", password: "" });
   const [togglePassword, settogglePassword] = useState(false);
+  const [loading, setLoading] = useState(false)
+
   const navigate = useNavigate();
   const handleKeyPress = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
@@ -45,6 +48,7 @@ const Login = () => {
   };
 
   const loginUser = async (event) => {
+    setLoading(true)
     event.preventDefault();
     if (error.mobile || error.password) {
       return; // Exit the function if there are errors
@@ -95,10 +99,12 @@ const Login = () => {
         toast.error("An error occurred while setting up the request");
       }
     }
+    setLoading(false)
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      {loading && <Loader text='Wait while login' />}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-md">
         <div className="flex justify-center mt-6">
           <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">

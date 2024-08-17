@@ -1,25 +1,33 @@
 import React, { useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
-
 const Admin = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const navigate = useNavigate();
-  useEffect(()=>{
-     const role = localStorage.getItem('role');
-     const token = localStorage.getItem('token');
-     if(role == null || token == null){
-      navigate('/adminLogin');
-     }
-  },[])
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    const token = localStorage.getItem("token");
+    if (role == null || token == null) {
+      navigate("/adminLogin");
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
 
   return (
     <div className="flex h-screen">
       <aside className="w-64 bg-gray-100">
         <div className="px-4">
           <div className="flex items-center mb-4">
-            <img className="w-full pt-4 object-contain" src="/nimantran logo.png" alt="" />
+            <img
+              className="w-full pt-4 object-contain"
+              src="/nimantran logo.png"
+              alt=""
+            />
           </div>
           <nav className="space-y-2 pt-5">
             <Link
@@ -59,20 +67,20 @@ const Admin = () => {
         </div>
       </aside>
       <main className="flex-1 p-6 bg-white">
-        <header className="flex items-center justify-between mb-6">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="px-4 py-2 border rounded-xl w-1/3"
-          />
+        <header className="flex items-center justify-end mb-6">
           <div className="flex items-center">
             <div className="flex items-center">
-              <img
-                className="h-8 w-8 rounded-full mr-2"
-                src="https://via.placeholder.com/32"
-                alt="Profile"
-              />
-              <span>Nimantran</span>
+              <span className="w-9 h-9 bg-slate-300 rounded-full flex justify-center items-center">
+                A
+              </span>
+            </div>
+            <div className="h-full flex items-center justify-center">
+              <div
+                className="bg-black text-white text-center mx-2 py-2 px-4 rounded-lg cursor-pointer"
+                onClick={handleLogout}
+              >
+                Logout
+              </div>
             </div>
           </div>
         </header>
