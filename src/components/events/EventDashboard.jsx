@@ -17,7 +17,6 @@ const EventDashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response);
       setEvent(response?.data?.data);
     } catch (error) {
       toast.error(error?.message);

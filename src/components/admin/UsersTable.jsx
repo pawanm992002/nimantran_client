@@ -7,6 +7,9 @@ const UsersTable = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("customer"); // 'customer' or 'client'
+  const [creditModal, setCreditModal] = useState(false);
+  const [creditsToTransfer, setCreditsToTransfer] = useState(0);
+  const [selectedCustomerId, setSelectedCustomerId] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -18,18 +21,39 @@ const UsersTable = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response);
       setUsers(response.data.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching users:", error);
       toast.error("Error fetching users");
       setLoading(false);
     }
   };
+
   const handleCustomerProfile = (id) => {
-    localStorage.setItem("customerId", id);
-    navigate(`/customer/profile?customerId=${id}`);
+    if (activeTab === "customer") {
+      localStorage.setItem("customerId", id);
+      navigate(`/customer/profile?customerId=${id}`);
+    }
+  };
+
+  const transferCreditsToClient = async (e, customerId) => {
+    try {
+      e.preventDefault();
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/admin/transfer-credits-to-client`,
+        { userId: selectedCustomerId, credits: parseInt(creditsToTransfer) },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setCreditsToTransfer(0);
+      setSelectedCustomerId("");
+      setCreditModal(false);
+      fetchUsers();
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data);
+    }
   };
 
   useEffect(() => {
@@ -91,6 +115,11 @@ const UsersTable = () => {
             <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
               Credits
             </th>
+            {activeTab === "client" && (
+              <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -122,10 +151,68 @@ const UsersTable = () => {
               <td className="py-2 px-4 border-b text-center border-gray-200">
                 {user.credits}
               </td>
+              {activeTab === "client" && (
+                <td className="py-2 px-4 border-b text-center border-gray-200">
+                  <button
+                    className="px-6 py-2 text-lg font-semibold rounded-lg bg-blue-500 text-white"
+                    onClick={() => {
+                      setCreditModal(true);
+                      setSelectedCustomerId(user._id);
+                    }}
+                  >
+                    Transfer
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
+      {creditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4">Transfer Credits</h2>
+            <form
+              onSubmit={(e) => transferCreditsToClient(e, selectedCustomerId)}
+            >
+              <div className="mb-4">
+                <label
+                  htmlFor="credits"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Credits
+                </label>
+                <input
+                  type="number"
+                  id="credits"
+                  value={creditsToTransfer}
+                  onChange={(e) => setCreditsToTransfer(e.target.value)}
+                  className="mt-1 px-4 py-2 w-full border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreditModal(false);
+                    setSelectedCustomerId("");
+                    setCreditsToTransfer(0);
+                  }}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                >
+                  Transfer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

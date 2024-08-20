@@ -107,21 +107,7 @@ export default function WeddingVideo() {
           h: videoPlayer.videoHeight,
         });
       });
-
-      // videoPlayer.addEventListener("resize", (ev) => {
-      //   // setScaling({
-      //   //   width: videoPlayer.videoWidth / videoPlayer.clientWidth,
-      //   //   height: videoPlayer.videoHeight / videoPlayer.clientHeight,
-      //   // });
-      //   setResized({
-      //     w: videoPlayer.clientWidth,
-      //     h: videoPlayer.clientHeight,
-      //   });
-      //   setOriginalSize({
-      //     w: videoPlayer.videoWidth,
-      //     h: videoPlayer.videoHeight,
-      //   });
-      // });
+      
       const fileURL = URL.createObjectURL(file);
       videoPlayer.src = fileURL;
       videoPlayer.load();
@@ -424,9 +410,9 @@ export default function WeddingVideo() {
 
               {/* Horizontal Scrollable Container */}
               <div className="flex space-x-4 overflow-x-auto p-2">
-                {processedVideoUrls.map((val) => (
+                {processedVideoUrls.map((val,i) => (
                   <div
-                    key={val}
+                    key={i}
                     className="w-[250px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]"
                   >
                     <video

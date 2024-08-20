@@ -440,8 +440,8 @@ export default function WeddingVideo() {
 
               {/* Horizontal Scrollable Container */}
               <div className="flex space-x-4 overflow-x-auto p-2">
-                {processedVideoUrls.map((val) => (
-                  <div key={val} className="min-w-[250px] bg-gray-200 rounded-lg shadow-lg overflow-y-scroll max-h-[460px]">
+                {processedVideoUrls.map((val, i) => (
+                  <div key={i} className="min-w-[250px] bg-gray-200 rounded-lg shadow-lg overflow-y-scroll max-h-[460px]">
                     <Worker workerUrl={pdfjsWorker}>
                     <Viewer
                       fileUrl={val.link}

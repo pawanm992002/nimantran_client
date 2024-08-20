@@ -100,7 +100,7 @@ const Transactions = () => {
       ) : (
         <div>
           {transactions.length === 0 ? (
-            <div>No Transactions yet {console.log("..........")}</div>
+            <div>No Transactions yet </div>
           ) : tableSwitch === "transfer" ? (
             <div className="overflow-x-auto h-[55vh]">
               <table className="min-w-full bg-white">

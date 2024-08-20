@@ -66,7 +66,6 @@ const WhatsappModal = ({
 
   const bulkWhatsuppPersonalInvite = async () => {
     try {
-      console.log("........... 2");
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/whatsapp/allPersonal?eventId=${eventId}`,
 

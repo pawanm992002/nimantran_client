@@ -8,7 +8,6 @@ const Events = () => {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   useEffect(() => {
-    console.log("hello")
     if (location.pathname === `/Events` && eventId) {
       navigate(`/events/dashboard?eventId=${eventId}`);
     }

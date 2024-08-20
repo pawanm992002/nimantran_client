@@ -10,6 +10,8 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [requests, setRequests] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [acceptedRequestId, setAcceptedRequestId] = useState("");
 
   useEffect(() => {
     fetchRequests();
@@ -57,7 +59,6 @@ const AdminDashboard = () => {
       toast.error(error.message);
     }
   };
-
   const handleAcceptRequest = async (requestId) => {
     try {
       const { data } = await axios.get(
@@ -71,10 +72,12 @@ const AdminDashboard = () => {
         fetchRequests(); // Refresh requests after accepting
       }
     } catch (error) {
-      console.error("Error accepting request:", error);
       toast.error("Error accepting request");
     }
+    setAcceptedRequestId("");
+    setShowWarningModal(false);
   };
+
   const handleRejectRequest = async (requestId) => {
     try {
       const { data } = await axios.get(
@@ -94,6 +97,7 @@ const AdminDashboard = () => {
   const handleFiltersStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   };
+
   const filteredData =
     selectedStatus === "All"
       ? requests
@@ -176,7 +180,33 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
-
+      {showWarningModal && (
+        <div className="fixed z-30 inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4 text-center">
+              Do you want to Accept Request ?
+            </h2>
+            <div className="flex justify-center space-x-4">
+              <button
+                type="button"
+                className="px-6 py-2 font-semibold rounded-lg bg-gray-200 text-gray-800"
+                onClick={() => {
+                  setAcceptedRequestId("");
+                  setShowWarningModal(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleAcceptRequest(acceptedRequestId)}
+                className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
+              >
+                Accept
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Requests Table */}
       <div className="overflow-auto mt-6 h-[53vh] border">
         <table className="min-w-full  bg-white border border-gray-200 border-collapse rounded-lg shadow-md">
@@ -232,18 +262,21 @@ const AdminDashboard = () => {
                 <td className="py-2 px-4 border-b text-center border-gray-200">
                   {request.status === "pending" && (
                     <div>
-                    <button
-                      className="px-4 py-1 bg-blue-500 text-white rounded-lg"
-                      onClick={() => handleAcceptRequest(request._id)}
-                    >
-                      Accept
-                    </button>
-                    <button
-                      className="px-4 py-1 bg-blue-500 text-white rounded-lg ml-2"
-                      onClick={() => handleRejectRequest(request._id)}
-                    >
-                      Reject
-                    </button>
+                      <button
+                        className="px-4 py-1 bg-blue-500 text-white rounded-lg"
+                        onClick={() => {
+                          setShowWarningModal(true);
+                          setAcceptedRequestId(request._id);
+                        }}
+                      >
+                        Accept
+                      </button>
+                      <button
+                        className="px-4 py-1 bg-blue-500 text-white rounded-lg ml-2"
+                        onClick={() => handleRejectRequest(request._id)}
+                      >
+                        Reject
+                      </button>
                     </div>
                   )}
                 </td>

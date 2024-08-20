@@ -36,7 +36,6 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(data);
       setCustomerInfo(data?.data);
     } catch (error) {
       toast.error(error.response.data.message);

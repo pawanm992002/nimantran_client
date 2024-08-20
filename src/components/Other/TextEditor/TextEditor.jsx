@@ -5,9 +5,10 @@ import {
   faRotateLeft,
   faCircleChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
+
 const DropDownMenu = ({ fontFamilies, select, setSelectedFont }) => {
   const [toggleState, settoggleState] = useState(false);
-  console.log(fontFamilies);
+
   return (
     <div className="" onClick={() => settoggleState(!toggleState)}>
       <div className="bg-gray-100 py-1 px-2 rounded-md flex  gap-x-2 justify-between">
@@ -227,7 +228,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               id="fontColor"
               value={fontColor}
               onChange={handleStyleChange}
-              style={{ visibility: 'hidden', width: 0, height: 0 }}
+              style={{ visibility: "hidden", width: 0, height: 0 }}
             />
           </label>
         </div>
@@ -244,7 +245,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             <button
               className="bg-white border rounded size-9 mr-2"
               name="reset"
-              onClick={() => setBackgroundColor('none')}
+              onClick={() => setBackgroundColor("none")}
             >
               <FontAwesomeIcon icon={faRotateLeft} />
             </button>

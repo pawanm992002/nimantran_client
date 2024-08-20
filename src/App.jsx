@@ -73,6 +73,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/adminLogin" element={<AdminLogin />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+
         <Route path="/admin" element={<Admin />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="userDetails" element={<UsersTable />} />
@@ -80,16 +83,13 @@ const App = () => {
           <Route path="credits" element={<AdminTransaction />} />
         </Route>
 
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        {/* <Route path="/events" element={} /> */}
-        {/* <Route path="/client" element={<ClientDashboard />} /> */}
         <Route path="/client" element={<Client />}>
           <Route path="dashboard" element={<ClientDashboard />} />
           <Route path="customers" element={<CustomerTable />} />
           <Route path="eventlist" element={<EventsList />} />
           <Route path="credits" element={<ClientCredits />} />
         </Route>
+        
         <Route path="/event" element={<EventLayout />}>
           <Route path="createEvent" element={<CreateEvent />} />
           <Route path="imageEdit" element={<WeddingImage />} />

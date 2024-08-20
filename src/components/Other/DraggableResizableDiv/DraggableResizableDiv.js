@@ -35,7 +35,6 @@ const DraggableResizableDiv = ({
       },
     };
     obj.options[dif] = parseInt(e.target.value);
-    // console.log("oooooo", obj);
     setSelectedTranstion(obj);
   };
   const handleDrag = (e, data) => {

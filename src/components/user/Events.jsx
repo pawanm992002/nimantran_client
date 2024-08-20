@@ -59,7 +59,6 @@ export default function Events() {
           },
         }
       );
-      console.log(response.data.data);
       setEventData(response.data.data);
       toast.success(response.data.message);
     } catch (error) {
@@ -95,7 +94,6 @@ export default function Events() {
           },
         }
       );
-      console.log(response.data.data)
       setEventData(response.data.data);
       toast.success(response.data.message);
     } catch (error) {

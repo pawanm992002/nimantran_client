@@ -14,7 +14,7 @@ const CreateEvent = () => {
   const [customerSuggestions, setCustomerSuggestions] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
   const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false);
-
+  const [isStop, setIsStop] = useState(false);
   const token = localStorage.getItem("token");
 
   const handleCreateEvent = async (e) => {
@@ -46,11 +46,22 @@ const CreateEvent = () => {
     }
   };
 
-  const handleCustomerSearch = async () => {
+  const handleCustomerSearch = async (isSelectedCustomer, customer) => {
     try {
+      if(isSelectedCustomer) {
+        setCustomerQuery(customer.name);
+        setSelectedCustomerId(customer._id);
+        setCustomerSuggestions([]);
+        setIsStop(true)
+        return;
+      }
       if (customerQuery.trim() === "") {
         setCustomerSuggestions([]);
+        setIsStop(false);
         return;
+      }
+      if(isStop) {
+        return ;
       }
 
       const response = await axios.get(
@@ -126,9 +137,7 @@ const CreateEvent = () => {
                 <li
                   key={customer._id}
                   onClick={() => {
-                    setCustomerQuery(customer.name);
-                    setSelectedCustomerId(customer._id);
-                    setCustomerSuggestions([]);
+                    handleCustomerSearch(true, customer)
                   }}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >

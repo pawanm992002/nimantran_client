@@ -116,9 +116,8 @@ const CustomerTable = () => {
       : filteredRequestsCustomers;
 
   const transferCredits = async (e) => {
-    e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
+      e.preventDefault();
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/client/transfer-credits`,
         { customerId, credits: parseInt(credits) },
