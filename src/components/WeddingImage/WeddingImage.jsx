@@ -16,6 +16,7 @@ import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import Loader from "../Other/Loader/Loader";
 import { debounce } from "lodash";
+// import bufferImage from "buffer-image";
 export default function WeddingImage() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function WeddingImage() {
   }, []);
   const videoRef = useRef();
   const [params] = useSearchParams();
-  const eventId = params.get("eventId");
+  var eventId = params.get("eventId");
   const [jsonData, setJsonData] = useState([
     {
       name: "Random 1",
@@ -53,6 +54,7 @@ export default function WeddingImage() {
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
 
+  const [videoObj,setVideoObj] = useState({})
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -87,11 +89,30 @@ export default function WeddingImage() {
     setTexts([...texts, newText]);
   };
 
-  const handleVideoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const videoPlayer = document.getElementById("videoPlayer");
+//  const handleVideoChange = () =>{
+//   const file = event.target.files[0];
+//   setVideo(URL.createObjectURL(file));
+//   setVideoObj(file);
+//  }
 
+  const handleVideoUpload = async (event) => {
+    const inputFile = event.target.files[0];
+    const formData = new FormData();
+    formData.append("pawan", inputFile);
+
+
+
+    if (inputFile) {
+      const videoPlayer = document.getElementById("videoPlayer");
+        console.log(inputFile)
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/texts/image?eventId=${eventId}`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      // console.log(response)
       const img = new Image();
       img.onload = () => {
         // Set the original size
@@ -107,7 +128,7 @@ export default function WeddingImage() {
         });
       };
 
-      const fileURL = URL.createObjectURL(file);
+      const fileURL = URL.createObjectURL(inputFile);
       img.src = fileURL;
       videoPlayer.src = fileURL;
     }
@@ -194,48 +215,48 @@ export default function WeddingImage() {
     }
   };
 
-  // useEffect(() => {
-  //   if (texts.length !== 0) {
-  //     var debouncedFetch = debounce(async () => {
-  //       try {
-  //         const response = await axios.post(
-  //           `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-  //           { texts },
-  //           {
-  //             headers: { Authorization: `Bearer ${token}` },
-  //           }
-  //         );
-  //         console.log(response.data);
-  //       } catch (error) {
-  //         console.error("Error saving texts:", error);
-  //       }
-  //     }, 10000);
-  //     debouncedFetch();
-  //     return () => {
-  //       debouncedFetch.cancel();
-  //     };
-  //   }
-  // }, [texts]);
+  useEffect(() => {
+    if (texts.length !== 0) {
+      var debouncedFetch = debounce(async () => {
+        try {
+          const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+            { texts },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log(response.data);
+        } catch (error) {
+          console.error("Error saving texts:", error);
+        }
+      }, 10000);
+      debouncedFetch();
+      return () => {
+        debouncedFetch.cancel();
+      };
+    }
+  }, [texts]);
 
-  // useEffect(() => {
-  //   var getText = async () => {
-  //     try {
-  //       var response = await axios.get(
-  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-  //         {
-  //           headers: { Authorization: `Bearer ${token}` },
-  //         }
-  //       );
-  //       // console.log(response.data[0].texts);
-  //       setTexts(response.data[0].texts);
-  //       console.log(texts);
-  //       return response.data[0].texts;
-  //     } catch (error) {
-  //       console.error("Error getting texts:", error);
-  //     }
-  //   };
-  //   getText();
-  // }, []);
+  useEffect(() => {
+    var getText = async () => {
+      try {
+        var response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        // console.log(response.data[0].texts);
+        setTexts(response.data[0].texts);
+        console.log(texts);
+        return response.data[0].texts;
+      } catch (error) {
+        console.error("Error getting texts:", error);
+      }
+    };
+    getText();
+  }, []);
 
   return (
     <div className="main">
@@ -318,7 +339,7 @@ export default function WeddingImage() {
                   padding: video && "5px",
                 }}
               >
-                <input type="file" accept="image/*" />
+                <input type="file" accept="image/*" onChange={(e)=>console.log("a",e)} />
                 <div className="upload-content">
                   <h2
                     className="upload-button"
