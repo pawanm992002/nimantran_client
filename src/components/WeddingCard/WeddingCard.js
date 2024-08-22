@@ -57,7 +57,7 @@ export default function WeddingVideo() {
       mobileNumber: "412658126",
     },
   ]);
-  const [showPreview, setShowPreview] = useState(false)
+  const [showPreview, setShowPreview] = useState(false);
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -98,7 +98,6 @@ export default function WeddingVideo() {
       backgroundColor: "none",
       hidden: false,
       page: currentPage,
-
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
@@ -179,7 +178,7 @@ export default function WeddingVideo() {
       );
 
       setIsLoading(false);
-      if(isSample) {
+      if (isSample) {
         setProcessedVideoUrls(response?.data?.videoUrls);
         setZipUrl(response.data.zipUrl);
         setShowPreview(true);
@@ -192,56 +191,55 @@ export default function WeddingVideo() {
     setIsLoading(false);
   };
 
-  useEffect(() => {     
-    console.log(texts)
-    if(texts.length !== 0 ){
-    var debouncedFetch = debounce(async () => {
-   
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-            {texts},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-          console.log(response.data);
-        } catch (error) {
-          console.error("Error saving texts:", error);
-        }
-      }, 10000);
-        debouncedFetch()
-      return () => {
-        debouncedFetch.cancel();
-      };}
-    }, [texts]);
- 
-    useEffect(() => {
+  // useEffect(() => {
+  //   console.log(texts)
+  //   if(texts.length !== 0 ){
+  //   var debouncedFetch = debounce(async () => {
 
-      var getText = async () => {
+  //     try {
+  //       const response = await axios.post(
+  //         `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+  //           {texts},
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //         console.log(response.data);
+  //       } catch (error) {
+  //         console.error("Error saving texts:", error);
+  //       }
+  //     }, 10000);
+  //       debouncedFetch()
+  //     return () => {
+  //       debouncedFetch.cancel();
+  //     };}
+  //   }, [texts]);
 
-      try {
-        var response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        // console.log(response.data[0].texts);
-        setTexts(response.data[0].texts)
-        console.log(texts)
-        return response.data[0].texts;
-          
-        } catch (error) {
-          console.error("Error getting texts:", error);
-        }
-      }
-      getText();
-      
+  //   useEffect(() => {
 
-    }, [])
-     
+      // var getText = async () => {
+
+  //     try {
+  //       var response = await axios.get(
+  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+  //         {},
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //       // console.log(response.data[0].texts);
+  //       setTexts(response.data[0].texts)
+  //       console.log(texts)
+  //       return response.data[0].texts;
+
+  //       } catch (error) {
+  //         console.error("Error getting texts:", error);
+  //       }
+  //     }
+  //     getText();
+
+  //   }, [])
+
   return (
     <div className="main">
       <ShowSampleModal
@@ -329,7 +327,10 @@ export default function WeddingVideo() {
                   padding: pdfFile && "5px",
                 }}
               >
-                <input type="file" accept="application/pdf,application/vnd.ms-excel" />
+                <input
+                  type="file"
+                  accept="application/pdf,application/vnd.ms-excel"
+                />
                 <div className="upload-content">
                   <h2
                     className="upload-button"
@@ -371,11 +372,8 @@ export default function WeddingVideo() {
                       onPageChange={(e) => setCurrentPage(e.currentPage)}
                       onDocumentLoad={onDocumentLoad}
                       renderPage={(props) => {
-                        const {
-                          canvasLayer,
-                          textLayer,
-                          annotationLayer,
-                        } = props;
+                        const { canvasLayer, textLayer, annotationLayer } =
+                          props;
                         return (
                           <div
                             style={{ width: "100%", height: "100%" }}
@@ -401,6 +399,7 @@ export default function WeddingVideo() {
                                       takeTextDetails={takeTextDetails}
                                       property={val}
                                       videoCenter={resized.w / 2}
+                                      widthHeight={resized}
                                     />
                                   )
                               )}
@@ -441,14 +440,17 @@ export default function WeddingVideo() {
               {/* Horizontal Scrollable Container */}
               <div className="flex space-x-4 overflow-x-auto p-2">
                 {processedVideoUrls.map((val, i) => (
-                  <div key={i} className="min-w-[250px] bg-gray-200 rounded-lg shadow-lg overflow-y-scroll max-h-[460px]">
+                  <div
+                    key={i}
+                    className="min-w-[250px] bg-gray-200 rounded-lg shadow-lg overflow-y-scroll max-h-[460px]"
+                  >
                     <Worker workerUrl={pdfjsWorker}>
-                    <Viewer
-                      fileUrl={val.link}
-                      scrollMode="Page"
-                      // plugins={[defaultLayoutPluginInstance]}
-                    />
-                  </Worker>
+                      <Viewer
+                        fileUrl={val.link}
+                        scrollMode="Page"
+                        // plugins={[defaultLayoutPluginInstance]}
+                      />
+                    </Worker>
                   </div>
                 ))}
               </div>

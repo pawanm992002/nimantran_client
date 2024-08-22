@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
 const AdminDashboard = () => {
   const token = localStorage.getItem("token");
   const [mobile, setMobile] = useState("");
@@ -36,6 +37,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       if (!mobile || !password || !name) {
+        toast.dismiss();
         toast.error("Enter all necessary fields");
         return;
       }
@@ -47,6 +49,7 @@ const AdminDashboard = () => {
         }
       );
       if (data?.flag) {
+        
         toast.success(data.message);
         setIsModalOpen(false);
         setMobile("");
@@ -56,6 +59,7 @@ const AdminDashboard = () => {
         return;
       }
     } catch (error) {
+      
       toast.error(error.message);
     }
   };
@@ -102,6 +106,29 @@ const AdminDashboard = () => {
     selectedStatus === "All"
       ? requests
       : requests.filter((item) => item.status === selectedStatus.toLowerCase());
+
+  const generateRandomPassword = () => {
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const specialChars = "@$!%*?&()_+-=[]{};'\",./<>?/\\|`~#";
+
+    let password = "";
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+    for (let i = 0; i < 4; i++) {
+      const allChars = lowercase + uppercase + numbers + specialChars;
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+
+    return password
+      .split("")
+      .sort(() => 0.5 - Math.random())
+      .join("");
+  };
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
@@ -153,13 +180,23 @@ const AdminDashboard = () => {
                 >
                   Temporary Password
                 </label>
-                <input
-                  id="temp_password"
-                  type="text"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative flex  items-center">
+                  <input
+                    id="temp_password"
+                    type="text"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    onClick={() => setPassword(generateRandomPassword())}
+                    className=" absolute right-2 "
+                  >
+                    <FontAwesomeIcon
+                      icon={faWandMagicSparkles}
+                    ></FontAwesomeIcon>
+                  </button>
+                </div>
               </div>
               <div className="flex justify-end space-x-4">
                 <button
@@ -272,7 +309,7 @@ const AdminDashboard = () => {
                         Accept
                       </button>
                       <button
-                        className="px-4 py-1 bg-blue-500 text-white rounded-lg ml-2"
+                        className="px-4 py-1 bg-red-500 text-white rounded-lg ml-2"
                         onClick={() => handleRejectRequest(request._id)}
                       >
                         Reject

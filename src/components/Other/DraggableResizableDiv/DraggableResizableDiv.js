@@ -13,6 +13,7 @@ const DraggableResizableDiv = ({
   setOpenContextMenuId,
   videoCenter,
   comp,
+  widthHeight,
 }) => {
   const [text, setText] = useState(property?.text);
   const [position, setPosition] = useState(property?.position);
@@ -21,8 +22,14 @@ const DraggableResizableDiv = ({
   const [isAtCenter, setIsAtCenter] = useState(false);
 
   const handleDrag = (e, data) => {
-    if(data.x >= 0 && data.y >= 0) {
+    if (data.x >= 0 && data.y >= 0) {
       setPosition({ x: data.x, y: data.y });
+    }
+    if (data.y >= widthHeight.h - property?.size?.height) {
+      setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
+    }
+    if (data.x >= widthHeight.w - property?.size?.width) {
+      setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
     }
     if (Math.abs(videoCenter - size?.width / 2 - data.x) < 2) {
       setIsAtCenter(true);
@@ -43,6 +50,7 @@ const DraggableResizableDiv = ({
     setOpenContextMenuId(property?.id);
   };
 
+  console.log(property.size.width);
   useEffect(() => {
     takeTextDetails({
       id: property?.id,

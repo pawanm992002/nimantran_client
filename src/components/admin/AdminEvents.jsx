@@ -10,6 +10,8 @@ const AdminEvents = () => {
   const [loading, setLoading] = useState(true);
   const [customerId, setCustomerId] = useState(null);
   const [singleEventView, setSingleEventView] = useState(null);
+  const [searchItem, setsearchItem] = useState("");
+
   const token = localStorage.getItem("token");
 
   const fetchEvents = async () => {
@@ -71,6 +73,9 @@ const AdminEvents = () => {
     fetchEvents();
   };
 
+  const filterEventData = events.filter((item) => {
+    return item.eventName.toLowerCase().includes(searchItem.toLowerCase());
+  });
   if (singleEventView) {
     return (
       <div className="w-full flex flex-col items-center p-4">
@@ -184,6 +189,12 @@ const AdminEvents = () => {
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Event Name
+              <input
+                type="text"
+                className="bg-gray-100 px-4 py-1 rounded-full border-gray-300 border-2 ml-4"
+                placeholder="Search"
+                onChange={(event) => setsearchItem(event.target.value)}
+              />
             </th>
             <th
               scope="col"
@@ -218,7 +229,7 @@ const AdminEvents = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {events?.map((event) => (
+          {filterEventData?.map((event) => (
             <tr
               key={event._id}
               className="hover:bg-gray-100 cursor-pointer"

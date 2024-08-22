@@ -107,7 +107,7 @@ export default function WeddingVideo() {
           h: videoPlayer.videoHeight,
         });
       });
-      
+
       const fileURL = URL.createObjectURL(file);
       videoPlayer.src = fileURL;
       videoPlayer.load();
@@ -378,6 +378,7 @@ export default function WeddingVideo() {
                       property={val}
                       videoCenter={resized.w / 2}
                       comp="video"
+                      widthHeight={resized}
                     />
                   ))}
                 </div>
@@ -411,7 +412,7 @@ export default function WeddingVideo() {
 
               {/* Horizontal Scrollable Container */}
               <div className="flex space-x-4 overflow-x-auto p-2">
-                {processedVideoUrls.map((val,i) => (
+                {processedVideoUrls.map((val, i) => (
                   <div
                     key={i}
                     className="w-[250px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]"

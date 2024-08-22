@@ -390,6 +390,7 @@ export default function WeddingImage() {
                       comp="image"
                       setSelectedText={setSelectedText}
                       selectedText={selectedText}
+                      widthHeight={resized}
                     />
                   ))}
                 </div>
@@ -426,7 +427,10 @@ export default function WeddingImage() {
               <div className="flex space-x-4 overflow-x-auto p-2">
                 {/* Example Cards */}
                 {processedVideoUrls.map((val, i) => (
-                  <div key={i} className="w-[250px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]">
+                  <div
+                    key={i}
+                    className="w-[250px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]"
+                  >
                     <img
                       src={val.link}
                       alt={`Image ${val}`}
