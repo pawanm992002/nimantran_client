@@ -98,21 +98,23 @@ export default function WeddingImage() {
   const handleVideoUpload = async (event) => {
     const inputFile = event.target.files[0];
     const formData = new FormData();
-    formData.append("pawan", inputFile);
-
-
-
+    formData.append("inputfile", inputFile);
     if (inputFile) {
       const videoPlayer = document.getElementById("videoPlayer");
         console.log(inputFile)
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/texts/image?eventId=${eventId}`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
+        try {
+          const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/texts/image?eventId=${eventId}`,
+            formData,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log(response);
+        } catch (error) {
+          console.error('Upload failed:', error.response ? error.response.data : error.message);
         }
-      );
-      // console.log(response)
+        
       const img = new Image();
       img.onload = () => {
         // Set the original size
