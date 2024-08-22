@@ -15,28 +15,11 @@ const DraggableResizableDiv = ({
   comp,
 }) => {
   const [text, setText] = useState(property?.text);
-  const [selectedTranstion, setSelectedTranstion] = useState(
-    property?.transition
-  );
   const [position, setPosition] = useState(property?.position);
   const [size, setSize] = useState(property?.size);
   const [visible, setVisible] = useState(true);
   const [isAtCenter, setIsAtCenter] = useState(false);
 
-  const changeTransition = (e, dif) => {
-    let obj = {
-      type: "slide",
-      options: {
-        left: selectedTranstion?.options?.left,
-        right: selectedTranstion?.options?.right,
-        top: selectedTranstion?.options?.top,
-        bottom: selectedTranstion?.options?.bottom,
-        duration: selectedTranstion?.options?.duration,
-      },
-    };
-    obj.options[dif] = parseInt(e.target.value);
-    setSelectedTranstion(obj);
-  };
   const handleDrag = (e, data) => {
     if(data.x >= 0 && data.y >= 0) {
       setPosition({ x: data.x, y: data.y });
@@ -74,7 +57,7 @@ const DraggableResizableDiv = ({
       startTime: property.startTime,
       duration: property.duration,
       backgroundColor: property.backgroundColor,
-      transition: selectedTranstion,
+      transition: property.transition,
       hidden: property.hidden,
       page: property.page,
     });
@@ -82,7 +65,6 @@ const DraggableResizableDiv = ({
     position,
     size,
     text,
-    selectedTranstion,
     property.page,
     property.hidden,
     property.backgroundColor,

@@ -60,7 +60,7 @@ const WhatsappModal = ({
         setResponse("Message sent successfully!");
       }
     } catch (error) {
-      setResponse("Failed to send message.");
+      setResponse(error.response.data.message);
     }
   };
 
@@ -78,7 +78,7 @@ const WhatsappModal = ({
         setResponse("Message sent successfully!");
       }
     } catch (error) {
-      setResponse("Failed to send message.");
+      setResponse(error.response.data.message);
     }
   };
 
@@ -155,25 +155,25 @@ const WhatsappModal = ({
               />
             </div> */}
             <div>
-              {qrCode ? (
-                <div className="flex flex-col m-4 items-center">
-                  <span>Scan QR Code with WhatsApp</span>
-                  <span
-                    className="text-sm text-gray-800 hover:text-gray-500"
-                    onClick={() => generateQR()}
-                  >
-                    (Refresh QR)
-                  </span>
-                  <img
-                    src={qrCode}
-                    alt="WhatsApp QR Code"
-                    className="max-w-[260px]"
-                  />
-                  <span>{response}</span>
-                </div>
-              ) : (
-                <p>Loading QR Code...</p>
-              )}
+              {/* {qrCode ? ( */}
+              <div className="flex flex-col m-4 items-center">
+                <span>Scan QR Code with WhatsApp</span>
+                <span
+                  className="text-sm text-gray-800 hover:text-gray-500"
+                  onClick={() => generateQR()}
+                >
+                  (Refresh QR)
+                </span>
+                {qrCode ? <img
+                  src={qrCode}
+                  alt="WhatsApp QR Code"
+                  className="max-w-[260px]"
+                /> : <p>Loading QR Code...</p> }
+                <span>{response}</span>
+              </div>
+              {/* ) : (
+                <p>Loading QR Code...</p> */}
+              {/* )} */}
             </div>
             <button
               onClick={() =>

@@ -210,7 +210,7 @@ export default function WeddingImage() {
         navigate(`/event/mediaGrid?eventId=${eventId}`);
       }
     } catch (error) {
-      toast.error("Something Went Wrong");
+      toast.error(error.response.data.message);
       setIsLoading(false);
     }
   };

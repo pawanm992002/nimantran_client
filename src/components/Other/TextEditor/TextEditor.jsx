@@ -11,7 +11,7 @@ const DropDownMenu = ({ fontFamilies, select, setSelectedFont }) => {
 
   return (
     <div className="" onClick={() => settoggleState(!toggleState)}>
-      <div className="bg-gray-100 py-1 px-2 rounded-md flex  gap-x-2 justify-between">
+      <div className="bg-gray-200 px-2 rounded-md flex  gap-x-2 justify-between w-max">
         <div style={{ fontFamily: select }}>{select}</div>
         <div>
           <FontAwesomeIcon
@@ -24,15 +24,15 @@ const DropDownMenu = ({ fontFamilies, select, setSelectedFont }) => {
       </div>
 
       <div
-        className={`bg-gray-100 py-1 px-2 rounded-md flex  gap-x-2 justify-between absolute z-50 mt-2 ${
+        className={`bg-gray-200 py-1 px-2 rounded-md flex  gap-x-2 justify-between absolute z-50 mt-2 ${
           toggleState ? "visible" : "hidden"
         }  transition-all duration-300`}
       >
-        <ul className="bg-gray-100 px-2 max-h-96 overflow-y-scroll rounded-b-md gap-y-1">
+        <ul className="bg-gray-200 px-2 max-h-96 overflow-y-scroll rounded-b-md gap-y-1">
           {fontFamilies.map((fontFamily) => (
             <li
               key={fontFamily}
-              className="bg-gray-100 cursor-pointer "
+              className="bg-gray-200 cursor-pointer "
               style={{ fontFamily: fontFamily }}
               onClick={() => setSelectedFont(fontFamily)}
             >
@@ -87,10 +87,12 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     fontStyle,
     fontFamily,
     backgroundColor,
-    selectedTransition,
+    selectedTransition?.type,
+    selectedTransition?.options?.duration
   ]);
 
   useEffect(() => {
+    setSelectedTransition(property?.transition);
     setBackgroundColor(property?.backgroundColor);
     setFontSize(property?.fontSize);
     setFontColor(property?.fontColor);
@@ -99,8 +101,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     setFontFamily(property?.fontFamily);
     setStartTime(property?.startTime);
     setDuration(property?.duration);
-    setSelectedTransition(property?.transition);
-  }, [openContextMenuId, property]);
+  }, [openContextMenuId]);
 
   const handleStyleChange = (e) => {
     const { name, value } = e.target;
@@ -120,28 +121,29 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       setDuration(parseFloat(value));
     } else if (name === "backgroundColor") {
       setBackgroundColor(value);
-    } else if (name === "transition") {
-      setSelectedTransition(JSON.parse(value));
-    }
+    } 
+    // else if (name === "transition") {
+    //   setSelectedTransition(JSON.parse(value));
+    // }
   };
 
   const transitionArray = [
     {
       type: "none",
-      options: {
-        top: NaN,
-        duration: NaN,
-      },
+      name: "Select Transition",
+      options: null,
     },
     {
       type: "move_up",
+      name: "Move Up",
       options: {
         top: 50,
-        duration: 1,
+        duration: 3,
       },
     },
     {
       type: "move_down",
+      name: "Move Down",
       options: {
         bottom: 100,
         duration: 1,
@@ -149,6 +151,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     },
     {
       type: "move_right",
+      name: "Move Right",
       options: {
         right: 50,
         duration: 1,
@@ -156,6 +159,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     },
     {
       type: "move_left",
+      name: "Move Left",
       options: {
         left: 50,
         duration: 1,
@@ -163,6 +167,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     },
     {
       type: "path_cover",
+      name: "Rotate",
       options: {
         rotationSpeed: 0.4,
         duration: 1,
@@ -171,18 +176,21 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     },
     {
       type: "fade",
+      name: "Fade",
       options: {
         duration: 2,
       },
     },
     {
       type: "zoom_in",
+      name: "Zoom In",
       options: {
         scale: 2,
       },
     },
     {
       type: "zoom_out",
+      name: "Zoom Out",
       options: {
         scale: 2,
       },
@@ -191,19 +199,15 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
 
   return (
     openContextMenuId === property?.id && (
-      <div className="flex items-center px-4 py-1 bg-white shadow-md space-x-4 m-2 rounded-md">
-        <div>
-          <label>
-            <DropDownMenu
-              fontFamilies={fontFamilies}
-              select={fontFamily}
-              setSelectedFont={setFontFamily}
-            />
-          </label>
-        </div>
-        <div className="flex h-9 rounded-md m-2">
+      <div className="flex items-center pb-2 px-1 bg-white shadow-md space-x-2 m-2 rounded-md h-[35px]">
+        <DropDownMenu
+          fontFamilies={fontFamilies}
+          select={fontFamily}
+          setSelectedFont={setFontFamily}
+        />
+        <div className="flex rounded-md m-2">
           <input
-            className="w-14 outline-none bg-gray-100 p-1 rounded-md"
+            className="w-14 outline-none bg-gray-200 p-1 rounded-md"
             type="number"
             name="size"
             value={fontSize}
@@ -211,50 +215,68 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             title="Set font size"
           />
         </div>
-        <div className="h-9 flex items-center justify-center bg-gray-100 rounded-md">
+        <div className="h-9 flex items-center justify-center bg-gray-200 rounded-md">
           <label
-            className="relative text-black font-bold py-2 px-4 rounded h-9"
+            className="relative text-black font-extrabold rounded h-9 text-2xl min-w-8 flex justify-center items-center"
             htmlFor="fontColor"
+            style={{ color: fontColor }}
           >
-            <span
-              className="absolute inset-x-0 bottom-0 h-2"
-              style={{ background: fontColor }}
-              title="Set font color"
-            ></span>
             A
-            <input
-              type="color"
-              name="fontColor"
-              id="fontColor"
-              value={fontColor}
-              onChange={handleStyleChange}
-              style={{ visibility: "hidden", width: 0, height: 0 }}
-            />
           </label>
-        </div>
-        <div className="h-9 flex items-center bg-gray-100">
           <input
+            type="color"
+            name="fontColor"
+            id="fontColor"
+            value={fontColor}
+            onChange={handleStyleChange}
+            style={{ visibility: "hidden", width: 0, height: 0 }}
+          />
+        </div>
+        <div className="h-9 flex items-center bg-gray-200">
+          <label
+            className="relative text-black font-extrabold rounded h-9 text-2xl min-w-8 flex justify-center items-center"
+            htmlFor="backgroundColor"
+            style={{
+              color: backgroundColor === "none" ? "black" : backgroundColor,
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-6"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.098 2.598a3.75 3.75 0 1 1 3.622 6.275l-1.72.46V12a.75.75 0 0 1-.22.53l-.75.75a.75.75 0 0 1-1.06 0l-.97-.97-7.94 7.94a2.56 2.56 0 0 1-1.81.75 1.06 1.06 0 0 0-.75.31l-.97.97a.75.75 0 0 1-1.06 0l-.75-.75a.75.75 0 0 1 0-1.06l.97-.97a1.06 1.06 0 0 0 .31-.75c0-.68.27-1.33.75-1.81L11.69 9l-.97-.97a.75.75 0 0 1 0-1.06l.75-.75A.75.75 0 0 1 12 6h2.666l.461-1.72c.165-.617.49-1.2.971-1.682Zm-3.348 7.463L4.81 18a1.06 1.06 0 0 0-.31.75c0 .318-.06.63-.172.922a2.56 2.56 0 0 1 .922-.172c.281 0 .551-.112.75-.31l7.94-7.94-1.19-1.19Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </label>
+          <input
+            id="backgroundColor"
             className="h-4/5 bg-none"
             type="color"
             name="backgroundColor"
             value={backgroundColor}
             onChange={handleStyleChange}
             title="Set background color"
+            style={{ visibility: "hidden", width: 0, height: 0 }}
           />
-          <div>
-            <button
-              className="bg-white border rounded size-9 mr-2"
-              name="reset"
-              onClick={() => setBackgroundColor("none")}
-            >
-              <FontAwesomeIcon icon={faRotateLeft} />
-            </button>
-          </div>
+          {/* <div> */}
+          <button
+            className="bg-white border rounded-md size-8 h-full"
+            name="reset"
+            onClick={() => setBackgroundColor("none")}
+          >
+            <FontAwesomeIcon icon={faRotateLeft} />
+          </button>
+          {/* </div> */}
         </div>
         <div className="h-9 flex items-center">
           <button
             name="weight"
-            className={`p-2 border rounded font-bold w-9 m-0 ${
+            className={`p-2 border rounded font-bold w-8 h-full m-0 ${
               fontWeight === "bold" ? "bg-blue-500 text-white" : "bg-white"
             }`}
             onClick={handleStyleChange}
@@ -265,7 +287,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
           </button>
           <button
             name="style"
-            className={`p-2 border rounded italic w-9 ${
+            className={`p-2 border h-full rounded italic w-8 ${
               fontStyle === "italic" ? "bg-blue-500 text-white" : "bg-white"
             }`}
             value={fontStyle}
@@ -277,25 +299,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
         </div>
 
         {comp === "video" && (
-          <div className="h-9 flex items-center bg-gray-100 rounded-md">
-            <select
-              className="h-9 outline-none p-2 rounded-md w-48"
-              name="transition"
-              value={JSON.stringify(selectedTransition)}
-              onChange={handleStyleChange}
-              title="Select transition"
-            >
-              {transitionArray.map((transition, i) => (
-                <option value={JSON.stringify(transition)} key={i}>
-                  {transition.type}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {comp === "video" && (
-          <div className="h-9 flex items-center bg-gray-100 rounded-md">
+          <div className="h-9 flex items-center bg-gray-200 rounded-md">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -318,7 +322,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             </svg>
 
             <input
-              className="w-14 bg-gray-100 outline-none p-1 rounded-md"
+              className="w-14 bg-gray-200 outline-none p-1 rounded-md"
               type="number"
               name="startTime"
               step="0.1"
@@ -329,7 +333,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
           </div>
         )}
         {comp === "video" && (
-          <div className="h-9 flex items-center bg-gray-100 rounded-md">
+          <div className="h-9 flex items-center bg-gray-200 rounded-md">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -347,13 +351,67 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             </svg>
 
             <input
-              className="w-14 outline-none bg-gray-100 p-1 rounded-md"
+              className="w-14 outline-none bg-gray-200 p-1 rounded-md"
               type="number"
               name="duration"
               step="0.1"
               value={duration}
               onChange={handleStyleChange}
               title="Set duration"
+            />
+          </div>
+        )}
+
+        {comp === "video" && (
+          <div className="h-9 flex items-center bg-gray-200 rounded-md">
+            <select
+              className="h-9 outline-none p-2 rounded-md w-full"
+              name="transition"
+              // defaultValue={JSON.stringify(property.transition)}
+              value={selectedTransition.type}
+              onChange={(e) => setSelectedTransition((prev) => {
+                prev.type = e.target.value;
+                return { ...prev };
+              })}
+              title="Select transition"
+            >
+              {transitionArray.map((transition, i) => (
+                <option value={transition.type} key={i}>
+                  {transition.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+{console.log(selectedTransition)}
+        {comp === "video" && (
+          <div className="h-9 flex items-center bg-gray-200 rounded-md">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-6"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6Zm-5.03 4.72a.75.75 0 0 0 0 1.06l1.72 1.72H2.25a.75.75 0 0 0 0 1.5h10.94l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 0 0-1.06 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+
+            <input
+              className="w-14 outline-none bg-gray-200 p-1 rounded-md"
+              type="number"
+              step="0.1"
+              value={selectedTransition?.options?.duration}
+              onChange={(e) =>
+                setSelectedTransition((prev) => {
+                  prev.options.duration = parseFloat(e.target.value);
+                  return { ...prev };
+                })
+              }
+              title="Transition On Enter"
             />
           </div>
         )}
