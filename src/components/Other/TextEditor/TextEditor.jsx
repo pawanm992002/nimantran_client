@@ -52,6 +52,11 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
   const [selectedTransition, setSelectedTransition] = useState(
     property?.transition
   );
+  console.log(property);
+  const [selectedTransitionOut, setSelectedTransitionOut] = useState(
+    property?.transitionOut
+  );
+
   const [fontWeight, setFontWeight] = useState(property?.fontWeight);
   const [fontColor, setFontColor] = useState(property?.fontColor);
   const [fontStyle, setFontStyle] = useState(property?.fontStyle);
@@ -75,6 +80,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       duration: duration,
       backgroundColor: backgroundColor,
       transition: selectedTransition,
+      transitionOut: selectedTransitionOut,
       hidden: property?.hidden,
       page: property?.page,
     });
@@ -88,11 +94,14 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     fontFamily,
     backgroundColor,
     selectedTransition?.type,
-    selectedTransition?.options?.duration
+    selectedTransition?.options?.duration,
+    selectedTransitionOut?.type,
+    selectedTransitionOut?.options?.duration,
   ]);
 
   useEffect(() => {
     setSelectedTransition(property?.transition);
+    setSelectedTransitionOut(property?.transitionOut);
     setBackgroundColor(property?.backgroundColor);
     setFontSize(property?.fontSize);
     setFontColor(property?.fontColor);
@@ -121,7 +130,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       setDuration(parseFloat(value));
     } else if (name === "backgroundColor") {
       setBackgroundColor(value);
-    } 
+    }
     // else if (name === "transition") {
     //   setSelectedTransition(JSON.parse(value));
     // }
@@ -210,6 +219,8 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             className="w-14 outline-none bg-gray-200 p-1 rounded-md"
             type="number"
             name="size"
+            min="1"
+            max="100"
             value={fontSize}
             onChange={handleStyleChange}
             title="Set font size"
@@ -326,6 +337,8 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               type="number"
               name="startTime"
               step="0.1"
+              min="0"
+              max={duration}
               value={startTime}
               onChange={handleStyleChange}
               title="Set start time"
@@ -355,6 +368,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               type="number"
               name="duration"
               step="0.1"
+              min={startTime + 0.1}
               value={duration}
               onChange={handleStyleChange}
               title="Set duration"
@@ -369,10 +383,12 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               name="transition"
               // defaultValue={JSON.stringify(property.transition)}
               value={selectedTransition.type}
-              onChange={(e) => setSelectedTransition((prev) => {
-                prev.type = e.target.value;
-                return { ...prev };
-              })}
+              onChange={(e) =>
+                setSelectedTransition((prev) => {
+                  prev.type = e.target.value;
+                  return { ...prev };
+                })
+              }
               title="Select transition"
             >
               {transitionArray.map((transition, i) => (
@@ -384,7 +400,6 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
           </div>
         )}
 
-{console.log(selectedTransition)}
         {comp === "video" && (
           <div className="h-9 flex items-center bg-gray-200 rounded-md">
             <svg
@@ -404,6 +419,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               className="w-14 outline-none bg-gray-200 p-1 rounded-md"
               type="number"
               step="0.1"
+              min={0.1}
               value={selectedTransition?.options?.duration}
               onChange={(e) =>
                 setSelectedTransition((prev) => {
@@ -412,6 +428,61 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
                 })
               }
               title="Transition On Enter"
+            />
+          </div>
+        )}
+        {comp === "video" && (
+          <div className="h-9 flex items-center bg-gray-200 rounded-md">
+            <select
+              className="h-9 outline-none p-2 rounded-md w-full"
+              name="transitionOut"
+              // defaultValue={JSON.stringify(property.transition)}
+              value={selectedTransitionOut.type}
+              onChange={(e) =>
+                setSelectedTransitionOut((prev) => {
+                  prev.type = e.target.value;
+                  return { ...prev };
+                })
+              }
+              title="Select transition Out"
+            >
+              {transitionArray.map((transition, i) => (
+                <option value={transition.type} key={i}>
+                  {transition.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {comp === "video" && (
+          <div className="h-9 flex items-center bg-gray-200 rounded-md">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-6 rotate-180"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6Zm-5.03 4.72a.75.75 0 0 0 0 1.06l1.72 1.72H2.25a.75.75 0 0 0 0 1.5h10.94l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 0 0-1.06 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+
+            <input
+              className="w-14 outline-none bg-gray-200 p-1 rounded-md"
+              type="number"
+              step="0.1"
+              min={0.1}
+              value={selectedTransitionOut?.options?.duration}
+              onChange={(e) =>
+                setSelectedTransitionOut((prev) => {
+                  prev.options.duration = parseFloat(e.target.value);
+                  return { ...prev };
+                })
+              }
+              title="Transition On Exit"
             />
           </div>
         )}

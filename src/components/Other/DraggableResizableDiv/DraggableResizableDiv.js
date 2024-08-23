@@ -20,7 +20,7 @@ const DraggableResizableDiv = ({
   const [size, setSize] = useState(property?.size);
   const [visible, setVisible] = useState(true);
   const [isAtCenter, setIsAtCenter] = useState(false);
-
+  // console.log(property)
   const handleDrag = (e, data) => {
     if (data.x >= 0 && data.y >= 0) {
       setPosition({ x: data.x, y: data.y });
@@ -66,6 +66,7 @@ const DraggableResizableDiv = ({
       duration: property.duration,
       backgroundColor: property.backgroundColor,
       transition: property.transition,
+      transitionOut: property.transitionOut,
       hidden: property.hidden,
       page: property.page,
     });
@@ -77,6 +78,7 @@ const DraggableResizableDiv = ({
     property.hidden,
     property.backgroundColor,
     property.fontWeight,
+    property.transitionOut,
   ]);
 
   useEffect(() => {

@@ -82,10 +82,20 @@ export default function WeddingVideo() {
       text: `{name}`,
       backgroundColor: "none",
       hidden: false,
-      transition: { type: "none", name: "Select Transition", options: {duration: 0} },
+      transition: {
+        type: "none",
+        name: "Select Transition",
+        options: { duration: 0 },
+      },
+      transitionOut: {
+        type: "none",
+        name: "Select Transition Out",
+        options: { duration: 0 },
+      },
     };
     setCount(count + 1);
     setTexts([...texts, newText]);
+    console.log(newText);
   };
 
   const handleVideoUpload = (event) => {
@@ -195,7 +205,7 @@ export default function WeddingVideo() {
     }
     setIsLoading(false);
   };
-  
+
   // useEffect(() => {
   //   console.log(texts);
   //   if (texts.length !== 0) {
@@ -270,6 +280,7 @@ export default function WeddingVideo() {
             comp="video"
           />
         )}
+
         <div className="main-wrapper">
           <form className="sidebar" onSubmit={handleSubmit}>
             <label
