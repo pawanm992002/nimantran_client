@@ -11,6 +11,8 @@ const Profile = () => {
   const id = params.get("customerId");
   const [credits, setCredits] = useState(0);
   const [purchaseRequestModal, setPurchaseRequestModal] = useState(false);
+  const [requests, setRequests] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   const requestCreditFromClient = async (e) => {
     try {
@@ -23,6 +25,8 @@ const Profile = () => {
         }
       );
       toast.success("Credits purchased");
+      setPurchaseRequestModal(false);
+      fetchCustomerDetails();
     } catch (error) {
       toast.error("Error buying credits");
     }
@@ -37,113 +41,165 @@ const Profile = () => {
         }
       );
       setCustomerInfo(data?.data);
+      setRequests(data?.data.requests || []);
+      setFilteredData(data?.data.requests || []);
     } catch (error) {
       toast.error(error.response.data.message);
     }
   };
+
   useEffect(() => {
     fetchCustomerDetails();
   }, []);
 
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+    }
+  };
+
+  const handleFiltersStatusChange = (e) => {
+    const status = e.target.value;
+    if (status === "All") {
+      setFilteredData(requests);
+    } else {
+      setFilteredData(requests.filter((request) => request.status === status));
+    }
+  };
+  console.log(customerInfo);
   return (
-    <div className="flex mt-4 p-5 h-[60vh] w-[70vw] rounded-lg items-center shadow-lg border">
-      <div className="w-1/3 flex flex-col items-center border-r pr-4">
-        <div className="rounded-full bg-gray-300 w-24 h-24 flex items-center justify-center mb-4">
-          <svg
-            className="w-12 h-12 text-gray-500"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M12 12c2.208 0 4-1.792 4-4s-1.792-4-4-4-4 1.792-4 4 1.792 4 4 4zm0 2c-3.528 0-6 2.392-6 5.308v.692h12v-.692c0-2.916-2.472-5.308-6-5.308z" />
-          </svg>
+    <div className="w-full flex p-8 gap-x-4">
+      <div className="bg-white rounded-lg shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] p-8 flex flex-col gap-y-4 max-w-[450px] w-full">
+        <div className="bg-blue-50 py-6 px-4 rounded-lg flex items-center gap-x-2">
+          <h1 className="text-xl font-semibold text-blue-500">
+            Customer Name:
+          </h1>
+          <p className="text-lg">{customerInfo.name}</p>
         </div>
-
-        <h2 className="text-xl font-medium">{customerInfo.name}</h2>
-        <p className="text-gray-600">{customerInfo.mobile}</p>
+        <div className="bg-blue-50 py-6 px-4 rounded-lg flex items-center gap-x-2">
+          <h1 className="text-xl font-semibold text-blue-500">Mobile:</h1>
+          <p className="text-lg">{customerInfo.mobile}</p>
+        </div>
+        <div className="bg-blue-50 py-6 px-4 rounded-lg flex items-center gap-x-2">
+          <h1 className="text-xl font-semibold text-blue-500">Credits:</h1>
+          <p className="text-lg">{customerInfo.credits}</p>
+        </div>
+        <div className="bg-blue-50 py-6 px-4 rounded-lg flex items-center gap-x-2">
+          <h1 className="text-xl font-semibold text-blue-500">Gender:</h1>
+          <p className="text-lg">{customerInfo.gender}</p>
+        </div>
+        <div className="bg-blue-50 py-6 px-4 rounded-lg flex items-center gap-x-2">
+          <h1 className="text-xl font-semibold text-blue-500">Location:</h1>
+          <p className="text-lg">{customerInfo.location}</p>
+        </div>
       </div>
-
-      <div className="w-2/3 pl-4">
-        <div className="mb-4">
-          <div className="space-y-2">
-            <p>
-              <strong>Gender:</strong>
-              {customerInfo.gender}
-            </p>
-            <p>
-              <strong>D.O.B.:</strong>
-              {new Date(customerInfo.dateOfBirth).toLocaleDateString()}
-            </p>
-            <p>
-              <strong>Location:</strong> {customerInfo.location}
-            </p>
-          </div>
+      <div className="w-full">
+        <div className="w-full">
           {localStorage.getItem("role") === "customer" && (
             <button
               type="button"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 my-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              className="text-white bg-blue-500 w-full rounded-md py-2.5"
               onClick={() => setPurchaseRequestModal(true)}
             >
               Request Credit from Client
             </button>
           )}
-        </div>
-      </div>
-      <div className="w-56 flex flex-col">
-        <CircularProgressbar
-          value={(customerInfo.credits / 2000) * 100}
-          text={`${Math.round((customerInfo.credits / 2000) * 100)}%`}
-          styles={buildStyles({
-            display: "flex",
-            textColor: "#000",
-            pathColor: `rgba(62, 152, 199, ${customerInfo.credits})`,
-            trailColor: "#d6d6d6",
-            textStyle: {
-              fontSize: "16px",
-              fontWeight: "bold",
-            },
-          })}
-        />
-        <div style={{ textAlign: "center", marginTop: 10 }}>
-          <p>Credits</p>
-          <p>{customerInfo.credits} / 2000</p>
-        </div>
-      </div>
-
-      {purchaseRequestModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-8 w-1/3">
-            <h3 className="text-2xl mb-4">Request Credits from Client</h3>
-            <form onSubmit={(e) => requestCreditFromClient(e)}>
-              <div className="mb-4">
-                <label className="block mb-2">Credits:</label>
-                <input
-                  type="number"
-                  value={credits}
-                  onChange={(e) => setCredits(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  required
-                  min={1}
-                />
+          {purchaseRequestModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white rounded-lg p-8 w-1/3">
+                <h3 className="text-2xl mb-4">Request Credits from Client</h3>
+                <form onSubmit={(e) => requestCreditFromClient(e)}>
+                  <div className="mb-4">
+                    <label className="block mb-2">Credits:</label>
+                    <input
+                      type="number"
+                      value={credits}
+                      onKeyPress={handleKeyPress}
+                      onChange={(e) => setCredits(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      required
+                      min={1}
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setPurchaseRequestModal(false)}
+                      className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                    >
+                      Request
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setPurchaseRequestModal(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-                >
-                  Request
-                </button>
-              </div>
-            </form>
+            </div>
+          )}
+        </div>
+        <div className="m-8">
+          <h2 className="text-2xl font-semibold mb-4">Requests To Client</h2>
+          <div
+            className="overflow-y-auto no-scrollbar border"
+            style={{ height: "40vh" }}
+          >
+            <table className="min-w-full bg-white border border-gray-200">
+              <thead className="bg-gray-200 sticky top-[-1px]">
+                <tr>
+                  <th className="py-2 px-4 border-b">Credits</th>
+                  <th className="py-2 px-4 border-b">
+                    <label>Status : </label>
+                    <select
+                      className="border px-4 py-1 box-border rounded-md bg-gray-300"
+                      onChange={(e) => handleFiltersStatusChange(e)}
+                    >
+                      <option value="All">All</option>
+                      <option value="Completed" className="text-green-500">
+                        Completed
+                      </option>
+                      <option value="Pending" className="text-yellow-500">
+                        Pending
+                      </option>
+                      <option value="Failed" className="text-red-500">
+                        Failed
+                      </option>
+                    </select>
+                  </th>
+                  <th className="py-2 px-4 border-b">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {requests.length > 0 ? (
+                  filteredData.map((request) => (
+                    <tr key={request._id}>
+                      <td className="py-2 text-center px-4 border-b">
+                        {request?.credits}
+                      </td>
+                      <td className="py-2 text-center px-4 border-b">
+                        {request?.status}
+                      </td>
+                      <td className="py-2 text-center px-4 border-b">
+                        {new Date(request?.createdAt).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="py-2 px-4 border-b text-center" colSpan="3">
+                      No requests found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
