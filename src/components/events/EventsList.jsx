@@ -12,6 +12,8 @@ const EventsList = () => {
   const [customerId, setCustomerId] = useState(null);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const [searchItem, setsearchItem] = useState("");
+
   const fetchEvents = async () => {
     try {
       setLoading(true);
@@ -21,8 +23,17 @@ const EventsList = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setCustomers(response?.data?.data.reverse());
+
+      const sortedCustomers = response?.data?.data.map((customer) => {
+        customer.events.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        return customer;
+      });
+      console.log(sortedCustomers);
+      setCustomers(sortedCustomers);
       setLoading(false);
+      console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching events:", error);
       setLoading(false);
@@ -63,6 +74,12 @@ const EventsList = () => {
   const handleEventUpdated = () => {
     fetchEvents();
   };
+  const filteredCustomers = customers.map((customer) => ({
+    ...customer,
+    events: customer.events.filter((event) =>
+      event.eventName.toLowerCase().includes(searchItem.toLowerCase())
+    ),
+  }));
 
   return (
     <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
@@ -76,9 +93,17 @@ const EventsList = () => {
             <tr>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-x-2"
               >
                 Event Name
+                <div>
+                  <input
+                    type="text"
+                    className="px-2 py-1 rounded-full border-[1px] border-gray-400"
+                    placeholder="Search here"
+                    onChange={(e) => setsearchItem(e.target?.value?.trim())}
+                  />
+                </div>
               </th>
               <th
                 scope="col"
@@ -119,7 +144,7 @@ const EventsList = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {customers?.map((customer) =>
+            {filteredCustomers?.map((customer) =>
               customer.events.map((event) => (
                 <tr key={event._id} className="hover:bg-gray-100">
                   <td
