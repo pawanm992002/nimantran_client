@@ -96,12 +96,13 @@ export default function WeddingImage() {
 //  }
 
   const handleVideoUpload = async (event) => {
-    const inputFile = event.target.files[0];
+    const file = event.target.files[0];
     const formData = new FormData();
-    formData.append("inputfile", inputFile);
-    if (inputFile) {
-      const videoPlayer = document.getElementById("videoPlayer");
-        console.log(inputFile)
+    formData.append("inputfile", file);
+    if (file) {
+      var videoPlayer = document.getElementById("videoPlayer");
+   
+        console.log(file)
         try {
           const response = await axios.post(
             `${process.env.REACT_APP_BACKEND_URL}/texts/image?eventId=${eventId}`,
@@ -130,7 +131,7 @@ export default function WeddingImage() {
         });
       };
 
-      const fileURL = URL.createObjectURL(inputFile);
+      const fileURL = URL.createObjectURL(file);
       img.src = fileURL;
       videoPlayer.src = fileURL;
     }
@@ -194,7 +195,7 @@ export default function WeddingImage() {
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
       formData.append("isSample", isSample);
-
+      console.log(formData)
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/imageEdit?eventId=${eventId}`,
         formData,
@@ -249,8 +250,27 @@ export default function WeddingImage() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        // console.log(response.data[0].texts);
+        console.log(response.data[0].inputFile);
+        const videoPlayer = document.getElementById("videoPlayer");
+        const img = new Image();
+        img.onload = () => {
+          // Set the original size
+          setOriginalSize({
+            w: img.naturalWidth,
+            h: img.naturalHeight,
+          });
+  
+          // Set the resized size after the image is loaded and resized in the container
+          setResized({
+            w: videoPlayer.clientWidth,
+            h: videoPlayer.clientHeight,
+          });
+        };
+        img.src = response.data[0].inputFile;
+        videoPlayer.src = response.data[0].inputFile;
+
         setTexts(response.data[0].texts);
+        setVideo(img);
         console.log(texts);
         return response.data[0].texts;
       } catch (error) {
