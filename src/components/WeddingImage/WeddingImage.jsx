@@ -358,21 +358,23 @@ export default function WeddingImage() {
             )}
             <div
               className="videoContainer"
-              style={{ display: !video ? "none" : "flex" }}
+              style={{ display: !video ? "none" : "flex", width: 'inherit',
+                height: 'inherit' }}
             >
               {/* <div className="app"> */}
               <div
                 style={{
                   position: "relative",
                   display: "inline-block",
+                  width: 'inherit',
+                  height: 'inherit'
                 }}
                 ref={videoRef}
               >
                 <img
                   style={{
                     backgroundColor: "#000",
-                    width: "100%",
-                    maxHeight: "var(--contentMaxHeight)",
+                    // maxHeight: "var(--contentMaxHeight)",
                     margin: "0px",
                     objectFit: "contain",
                   }}

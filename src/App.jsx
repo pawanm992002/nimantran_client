@@ -102,10 +102,7 @@ const App = () => {
           <Route path="events" element={<CustomerEvents />} />
           <Route path="credits" element={<Transactions />} />
         </Route>
-
-        <Route path="/videoEdit" element={<WeddingVideo />} />
-        <Route path="/cardEdit" element={<WeddingCard />} />
-        <Route path="/imageEdit" element={<WeddingImage />} />
+        
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
