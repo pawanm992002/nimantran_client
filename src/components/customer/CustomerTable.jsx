@@ -195,7 +195,7 @@ const CustomerTable = () => {
         );
   const navigate = useNavigate();
   const handleCustomerProfile = (id) => {
-    navigate(`/customer/profile?customerId=${id}`);
+    // navigate(`/customer/profile?customerId=${id}`);
   };
 
   return (
