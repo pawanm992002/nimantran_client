@@ -189,7 +189,7 @@ const Login = () => {
                 Login
               </button>
             </div>
-            <p className="text-sm text-gray-600 text-center">
+            {/* <p className="text-sm text-gray-600 text-center">
               Don't have an account?
               <Link
                 to={"/register"}
@@ -197,7 +197,7 @@ const Login = () => {
               >
                 Register Now
               </Link>
-            </p>
+            </p> */}
           </form>
         </div>
       </div>

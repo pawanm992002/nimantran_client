@@ -1,8 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ServiceCard from "../components/Landingpage/ServiceCard";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 const LandingPage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  const fetchUserInfo = async () => {
+    try {
+      const {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if(data.data?.role === "customer") {
+        navigate(`/customer/profile?customerId=${data.data._id}`)
+      } else {
+        navigate(`/${data.data.role}/dashboard`)
+      }
+    } catch (error) {
+      // navigate('/')
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo()
+  }, []);
   return (
     <div>
       <header className="bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-center h-[100vh] py-8">

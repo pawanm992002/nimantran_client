@@ -20,6 +20,11 @@ const Customer = () => {
   const customerId = params.get("customerId");
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   // useEffect(() => {
   //   if (location.pathname === `/customer` && customerId) {
   //     navigate(`/customer/profile?customerId=${customerId}`);
@@ -80,8 +85,8 @@ const Customer = () => {
           <div className="flex items-center">
             <div className="flex items-center">
               {/* <img className="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Profile" /> */}
-              <span className="size-8 rounded-full mr-2 bg-slate-400 justify-center items-center flex cursor-pointer">
-                P
+              <span className="p-2 rounded-md mr-2 border-2 justify-center items-center flex">
+                {role} Account
               </span>
               <div className="h-full flex items-center justify-center">
                 <div
@@ -94,6 +99,7 @@ const Customer = () => {
               <div className="h-full flex items-center justify-center">
                 <div
                   className="bg-black text-white text-center mx-2 py-2 px-4 rounded-lg cursor-pointer"
+                  onClick={() => handleLogout()}
                 >
                   Logout
                 </div>

@@ -3,9 +3,10 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const EventLayout = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const role = localStorage.getItem("role");
   const navigate = useNavigate()
   const location = useLocation();
+  const role = localStorage.getItem("role");
+  const customerIdFromLocal = localStorage.getItem("_id");
 
   useEffect(() => {
     const pathname = location.pathname;
@@ -23,10 +24,18 @@ const EventLayout = () => {
       setCurrentStep(4);
     }
   }, [location.pathname]);
+  
+  const gotoDashboard = () => {
+    if(role === "customer") {
+      navigate(`/customer/profile?customerId=${customerIdFromLocal}`)
+    } else {
+      navigate(`/${role}/dashboard`);
+    } 
+  }
   return (
     <div className="h-full flex flex-col items-center justify-center p-4">
       <ol className="flex justify-between items-center w-[80vw] mb-3">
-        <span className="mr-5" onClick={() => navigate(`/${role}/dashboard`)}>
+        <span className="mr-5" onClick={() => gotoDashboard()}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

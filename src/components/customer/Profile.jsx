@@ -15,6 +15,7 @@ const Profile = () => {
   const [filteredData, setFilteredData] = useState([]);
 
   const requestCreditFromClient = async (e) => {
+    setPurchaseRequestModal(false);
     try {
       e.preventDefault();
       await axios.post(
@@ -25,10 +26,26 @@ const Profile = () => {
         }
       );
       toast.success("Credits purchased");
-      setPurchaseRequestModal(false);
+      setCredits(0);
       fetchCustomerDetails();
+      fetchRequests()
     } catch (error) {
       toast.error("Error buying credits");
+    }
+  };
+
+  const fetchRequests = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/customers/customers-requests?customerId=${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setRequests(data.data);
+      setFilteredData(data?.data || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to fetch requests");
     }
   };
 
@@ -41,8 +58,6 @@ const Profile = () => {
         }
       );
       setCustomerInfo(data?.data);
-      setRequests(data?.data.requests || []);
-      setFilteredData(data?.data.requests || []);
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -50,6 +65,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchCustomerDetails();
+    fetchRequests();
   }, []);
 
   const handleKeyPress = (event) => {
@@ -67,7 +83,7 @@ const Profile = () => {
       setFilteredData(requests.filter((request) => request.status === status));
     }
   };
-  console.log(customerInfo);
+
   return (
     <div className="w-full flex p-8 gap-x-4">
       <div className="bg-white rounded-lg shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] p-8 flex flex-col gap-y-4 max-w-[450px] w-full">
@@ -125,7 +141,10 @@ const Profile = () => {
                   <div className="flex justify-end">
                     <button
                       type="button"
-                      onClick={() => setPurchaseRequestModal(false)}
+                      onClick={() => {
+                        setPurchaseRequestModal(false);
+                        setCredits(0);
+                      }}
                       className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
                     >
                       Cancel
@@ -159,14 +178,14 @@ const Profile = () => {
                       onChange={(e) => handleFiltersStatusChange(e)}
                     >
                       <option value="All">All</option>
-                      <option value="Completed" className="text-green-500">
+                      <option value="completed" className="text-green-500">
                         Completed
                       </option>
-                      <option value="Pending" className="text-yellow-500">
+                      <option value="pending" className="text-yellow-500">
                         Pending
                       </option>
-                      <option value="Failed" className="text-red-500">
-                        Failed
+                      <option value="rejected" className="text-red-500">
+                        Rejected
                       </option>
                     </select>
                   </th>
@@ -190,7 +209,7 @@ const Profile = () => {
                   ))
                 ) : (
                   <tr>
-                    <td className="py-2 px-4 border-b text-center" colSpan="3">
+                    <td className="py-2 px-4 border-b text-center" colSpan="5">
                       No requests found
                     </td>
                   </tr>

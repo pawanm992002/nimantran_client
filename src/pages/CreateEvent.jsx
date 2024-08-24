@@ -16,6 +16,8 @@ const CreateEvent = () => {
   const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false);
   const [isStop, setIsStop] = useState(false);
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  const customerIdFromLocal = localStorage.getItem("_id");
 
   const handleCreateEvent = async (e) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ const CreateEvent = () => {
       };
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/events/create-event/${selectedCustomerId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/events/create-event/${role === "customer" ? customerIdFromLocal : selectedCustomerId}`,
         eventData,
         {
           headers: {
@@ -103,7 +105,7 @@ const CreateEvent = () => {
             required
           />
         </div>
-        <div className="mb-6">
+        {role !== "customer" && <div className="mb-6">
           <label className="flex justify-between text-lg font-medium text-gray-700">
             <span>
               Customer <span className="text-red-600">*</span>
@@ -146,7 +148,7 @@ const CreateEvent = () => {
               ))}
             </ul>
           )}
-        </div>
+        </div>}
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700">
             Date of Organising
