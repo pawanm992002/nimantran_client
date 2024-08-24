@@ -23,6 +23,7 @@ const CustomerTable = () => {
 
   const handleAcceptRequest = async (requestId) => {
     try {
+      setShowWarningModal(false);
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/client/acceptCustomerCreditRequest/${requestId}`,
         {
@@ -37,11 +38,11 @@ const CustomerTable = () => {
       toast.error(error.response.data.message);
     }
     setAcceptedRequestId("");
-    setShowWarningModal(false);
   };
 
   const handleRejectRequest = async (requestId) => {
     try {
+      setShowWarningModal(false);
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/client/rejectCustomerCreditRequest/${requestId}`,
         {
@@ -55,6 +56,7 @@ const CustomerTable = () => {
     } catch (error) {
       toast.error(error.response.data.message);
     }
+    setAcceptedRequestId("");
   };
 
   const fetchClientDetails = async () => {
@@ -166,6 +168,7 @@ const CustomerTable = () => {
       toast.success(data.message);
       fetchClientDetails();
       handleModalCredits(customerId);
+      setCredits(0);
     } catch (error) {
       toast.error(error?.response?.data);
     }
@@ -319,8 +322,8 @@ const CustomerTable = () => {
                       <option value="Pending" className="text-yellow-500">
                         Pending
                       </option>
-                      <option value="Failed" className="text-red-500">
-                        Failed
+                      <option value="rejected" className="text-red-500">
+                        Rejected
                       </option>
                     </select>
                   </th>
@@ -355,27 +358,28 @@ const CustomerTable = () => {
                       {request.status}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      {request.status === "pending" && <div>
-                      <button
-                        className="px-4 py-1 bg-blue-500 text-white rounded-lg"
-                        onClick={() => {
-                          setShowWarningModal(true);
-                          setAcceptedRequestId(request._id + "#accept");
-                        }}
-                      >
-                        Accept
-                      </button>
-                      <button
-                        className="px-4 py-1 bg-red-500 text-white rounded-lg ml-2"
-                        onClick={() => {
-                          setShowWarningModal(true);
-                          setAcceptedRequestId(request._id + "#reject");
-                        }}
-                      >
-                        Reject
-                      </button>
-                    </div>}
-                    
+                      {request.status === "pending" && (
+                        <div>
+                          <button
+                            className="px-4 py-1 bg-blue-500 text-white rounded-lg"
+                            onClick={() => {
+                              setShowWarningModal(true);
+                              setAcceptedRequestId(request._id + "#accept");
+                            }}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="px-4 py-1 bg-red-500 text-white rounded-lg ml-2"
+                            onClick={() => {
+                              setShowWarningModal(true);
+                              setAcceptedRequestId(request._id + "#reject");
+                            }}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -408,7 +412,10 @@ const CustomerTable = () => {
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
-                  onClick={() => showCreditModal(false)}
+                  onClick={() => {
+                    showCreditModal(false);
+                    setCredits(0);
+                  }}
                   className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
                 >
                   Cancel
@@ -424,7 +431,7 @@ const CustomerTable = () => {
           </div>
         </div>
       )}
-            {showWarningModal && (
+      {showWarningModal && (
         <div className="fixed z-30 inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
             <h2 className="text-xl font-bold mb-4 text-center">
@@ -441,27 +448,25 @@ const CustomerTable = () => {
               >
                 Cancel
               </button>
-              {
-                (acceptedRequestId.split("#")[1] === "accept" ? (
-                  <button
-                    onClick={() =>
-                      handleAcceptRequest(acceptedRequestId.split("#")[0])
-                    }
-                    className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
-                  >
-                    Accept
-                  </button>
-                ) : (
-                  <button
-                    onClick={() =>
-                      handleRejectRequest(acceptedRequestId.split("#")[0])
-                    }
-                    className="px-6 py-2 font-semibold rounded-lg bg-red-500 text-white"
-                  >
-                    Reject
-                  </button>
-                ))
-              }
+              {acceptedRequestId.split("#")[1] === "accept" ? (
+                <button
+                  onClick={() =>
+                    handleAcceptRequest(acceptedRequestId.split("#")[0])
+                  }
+                  className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
+                >
+                  Accept
+                </button>
+              ) : (
+                <button
+                  onClick={() =>
+                    handleRejectRequest(acceptedRequestId.split("#")[0])
+                  }
+                  className="px-6 py-2 font-semibold rounded-lg bg-red-500 text-white"
+                >
+                  Reject
+                </button>
+              )}
             </div>
           </div>
         </div>

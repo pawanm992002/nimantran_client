@@ -86,7 +86,7 @@ const EditProfileCustomer = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   {field.label}
                 </label>
-                <input
+                <input 
                   type={field.type}
                   name={field.name}
                   value={formData[field.name]}

@@ -53,8 +53,9 @@ const ClientDashboard = () => {
   };
 
   const requestCreditsFromAdmin = async (e) => {
-    e.preventDefault();
     try {
+      e.preventDefault();
+      handleModalPurchaseRequest(); // Close modal even if the request fails
       await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/client/purchase-request-from-admin`,
         { credits: parseInt(adminCredits) },
@@ -64,14 +65,13 @@ const ClientDashboard = () => {
       );
 
       toast.success("Request Sent Successfully");
+      setAdminCredits(0)
       fetchClientDetails();
       fetchRequests();
-      handleModalPurchaseRequest();
     } catch (error) {
       toast.error(
         error?.response?.data?.message || "Failed to request credits"
       );
-      handleModalPurchaseRequest(); // Close modal even if the request fails
     }
   };
 
@@ -156,8 +156,8 @@ const ClientDashboard = () => {
                         <option value="Pending" className="text-yellow-500">
                           Pending
                         </option>
-                        <option value="Failed" className="text-red-500">
-                          Failed
+                        <option value="rejected" className="text-red-500">
+                          rejected
                         </option>
                       </select>
                     </th>

@@ -61,8 +61,10 @@ const AdminDashboard = () => {
       toast.error(error.message);
     }
   };
+
   const handleAcceptRequest = async (requestId) => {
     try {
+      setShowWarningModal(false);
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/admin/acceptCreditRequest/${requestId}`,
         {
@@ -77,11 +79,11 @@ const AdminDashboard = () => {
       toast.error("Error accepting request");
     }
     setAcceptedRequestId("");
-    setShowWarningModal(false);
   };
 
   const handleRejectRequest = async (requestId) => {
     try {
+      setShowWarningModal(false);
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/admin/rejectCreditRequest/${requestId}`,
         {
@@ -95,6 +97,7 @@ const AdminDashboard = () => {
     } catch (error) {
       toast.error("Error accepting request");
     }
+    setAcceptedRequestId("");
   };
   const handleFiltersStatusChange = (e) => {
     setSelectedStatus(e.target.value);
@@ -284,8 +287,8 @@ const AdminDashboard = () => {
                   <option value="Pending" className="text-yellow-500">
                     Pending
                   </option>
-                  <option value="Failed" className="text-red-500">
-                    Failed
+                  <option value="rejected" className="text-red-500">
+                    rejected
                   </option>
                 </select>
               </th>
