@@ -18,6 +18,44 @@ const CustomerTable = () => {
   const [sortByDate, setsortByDate] = useState(null); // Sorting state for date
   const [sortByCredits, setsortByCredits] = useState(null); // Sorting state for credits
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [acceptedRequestId, setAcceptedRequestId] = useState("");
+
+  const handleAcceptRequest = async (requestId) => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/client/acceptCustomerCreditRequest/${requestId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (data?.success) {
+        toast.success(data.message);
+        fetchCustomersRequest(); // Refresh requests after accepting
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+    setAcceptedRequestId("");
+    setShowWarningModal(false);
+  };
+
+  const handleRejectRequest = async (requestId) => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/client/rejectCustomerCreditRequest/${requestId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (data?.success) {
+        toast.success(data.message);
+        fetchCustomersRequest(); // Refresh requests after accepting
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
 
   const fetchClientDetails = async () => {
     setLoading(true); // Start loading
@@ -77,8 +115,8 @@ const CustomerTable = () => {
 
   const filteredRequestsCustomers = customerRequests.filter((customer) => {
     return (
-      customer?.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer?.user?.mobile.toLowerCase().includes(searchTerm.toLowerCase())
+      customer?.By?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer?.By?.mobile.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -286,6 +324,7 @@ const CustomerTable = () => {
                       </option>
                     </select>
                   </th>
+                  <th className="px-4 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -295,10 +334,10 @@ const CustomerTable = () => {
                     className="even:bg-gray-100 odd:bg-white"
                   >
                     <td className="px-4 py-2 text-center">
-                      {request?.user?.name}
+                      {request?.By?.name}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      {request?.user?.mobile}
+                      {request?.By?.mobile}
                     </td>
                     <td className="px-4 py-2 text-center">
                       {new Date(request.createdAt).toLocaleDateString()}
@@ -314,6 +353,29 @@ const CustomerTable = () => {
                       }`}
                     >
                       {request.status}
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      {request.status === "pending" && <div>
+                      <button
+                        className="px-4 py-1 bg-blue-500 text-white rounded-lg"
+                        onClick={() => {
+                          setShowWarningModal(true);
+                          setAcceptedRequestId(request._id + "#accept");
+                        }}
+                      >
+                        Accept
+                      </button>
+                      <button
+                        className="px-4 py-1 bg-red-500 text-white rounded-lg ml-2"
+                        onClick={() => {
+                          setShowWarningModal(true);
+                          setAcceptedRequestId(request._id + "#reject");
+                        }}
+                      >
+                        Reject
+                      </button>
+                    </div>}
+                    
                     </td>
                   </tr>
                 ))}
@@ -359,6 +421,48 @@ const CustomerTable = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+            {showWarningModal && (
+        <div className="fixed z-30 inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4 text-center">
+              Do you want to {acceptedRequestId.split("#")[1]} Request ?
+            </h2>
+            <div className="flex justify-center space-x-4">
+              <button
+                type="button"
+                className="px-6 py-2 font-semibold rounded-lg bg-gray-200 text-gray-800"
+                onClick={() => {
+                  setAcceptedRequestId("");
+                  setShowWarningModal(false);
+                }}
+              >
+                Cancel
+              </button>
+              {
+                (acceptedRequestId.split("#")[1] === "accept" ? (
+                  <button
+                    onClick={() =>
+                      handleAcceptRequest(acceptedRequestId.split("#")[0])
+                    }
+                    className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
+                  >
+                    Accept
+                  </button>
+                ) : (
+                  <button
+                    onClick={() =>
+                      handleRejectRequest(acceptedRequestId.split("#")[0])
+                    }
+                    className="px-6 py-2 font-semibold rounded-lg bg-red-500 text-white"
+                  >
+                    Reject
+                  </button>
+                ))
+              }
+            </div>
           </div>
         </div>
       )}

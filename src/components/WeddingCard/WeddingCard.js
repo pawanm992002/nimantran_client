@@ -329,7 +329,7 @@ export default function WeddingVideo() {
               >
                 <input
                   type="file"
-                  accept="application/pdf,application/vnd.ms-excel"
+                  accept="application/pdf"
                 />
                 <div className="upload-content">
                   <h2

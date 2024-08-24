@@ -49,7 +49,6 @@ const AdminDashboard = () => {
         }
       );
       if (data?.flag) {
-        
         toast.success(data.message);
         setIsModalOpen(false);
         setMobile("");
@@ -59,7 +58,6 @@ const AdminDashboard = () => {
         return;
       }
     } catch (error) {
-      
       toast.error(error.message);
     }
   };
@@ -221,7 +219,7 @@ const AdminDashboard = () => {
         <div className="fixed z-30 inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
             <h2 className="text-xl font-bold mb-4 text-center">
-              Do you want to Accept Request ?
+              Do you want to {acceptedRequestId.split("#")[1]} Request ?
             </h2>
             <div className="flex justify-center space-x-4">
               <button
@@ -234,12 +232,27 @@ const AdminDashboard = () => {
               >
                 Cancel
               </button>
-              <button
-                onClick={() => handleAcceptRequest(acceptedRequestId)}
-                className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
-              >
-                Accept
-              </button>
+              {
+                (acceptedRequestId.split("#")[1] === "accept" ? (
+                  <button
+                    onClick={() =>
+                      handleAcceptRequest(acceptedRequestId.split("#")[0])
+                    }
+                    className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
+                  >
+                    Accept
+                  </button>
+                ) : (
+                  <button
+                    onClick={() =>
+                      handleRejectRequest(acceptedRequestId.split("#")[0])
+                    }
+                    className="px-6 py-2 font-semibold rounded-lg bg-red-500 text-white"
+                  >
+                    Reject
+                  </button>
+                ))
+              }
             </div>
           </div>
         </div>
@@ -285,7 +298,7 @@ const AdminDashboard = () => {
             {filteredData.map((request) => (
               <tr key={request._id}>
                 <td className="py-2 px-4 border-b text-center border-gray-200">
-                  {request?.user?.name}
+                  {request?.By?.name}
                 </td>
                 <td className="py-2 px-4 border-b text-center border-gray-200">
                   {new Date(request.createdAt).toLocaleString()}
@@ -303,14 +316,17 @@ const AdminDashboard = () => {
                         className="px-4 py-1 bg-blue-500 text-white rounded-lg"
                         onClick={() => {
                           setShowWarningModal(true);
-                          setAcceptedRequestId(request._id);
+                          setAcceptedRequestId(request._id + "#accept");
                         }}
                       >
                         Accept
                       </button>
                       <button
                         className="px-4 py-1 bg-red-500 text-white rounded-lg ml-2"
-                        onClick={() => handleRejectRequest(request._id)}
+                        onClick={() => {
+                          setShowWarningModal(true);
+                          setAcceptedRequestId(request._id + "#reject");
+                        }}
                       >
                         Reject
                       </button>

@@ -78,14 +78,15 @@ const Login = () => {
       localStorage.setItem("mobile", data.mobile);
       localStorage.setItem("_id", data._id);
       localStorage.setItem("role", data.role);
-
+      
       toast.success(response.data.message);
-
+      
       // Navigate based on user role
       if (data.role === "client") {
         navigate(`/client/dashboard`);
       } else if (data.role === "customer") {
-        navigate(`/customer/profile?customerId=${response?.data?.data?._id}`);
+        localStorage.setItem("customerId", data._id);
+        navigate(`/customer/profile?customerId=${data._id}`);
       }
     } catch (error) {
       if (error.response) {

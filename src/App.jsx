@@ -27,9 +27,6 @@ import UsersTable from "./components/admin/UsersTable";
 import Admin from "./pages/Admin";
 import AdminEvents from "./components/admin/AdminEvents";
 import AdminTransaction from "./components/admin/AdminTransaction";
-import Events from "./pages/Events";
-import EventDashboard from "./components/events/EventDashboard";
-import GuestsList from "./components/events/GuestsList";
 import CreateEvent from "./pages/CreateEvent";
 import EventLayout from "./pages/EventLayout";
 import MediaGrid from "./components/mediaGrid/MediaGrid";
@@ -104,11 +101,6 @@ const App = () => {
           <Route path="editProfile" element={<EditProfileCustomer />} />
           <Route path="events" element={<CustomerEvents />} />
           <Route path="credits" element={<Transactions />} />
-        </Route>
-        <Route path="/events" element={<Events />}>
-          <Route path="dashboard" element={<EventDashboard />} />
-          <Route path="guests" element={<GuestsList />} />
-          <Route path="dashboard" element={<EventDashboard />} />
         </Route>
 
         <Route path="/videoEdit" element={<WeddingVideo />} />

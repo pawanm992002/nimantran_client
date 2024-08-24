@@ -4,11 +4,11 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 const Client = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-  //   const
   const navigate = useNavigate();
+  const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    const token = localStorage.getItem("token");
     if (role == null || token == null) {
       navigate("/login");
     }

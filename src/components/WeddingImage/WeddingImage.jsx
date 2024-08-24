@@ -54,7 +54,7 @@ export default function WeddingImage() {
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
 
-  const [videoObj,setVideoObj] = useState({})
+  const [videoObj, setVideoObj] = useState({});
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -89,11 +89,11 @@ export default function WeddingImage() {
     setTexts([...texts, newText]);
   };
 
-//  const handleVideoChange = () =>{
-//   const file = event.target.files[0];
-//   setVideo(URL.createObjectURL(file));
-//   setVideoObj(file);
-//  }
+  //  const handleVideoChange = () =>{
+  //   const file = event.target.files[0];
+  //   setVideo(URL.createObjectURL(file));
+  //   setVideoObj(file);
+  //  }
 
   const handleVideoUpload = async (event) => {
     const inputFile = event.target.files[0];
@@ -156,9 +156,9 @@ export default function WeddingImage() {
   };
 
   const handleSubmit = async (event, isSample) => {
-    event.preventDefault();
-    setIsLoading(true);
     try {
+      event.preventDefault();
+      setIsLoading(true);
       const formData = new FormData();
 
       let resized = document.getElementById("videoPlayer");
@@ -336,7 +336,11 @@ export default function WeddingImage() {
                   padding: video && "5px",
                 }}
               >
-                <input type="file" accept="image/*" onChange={(e)=>console.log("a",e)} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => console.log("a", e)}
+                />
                 <div className="upload-content">
                   <h2
                     className="upload-button"
