@@ -25,7 +25,7 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success("Credits purchased");
+      toast.success("Request send to Client");
       setCredits(0);
       fetchCustomerDetails();
       fetchRequests()

@@ -10,20 +10,17 @@ export default function ShowSampleModal({
   const headers = Object.keys(data?.at(0));
 
   const CalculateCost = () => {
+    let rate;
     if (Type === "Image") {
-      return `Total Guest * Cost Per Image : ${data.length.toFixed(
-        2
-      )} * 0.25 = ${data.length * 0.25}`;
+      rate = 0.25;
     } else if (Type === "video") {
-      return `Total Guest * Cost Per Image : ${data.length.toFixed(
-        2
-      )} * 0.50 = ${data.length * 0.5}`;
+      rate = 1.0;
     } else {
-      return `Total Guest * Cost Per Image : ${data.length.toFixed(
-        2
-      )} * 1.00 = ${data.length * 1.0}`;
-      ///type cards
+      rate = 0.5;
     }
+    return `Total Credits Required = Total Guest * Cost Per ${Type} : ${data.length.toFixed(
+      2
+    )} * ${rate} = ${data.length * rate}`;
   };
 
   const cost = CalculateCost();

@@ -217,7 +217,7 @@ export default function WeddingVideo() {
 
   //   useEffect(() => {
 
-      // var getText = async () => {
+  // var getText = async () => {
 
   //     try {
   //       var response = await axios.get(
@@ -327,10 +327,7 @@ export default function WeddingVideo() {
                   padding: pdfFile && "5px",
                 }}
               >
-                <input
-                  type="file"
-                  accept="application/pdf"
-                />
+                <input type="file" accept="application/pdf" />
                 <div className="upload-content">
                   <h2
                     className="upload-button"
@@ -438,18 +435,20 @@ export default function WeddingVideo() {
               <h2 className="text-2xl font-semibold mb-4">Previews</h2>
 
               {/* Horizontal Scrollable Container */}
-              <div className="flex space-x-4 overflow-x-auto p-2">
+              <div className="flex space-x-4 p-2">
                 {processedVideoUrls.map((val, i) => (
                   <div
-                    key={i}
-                    className="min-w-[250px] bg-gray-200 rounded-lg shadow-lg overflow-y-scroll max-h-[460px]"
+                    style={{
+                      position: "relative",
+                      display: "inline-block",
+                      width: "70vw",
+                      maxHeight: "500px",
+                      overflow: "auto",
+                      position: "relative",
+                    }}
                   >
                     <Worker workerUrl={pdfjsWorker}>
-                      <Viewer
-                        fileUrl={val.link}
-                        scrollMode="Page"
-                        // plugins={[defaultLayoutPluginInstance]}
-                      />
+                      <Viewer fileUrl={val.link} />
                     </Worker>
                   </div>
                 ))}

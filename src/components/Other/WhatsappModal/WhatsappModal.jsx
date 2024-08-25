@@ -27,9 +27,9 @@ const WhatsappModal = ({
     }
   };
 
-  useEffect(() => {
-    generateQR();
-  }, []);
+  // useEffect(() => {
+  //   generateQR();
+  // }, []);
 
   const individualWhatsuppBusinessInvite = async (guest) => {
     try {
@@ -162,7 +162,7 @@ const WhatsappModal = ({
                   className="text-sm text-gray-800 hover:text-gray-500"
                   onClick={() => generateQR()}
                 >
-                  (Refresh QR)
+                  (Show QR)
                 </span>
                 {qrCode ? <img
                   src={qrCode}
