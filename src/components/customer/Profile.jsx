@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowRightArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 const Profile = () => {
   const token = localStorage.getItem("token");
   const [customerInfo, setCustomerInfo] = useState({});
@@ -13,6 +16,7 @@ const Profile = () => {
   const [purchaseRequestModal, setPurchaseRequestModal] = useState(false);
   const [requests, setRequests] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [sortOrder, setSortOrder] = useState(false);
 
   const requestCreditFromClient = async (e) => {
     setPurchaseRequestModal(false);
@@ -28,7 +32,7 @@ const Profile = () => {
       toast.success("Credits purchased");
       setCredits(0);
       fetchCustomerDetails();
-      fetchRequests()
+      fetchRequests();
     } catch (error) {
       toast.error("Error buying credits");
     }
@@ -43,7 +47,13 @@ const Profile = () => {
         }
       );
       setRequests(data.data);
-      setFilteredData(data?.data || []);
+      const sorted = [...data?.data].sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return dateB - dateA;
+      });
+      console.log(sorted);
+      setFilteredData(sorted);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch requests");
     }
@@ -82,6 +92,15 @@ const Profile = () => {
     } else {
       setFilteredData(requests.filter((request) => request.status === status));
     }
+  };
+  const sortByDate = () => {
+    const sorted = [...filteredData].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder ? dateA - dateB : dateB - dateA;
+    });
+    setFilteredData(sorted);
+    setSortOrder((prev) => !prev);
   };
 
   return (
@@ -189,7 +208,17 @@ const Profile = () => {
                       </option>
                     </select>
                   </th>
-                  <th className="py-2 px-4 border-b">Date</th>
+                  <th className="py-2 px-4 border-b">
+                    Date
+                    <button onClick={sortByDate}>
+                      <FontAwesomeIcon
+                        className={`rotate-90 mx-1 ${
+                          sortOrder === "asc" ? "transform rotate-180" : ""
+                        }`}
+                        icon={faArrowRightArrowLeft}
+                      />
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody>

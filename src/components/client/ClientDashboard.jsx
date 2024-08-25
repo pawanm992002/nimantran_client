@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import CreateCustomerJSX from "../Other/CreateCustomerModal/CreateCustomerModal";
 import toast from "react-hot-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const ClientDashboard = () => {
   const token = localStorage.getItem("token");
@@ -11,6 +13,7 @@ const ClientDashboard = () => {
   const [adminCredits, setAdminCredits] = useState(0);
   const [requests, setRequests] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [sortOrder, setSortOrder] = useState(false);
 
   // Fetch functions
   const fetchClientDetails = async () => {
@@ -37,7 +40,12 @@ const ClientDashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setRequests(data?.data);
+      const SortedByDate = data?.data.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return dateB - dateA;
+      });
+      setRequests(SortedByDate);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch requests");
     }
@@ -49,6 +57,7 @@ const ClientDashboard = () => {
   }, []);
 
   const handleModalPurchaseRequest = () => {
+    setAdminCredits(0);
     showPurchaseRequestModal(!purchaseRequestModal);
   };
 
@@ -63,9 +72,8 @@ const ClientDashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       toast.success("Request Sent Successfully");
-      setAdminCredits(0)
+      setAdminCredits(0);
       fetchClientDetails();
       fetchRequests();
     } catch (error) {
@@ -94,6 +102,16 @@ const ClientDashboard = () => {
     selectedStatus === "All"
       ? requests
       : requests.filter((item) => item.status === selectedStatus.toLowerCase());
+
+  const sortByDate = () => {
+    const sorted = [...filteredData].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder ? dateA - dateB : dateB - dateA;
+    });
+    setRequests(sorted); // Update requests state instead of setFilteredData
+    setSortOrder((prev) => !prev);
+  };
 
   return (
     <>
@@ -147,7 +165,7 @@ const ClientDashboard = () => {
                       <label>Status : </label>
                       <select
                         className="border px-4 py-1  box-border rounded-md bg-gray-300"
-                        onChange={(e) => handleFiltersStatusChange(e)}
+                        onChange={handleFiltersStatusChange}
                       >
                         <option value="All">All</option>
                         <option value="Completed" className="text-green-500">
@@ -161,7 +179,17 @@ const ClientDashboard = () => {
                         </option>
                       </select>
                     </th>
-                    <th className="py-2 px-4 border-b">Date</th>
+                    <th className="py-2 px-4 border-b">
+                      Date
+                      <button onClick={sortByDate}>
+                        <FontAwesomeIcon
+                          className={`rotate-90 mx-1 ${
+                            sortOrder ? "transform rotate-180" : ""
+                          }`}
+                          icon={faArrowRightArrowLeft}
+                        />
+                      </button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -211,7 +239,7 @@ const ClientDashboard = () => {
                 <input
                   type="number"
                   value={adminCredits}
-                  onChange={(e) => handleCreditsChange(e)}
+                  onChange={handleCreditsChange}
                   onKeyPress={handleKeyPress}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   required

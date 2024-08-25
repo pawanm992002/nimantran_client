@@ -74,13 +74,19 @@ const EventsList = () => {
   const handleEventUpdated = () => {
     fetchEvents();
   };
-  const filteredCustomers = customers.map((customer) => ({
-    ...customer,
-    events: customer.events.filter((event) =>
-      event.eventName.toLowerCase().includes(searchItem.toLowerCase())
-    ),
-  }));
+const filteredCustomers = customers.filter((customer) => {
+  const customerNameMatch = customer.customerName
+    .toLowerCase()
+    .includes(searchItem.toLowerCase());
 
+  const eventsMatch = customer.events.some((event) =>
+    event.eventName.toLowerCase().includes(searchItem.toLowerCase())
+  );
+
+  return customerNameMatch || eventsMatch;
+});
+
+  console.log(filteredCustomers);
   return (
     <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
       {loading ? (
