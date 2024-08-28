@@ -98,7 +98,7 @@ const CustomerEvents = () => {
       {events.length > 0 ? (
         <table className="min-w-full bg-white shadow-lg rounded-lg overflow-y-scroll ">
           <thead>
-            <tr className="bg-gray-600 text-white">
+            <tr className="bg-gray-200 ">
               <th className="px-4 py-2 text-left flex items-center gap-x-2">
                 Event Name
                 <input
