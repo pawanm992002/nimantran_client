@@ -50,7 +50,6 @@ const DraggableResizableDiv = ({
     setOpenContextMenuId(property?.id);
   };
 
-  console.log(property.size.width);
   useEffect(() => {
     takeTextDetails({
       id: property?.id,

@@ -20,6 +20,7 @@ import TextEditor from "../Other/TextEditor/TextEditor";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import { debounce } from "lodash";
+import Loader from "../Other/Loader/Loader";
 
 export default function WeddingVideo() {
   const token = localStorage.getItem("token");
@@ -67,7 +68,7 @@ export default function WeddingVideo() {
     h: 0,
   });
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  const [zipUrl, setZipUrl] = useState("");
+  // const [zipUrl, setZipUrl] = useState("");
 
   const onDocumentLoad = async ({ doc }) => {
     const page = await doc.getPage(1);
@@ -133,10 +134,9 @@ export default function WeddingVideo() {
   };
 
   const handleSubmit = async (event, isSample) => {
-    event.preventDefault();
     try {
+      event.preventDefault();
       setIsLoading(true);
-      const formData = new FormData();
 
       let resized = document.getElementById("pdfPage");
       let scalingW = OriginalSize.w / resized.clientWidth;
@@ -145,7 +145,7 @@ export default function WeddingVideo() {
 
       if (!pdfFile) {
         setIsLoading(false);
-        return toast.error("Please Upload the PDF");
+        return toast.error("Please Upload the Video");
       }
 
       if (!texts) {
@@ -158,37 +158,67 @@ export default function WeddingVideo() {
         return toast.error("Please Enter Guest List");
       }
 
+      const formData = new FormData();
       formData.append("pdf", pdfFileObj);
-      // formData.append("guestNames", guestNames);
+      formData.append("guestNames", JSON.stringify(jsonData));
       formData.append("textProperty", JSON.stringify(texts));
       formData.append("scalingFont", scalingFont);
-      formData.append("guestNames", JSON.stringify(jsonData));
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
       formData.append("isSample", isSample);
-      // formData.append("videoW", parseInt(OriginalSize.w));
-      // formData.append("videoH", parseInt(OriginalSize.h));
 
-      const response = await axios.post(
+      const xhr = new XMLHttpRequest();
+      xhr.open(
+        "POST",
         `${process.env.REACT_APP_BACKEND_URL}/pdfEdit?eventId=${eventId}`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        true
       );
+      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+      xhr.setRequestHeader("Accept", "text/event-stream");
 
-      setIsLoading(false);
-      if (isSample) {
-        setProcessedVideoUrls(response?.data?.videoUrls);
-        setZipUrl(response.data.zipUrl);
-        setShowPreview(true);
-      } else {
-        navigate(`/event/mediaGrid?eventId=${eventId}`);
-      }
+      xhr.onprogress = function () {
+        const responseText = xhr.responseText.trim();
+        const responses = responseText.split("\n\n"); // SSE events are separated by double newline
+
+        responses.forEach((response) => {
+          if (response.startsWith("data: ")) {
+            const data = JSON.parse(response.replace("data: ", ""));
+            // Update processedVideoUrls ensuring uniqueness by mobileNumber
+            setProcessedVideoUrls((prev) => {
+              const newList = [...prev];
+              const existingIndex = newList.findIndex(
+                (item) => item.mobileNumber === data.mobileNumber
+              );
+              if (existingIndex === -1) {
+                newList.push(data);
+              } else {
+                newList[existingIndex] = data; // Replace existing object if found
+              }
+              return newList;
+            });
+          }
+        });
+      };
+
+      xhr.onerror = function () {
+        setIsLoading(false);
+        toast.error("Network error!");
+      };
+
+      xhr.onloadend = function () {
+        if (isSample) {
+          setShowPreview(true);
+        } else {
+          navigate(`/event/mediaGrid?eventId=${eventId}`);
+        }
+        setIsLoading(false); // Set isLoading to false after the response ends
+      };
+
+      xhr.send(formData);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   // useEffect(() => {
@@ -251,13 +281,11 @@ export default function WeddingVideo() {
       />
 
       {isLoading && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 z-[99]">
-          <div className="w-16 h-16 border-4 border-t-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
-          <p className="mt-4 text-white text-lg">
-            Please wait while its Proccessing
-          </p>
-        </div>
+        <Loader
+          text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
+        />
       )}
+
       <div className="mainContainer">
         {openContextMenuId && (
           <TextEditor
@@ -297,7 +325,7 @@ export default function WeddingVideo() {
               <FontAwesomeIcon icon={faSquarePlus} />
             </label>
 
-            {zipUrl && (
+            {/* {zipUrl && (
               <label
                 className="custom-file-upload"
                 onMouseOver={() => setOnHover4(true)}
@@ -313,7 +341,7 @@ export default function WeddingVideo() {
                   <FontAwesomeIcon icon={faFileArrowDown} />
                 </a>
               </label>
-            )}
+            )} */}
           </form>
 
           <div className="mainbar">
@@ -419,13 +447,17 @@ export default function WeddingVideo() {
           />
         )}
       </div>
-      {showPreview && (
+
+      {!isLoading && showPreview && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
           <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
             {/* Close Button */}
             <button
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
-              onClick={() => setShowPreview(false)}
+              onClick={() => {
+                setShowPreview(false);
+                setProcessedVideoUrls([]);
+              }}
             >
               &times;
             </button>

@@ -13,7 +13,7 @@ export default function ShowSampleModal({
     let rate;
     if (Type === "Image") {
       rate = 0.25;
-    } else if (Type === "video") {
+    } else if (Type === "Video") {
       rate = 1.0;
     } else {
       rate = 0.5;

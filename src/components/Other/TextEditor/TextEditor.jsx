@@ -384,7 +384,6 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
           </div>
         )}
 
-{console.log(selectedTransition)}
         {comp === "video" && (
           <div className="h-9 flex items-center bg-gray-200 rounded-md">
             <svg

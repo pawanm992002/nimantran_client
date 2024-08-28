@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import "./WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
@@ -14,7 +13,7 @@ import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import TextEditor from "../Other/TextEditor/TextEditor";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { debounce } from "lodash";
+import Loader from "../Other/Loader/Loader";
 
 export default function WeddingVideo() {
   const navigate = useNavigate();
@@ -36,7 +35,7 @@ export default function WeddingVideo() {
   const [count, setCount] = useState(1);
   const [onHover1, setOnHover1] = useState(false);
   const [onHover2, setOnHover2] = useState(false);
-  const [onHover4, setOnHover4] = useState(false);
+  // const [onHover4, setOnHover4] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
@@ -59,7 +58,7 @@ export default function WeddingVideo() {
     h: 0,
   });
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  const [zipUrl, setZipUrl] = useState("");
+  // const [zipUrl, setZipUrl] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [videoDuration, setVideoDuration] = useState(1);
 
@@ -139,10 +138,9 @@ export default function WeddingVideo() {
   };
 
   const handleSubmit = async (event, isSample) => {
-    event.preventDefault();
     try {
+      event.preventDefault();
       setIsLoading(true);
-      const formData = new FormData();
 
       let resized = document.getElementById("videoPlayer");
       let scalingW = OriginalSize.w / resized.clientWidth;
@@ -164,6 +162,7 @@ export default function WeddingVideo() {
         return toast.error("Please Enter Guest List");
       }
 
+      const formData = new FormData();
       formData.append("video", video);
       formData.append("videoDuration", videoDuration);
       formData.append("guestNames", JSON.stringify(jsonData));
@@ -171,29 +170,60 @@ export default function WeddingVideo() {
       formData.append("scalingFont", scalingFont);
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
-      formData.append("videoW", parseInt(OriginalSize.w));
-      formData.append("videoH", parseInt(OriginalSize.h));
       formData.append("isSample", isSample);
 
-      const response = await axios.post(
+      const xhr = new XMLHttpRequest();
+      xhr.open(
+        "POST",
         `${process.env.REACT_APP_BACKEND_URL}/videoEdit?eventId=${eventId}`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        true
       );
-      if (isSample) {
-        setProcessedVideoUrls(response?.data?.videoUrls);
-        setZipUrl(response.data.zipUrl);
-        setShowPreview(true);
-      } else {
-        navigate(`/event/mediaGrid?eventId=${eventId}`);
-      }
-      setIsLoading(false);
+      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+      xhr.setRequestHeader("Accept", "text/event-stream");
+
+      xhr.onprogress = function () {
+        const responseText = xhr.responseText.trim();
+        const responses = responseText.split("\n\n"); // SSE events are separated by double newline
+
+        responses.forEach((response) => {
+          if (response.startsWith("data: ")) {
+            const data = JSON.parse(response.replace("data: ", ""));
+            // Update processedVideoUrls ensuring uniqueness by mobileNumber
+            setProcessedVideoUrls((prev) => {
+              const newList = [...prev];
+              const existingIndex = newList.findIndex(
+                (item) => item.mobileNumber === data.mobileNumber
+              );
+              if (existingIndex === -1) {
+                newList.push(data);
+              } else {
+                newList[existingIndex] = data; // Replace existing object if found
+              }
+              return newList;
+            });
+          }
+        });
+      };
+
+      xhr.onerror = function () {
+        setIsLoading(false);
+        toast.error("Network error!");
+      };
+
+      xhr.onloadend = function () {
+        if(isSample) {
+          setShowPreview(true);
+        } else {
+          navigate(`/event/mediaGrid?eventId=${eventId}`);
+        }
+        setIsLoading(false); // Set isLoading to false after the response ends
+      };
+
+      xhr.send(formData);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
   
   // useEffect(() => {
@@ -248,16 +278,13 @@ export default function WeddingVideo() {
         setShowGuestList={setShowGuestList}
         data={jsonData}
         CountModelOpenNumber={CountModelOpenNumber}
-        Type={"Image"}
+        Type={"Video"}
       />
 
       {isLoading && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 z-[99]">
-          <div className="w-16 h-16 border-4 border-t-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
-          <p className="mt-4 text-white text-lg">
-            Please wait while its Proccessing
-          </p>
-        </div>
+        <Loader
+        text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
+      />
       )}
       <div className="mainContainer">
         {texts.length > 0 && openContextMenuId && (
@@ -271,7 +298,7 @@ export default function WeddingVideo() {
           />
         )}
         <div className="main-wrapper">
-          <form className="sidebar" onSubmit={handleSubmit}>
+          <form className="sidebar">
             <label
               className="custom-file-upload"
               onChange={handleGuestNamesChange}
@@ -299,7 +326,7 @@ export default function WeddingVideo() {
               <FontAwesomeIcon icon={faSquarePlus} />
             </label>
 
-            {zipUrl && (
+            {/* {zipUrl && (
               <label
                 className="custom-file-upload"
                 onMouseOver={() => setOnHover4(true)}
@@ -315,7 +342,7 @@ export default function WeddingVideo() {
                   <FontAwesomeIcon icon={faFileArrowDown} />
                 </a>
               </label>
-            )}
+            )} */}
           </form>
 
           <div className="mainbar">
@@ -395,13 +422,16 @@ export default function WeddingVideo() {
         )}
       </div>
 
-      {showPreview && (
+      {!isLoading && showPreview && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
           <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
             {/* Close Button */}
             <button
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
-              onClick={() => setShowPreview(false)}
+              onClick={() => {
+                setShowPreview(false);
+                setProcessedVideoUrls([]);
+              }}
             >
               &times;
             </button>

@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import "../WeddingVideo/WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
@@ -15,8 +14,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import Loader from "../Other/Loader/Loader";
-import { debounce } from "lodash";
-// import bufferImage from "buffer-image";
+
 export default function WeddingImage() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -46,15 +44,13 @@ export default function WeddingImage() {
   const [count, setCount] = useState(1);
   const [onHover1, setOnHover1] = useState(false);
   const [onHover2, setOnHover2] = useState(false);
-  const [onHover4, setOnHover4] = useState(false);
+  // const [onHover4, setOnHover4] = useState(false);
   const [selectedText, setSelectedText] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
-
-  const [videoObj, setVideoObj] = useState({});
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -63,7 +59,7 @@ export default function WeddingImage() {
     w: 0,
     h: 0,
   });
-  const [zipUrl, setZipUrl] = useState("");
+  // const [zipUrl, setZipUrl] = useState("");
 
   const createTextDiv = () => {
     if (!video) {
@@ -159,7 +155,6 @@ export default function WeddingImage() {
     try {
       event.preventDefault();
       setIsLoading(true);
-      const formData = new FormData();
 
       let resized = document.getElementById("videoPlayer");
       let scalingW = OriginalSize.w / resized.clientWidth;
@@ -181,33 +176,65 @@ export default function WeddingImage() {
         return toast.error("Please Enter Guest List");
       }
 
+      const formData = new FormData();
       formData.append("video", video);
-      formData.append("guestNames", guestNames);
-      formData.append("textProperty", JSON.stringify(texts));
       formData.append("guestNames", JSON.stringify(jsonData));
+      formData.append("textProperty", JSON.stringify(texts));
       formData.append("scalingFont", scalingFont);
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
       formData.append("isSample", isSample);
 
-      const response = await axios.post(
+      const xhr = new XMLHttpRequest();
+      xhr.open(
+        "POST",
         `${process.env.REACT_APP_BACKEND_URL}/imageEdit?eventId=${eventId}`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        true
       );
+      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+      xhr.setRequestHeader("Accept", "text/event-stream");
 
-      setIsLoading(false);
-      if (isSample) {
-        setZipUrl(response.data.zipUrl);
-        setProcessedVideoUrls(response?.data?.videoUrls);
-        setShowPreview(true);
-      } else {
-        navigate(`/event/mediaGrid?eventId=${eventId}`);
-      }
+      xhr.onprogress = function () {
+        const responseText = xhr.responseText.trim();
+        const responses = responseText.split("\n\n"); // SSE events are separated by double newline
+
+        responses.forEach((response) => {
+          if (response.startsWith("data: ")) {
+            const data = JSON.parse(response.replace("data: ", ""));
+            // Update processedVideoUrls ensuring uniqueness by mobileNumber
+            setProcessedVideoUrls((prev) => {
+              const newList = [...prev];
+              const existingIndex = newList.findIndex(
+                (item) => item.mobileNumber === data.mobileNumber
+              );
+              if (existingIndex === -1) {
+                newList.push(data);
+              } else {
+                newList[existingIndex] = data; // Replace existing object if found
+              }
+              return newList;
+            });
+          }
+        });
+      };
+
+      xhr.onerror = function () {
+        setIsLoading(false);
+        toast.error("Network error!");
+      };
+
+      xhr.onloadend = function () {
+        if (isSample) {
+          setShowPreview(true);
+        } else {
+          navigate(`/event/mediaGrid?eventId=${eventId}`);
+        }
+        setIsLoading(false); // Set isLoading to false after the response ends
+      };
+
+      xhr.send(formData);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong!");
       setIsLoading(false);
     }
   };
@@ -265,7 +292,11 @@ export default function WeddingImage() {
         Type={"Image"}
       />
 
-      {isLoading && <Loader text="Please wait while its Loading" />}
+      {isLoading && (
+        <Loader
+          text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
+        />
+      )}
 
       <div className="mainContainer">
         {openContextMenuId && (
@@ -306,7 +337,7 @@ export default function WeddingImage() {
               <FontAwesomeIcon icon={faSquarePlus} />
             </label>
 
-            {zipUrl && (
+            {/* {zipUrl && (
               <label
                 className="custom-file-upload"
                 onMouseOver={() => setOnHover4(true)}
@@ -322,7 +353,7 @@ export default function WeddingImage() {
                   <FontAwesomeIcon icon={faFileArrowDown} />
                 </a>
               </label>
-            )}
+            )} */}
           </form>
 
           <div className="mainbar">
@@ -336,11 +367,7 @@ export default function WeddingImage() {
                   padding: video && "5px",
                 }}
               >
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => console.log("a", e)}
-                />
+                <input type="file" accept="image/*" />
                 <div className="upload-content">
                   <h2
                     className="upload-button"
@@ -358,16 +385,19 @@ export default function WeddingImage() {
             )}
             <div
               className="videoContainer"
-              style={{ display: !video ? "none" : "flex", width: 'inherit',
-                height: 'inherit' }}
+              style={{
+                display: !video ? "none" : "flex",
+                width: "inherit",
+                height: "inherit",
+              }}
             >
               {/* <div className="app"> */}
               <div
                 style={{
                   position: "relative",
                   display: "inline-block",
-                  width: 'inherit',
-                  height: 'inherit'
+                  width: "inherit",
+                  height: "inherit",
                 }}
                 ref={videoRef}
               >
@@ -411,13 +441,16 @@ export default function WeddingImage() {
         )}
       </div>
 
-      {showPreview && (
+      {!isLoading && showPreview && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
           <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
             {/* Close Button */}
             <button
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
-              onClick={() => setShowPreview(false)}
+              onClick={() => {
+                setShowPreview(false);
+                setProcessedVideoUrls([]);
+              }}
             >
               &times;
             </button>
