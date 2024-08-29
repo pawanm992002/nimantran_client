@@ -3,7 +3,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRightArrowLeft,
-  faMagnifyingGlass,
+  
 } from "@fortawesome/free-solid-svg-icons";
 
 const AdminTransaction = () => {

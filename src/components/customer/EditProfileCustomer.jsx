@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 const EditProfileCustomer = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  
+
   const [params] = useSearchParams();
   const customerId = params.get("customerId");
 
@@ -67,12 +67,19 @@ const EditProfileCustomer = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-full w-full justify-center items-center">
+        <div className="spinner"></div> {/* Spinner */}
+      </div>
+    );
   }
 
   return (
+    <div className="w-full flex items-center justify-center h-full">
       <div className="bg-white border p-8 rounded-lg shadow-lg w-full max-w-4xl">
-        <h2 className="text-2xl font-semibold mb-9 text-center">Update Customer Details</h2>
+        <h2 className="text-2xl font-semibold mb-9 text-center">
+          Update Customer Details
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[
@@ -86,7 +93,7 @@ const EditProfileCustomer = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   {field.label}
                 </label>
-                <input 
+                <input
                   type={field.type}
                   name={field.name}
                   value={formData[field.name]}
@@ -107,6 +114,7 @@ const EditProfileCustomer = () => {
         </form>
         <Toaster />
       </div>
+    </div>
   );
 };
 
