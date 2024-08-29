@@ -54,7 +54,7 @@ export default function WeddingImage() {
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
 
-  const [videoObj, setVideoObj] = useState({});
+  const [videoObj,setVideoObj] = useState({})
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -89,27 +89,39 @@ export default function WeddingImage() {
     setTexts([...texts, newText]);
   };
 
-  //  const handleVideoChange = () =>{
-  //   const file = event.target.files[0];
-  //   setVideo(URL.createObjectURL(file));
-  //   setVideoObj(file);
-  //  }
+//  const handleVideoChange = () =>{
+//   const file = event.target.files[0];
+//   setVideo(URL.createObjectURL(file));
+//   setVideoObj(file);
+//  }
 
   const handleVideoUpload = async (event) => {
-    const inputFile = event.target.files[0];
-    // const formData = new FormData();
-    // formData.append("pawan", inputFile);
+    const file = event.target.files[0];
+    console.log(file)
 
-    if (inputFile) {
-      const videoPlayer = document.getElementById("videoPlayer");
-      // const response = await axios.post(
-      //   `${process.env.REACT_APP_BACKEND_URL}/texts/image?eventId=${eventId}`,
-      //   formData,
-      //   {
-      //     headers: { Authorization: `Bearer ${token}` },
-      //   }
-      // );
-      // console.log(response)
+    const formData = new FormData();
+    console.log(formData)
+    formData.append("inputfile", file);
+    console.log(formData.get("inputfile"))
+    var videoPlayer = document.getElementById("videoPlayer");
+    if (file) {
+  
+   
+        // console.log(file)
+        try {
+          const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/texts/image?eventId=${eventId}`,
+            formData,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log(response);
+        } catch (error) {
+          console.error('Upload failed:', error.response ? error.response.data : error.message);
+        }
+  
+        
       const img = new Image();
       img.onload = () => {
         // Set the original size
@@ -125,11 +137,12 @@ export default function WeddingImage() {
         });
       };
 
-      const fileURL = URL.createObjectURL(inputFile);
+      const fileURL = URL.createObjectURL(file);
       img.src = fileURL;
       videoPlayer.src = fileURL;
     }
     setVideo(event.target.files[0]);
+
   };
 
   const takeTextDetails = (details) => {
@@ -156,9 +169,9 @@ export default function WeddingImage() {
   };
 
   const handleSubmit = async (event, isSample) => {
+    event.preventDefault();
+    setIsLoading(true);
     try {
-      event.preventDefault();
-      setIsLoading(true);
       const formData = new FormData();
 
       let resized = document.getElementById("videoPlayer");
@@ -189,7 +202,7 @@ export default function WeddingImage() {
       formData.append("scalingW", scalingW);
       formData.append("scalingH", scalingH);
       formData.append("isSample", isSample);
-
+      console.log(formData)
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/imageEdit?eventId=${eventId}`,
         formData,
@@ -212,48 +225,68 @@ export default function WeddingImage() {
     }
   };
 
-  // useEffect(() => {
-  //   if (texts.length !== 0) {
-  //     var debouncedFetch = debounce(async () => {
-  //       try {
-  //         const response = await axios.post(
-  //           `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-  //           { texts },
-  //           {
-  //             headers: { Authorization: `Bearer ${token}` },
-  //           }
-  //         );
-  //         console.log(response.data);
-  //       } catch (error) {
-  //         console.error("Error saving texts:", error);
-  //       }
-  //     }, 10000);
-  //     debouncedFetch();
-  //     return () => {
-  //       debouncedFetch.cancel();
-  //     };
-  //   }
-  // }, [texts]);
+  useEffect(() => {
+    if (texts.length !== 0) {
+      var debouncedFetch = debounce(async () => {
+        try {
+          const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+            { texts },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log(response.data);
+        } catch (error) {
+          console.error("Error saving texts:", error);
+        }
+      }, 10000);
+      debouncedFetch();
+      return () => {
+        debouncedFetch.cancel();
+      };
+    }
+  }, [texts]);
 
-  // useEffect(() => {
-  //   var getText = async () => {
-  //     try {
-  //       var response = await axios.get(
-  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-  //         {
-  //           headers: { Authorization: `Bearer ${token}` },
-  //         }
-  //       );
-  //       // console.log(response.data[0].texts);
-  //       setTexts(response.data[0].texts);
-  //       console.log(texts);
-  //       return response.data[0].texts;
-  //     } catch (error) {
-  //       console.error("Error getting texts:", error);
-  //     }
-  //   };
-  //   getText();
-  // }, []);
+  useEffect(() => {
+    var getText = async () => {
+      try {
+        var response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        // console.log(response.data[0].inputFile);
+        const videoPlayer = document.getElementById("videoPlayer");
+        const img = new Image();
+        img.onload = () => {
+          // Set the original size
+          setOriginalSize({
+            w: img.naturalWidth,
+            h: img.naturalHeight,
+          });
+  
+          // Set the resized size after the image is loaded and resized in the container
+          setResized({
+            w: videoPlayer.clientWidth,
+            h: videoPlayer.clientHeight,
+          });
+        };
+
+        img.src = response.data[0].inputFile;
+        videoPlayer.src = response.data[0].inputFile;
+
+        setTexts(response.data[0].texts);
+        setVideo(img);
+        // console.log(texts);
+        return response.data[0].texts;
+      } catch (error) {
+        console.error("Error getting texts:", error);
+      }
+    };
+    getText();
+  }, []);
 
   return (
     <div className="main">
@@ -336,11 +369,7 @@ export default function WeddingImage() {
                   padding: video && "5px",
                 }}
               >
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => console.log("a", e)}
-                />
+                <input type="file" accept="image/*" onChange={(e)=>console.log("a",e)} />
                 <div className="upload-content">
                   <h2
                     className="upload-button"
@@ -358,23 +387,21 @@ export default function WeddingImage() {
             )}
             <div
               className="videoContainer"
-              style={{ display: !video ? "none" : "flex", width: 'inherit',
-                height: 'inherit' }}
+              style={{ display: !video ? "none" : "flex" }}
             >
               {/* <div className="app"> */}
               <div
                 style={{
                   position: "relative",
                   display: "inline-block",
-                  width: 'inherit',
-                  height: 'inherit'
                 }}
                 ref={videoRef}
               >
                 <img
                   style={{
                     backgroundColor: "#000",
-                    // maxHeight: "var(--contentMaxHeight)",
+                    width: "100%",
+                    maxHeight: "var(--contentMaxHeight)",
                     margin: "0px",
                     objectFit: "contain",
                   }}
