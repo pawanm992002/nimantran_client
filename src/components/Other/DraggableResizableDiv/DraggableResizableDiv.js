@@ -20,7 +20,7 @@ const DraggableResizableDiv = ({
   const [size, setSize] = useState(property?.size);
   const [visible, setVisible] = useState(true);
   const [isAtCenter, setIsAtCenter] = useState(false);
-
+  const [isActive, setIsActive] = useState(false);
   const handleDrag = (e, data) => {
     if (data.x >= 0 && data.y >= 0) {
       setPosition({ x: data.x, y: data.y });
@@ -116,7 +116,7 @@ const DraggableResizableDiv = ({
           display: property.hidden ? "none" : "inline-block",
         }}
       >
-        <div
+        {/* <div
           className="handle"
           style={{
             cursor: "move",
@@ -127,14 +127,14 @@ const DraggableResizableDiv = ({
             height: "4px",
             width: "100%",
           }}
-        ></div>
+        ></div> */}
         <ResizableBox
           width={size?.width}
           height={size?.height}
           minConstraints={[100, 40]}
           maxConstraints={[400, 250]}
           onResizeStop={handleResize}
-          className="resizable-box"
+          className="resizable-box  handle"
         >
           <div
             className="editable-box"
@@ -156,6 +156,8 @@ const DraggableResizableDiv = ({
               className="textInput"
               placeholder="Write Text..."
               value={text}
+              readOnly={!isActive}
+              onDoubleClick={() => setIsActive(!isActive)}
               onChange={(e) => setText(e.target.value)}
             />
           </div>

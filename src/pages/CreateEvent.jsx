@@ -11,10 +11,10 @@ const CreateEvent = () => {
   const [location, setLocation] = useState("");
   const [editType, setEditType] = useState("imageEdit");
   const [customerQuery, setCustomerQuery] = useState("");
-  const [customerSuggestions, setCustomerSuggestions] = useState([]);
-  const [selectedCustomerId, setSelectedCustomerId] = useState("");
+  const [inputFieldActive, setinputFieldActive] = useState(false);
+  const [customerID, setcustomerID] = useState("");
   const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false);
-  const [isStop, setIsStop] = useState(false);
+  const [customerData, setCustomerData] = useState([]);
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const customerIdFromLocal = localStorage.getItem("_id");
@@ -30,7 +30,9 @@ const CreateEvent = () => {
       };
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/events/create-event/${role === "customer" ? customerIdFromLocal : selectedCustomerId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/events/create-event/${
+          role === "customer" ? customerIdFromLocal : customerID
+        }`,
         eventData,
         {
           headers: {
@@ -47,153 +49,151 @@ const CreateEvent = () => {
       toast.error("Error creating event");
     }
   };
-
-  const handleCustomerSearch = async (isSelectedCustomer, customer) => {
-    try {
-      if(isSelectedCustomer) {
-        setCustomerQuery(customer.name);
-        setSelectedCustomerId(customer._id);
-        setCustomerSuggestions([]);
-        setIsStop(true)
-        return;
-      }
-      if (customerQuery.trim() === "") {
-        setCustomerSuggestions([]);
-        setIsStop(false);
-        return;
-      }
-      if(isStop) {
-        return ;
-      }
-
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/customers/searchCustomers`,
-        {
-          params: { query: customerQuery },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setCustomerSuggestions(response.data.data);
-    } catch (error) {
-      console.error("Error searching customers:", error);
-    }
-  };
-
   useEffect(() => {
-    handleCustomerSearch();
-  }, [customerQuery]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/client/clientCustomers`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
+        setCustomerData(response?.data?.customerNamesAndId);
+      } catch (error) {
+        console.error("Error while fetching Clients Customer Names :", error);
+        toast.error("Error while fetching Clients Customer Names");
+      }
+    };
+    fetchData();
+  }, []);
+  console.log(customerID);
   return (
     <div>
       <h2 className="text-3xl font-semibold mb-6 text-center">Create Event</h2>
-      <form
-        onSubmit={handleCreateEvent}
-        className="mx-auto border bg-white p-6 rounded-lg shadow-lg w-80"
-      >
-        <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700">
-            Event Name <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="text"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-            required
-          />
-        </div>
-        {role !== "customer" && <div className="mb-6">
-          <label className="flex justify-between text-lg font-medium text-gray-700">
-            <span>
-              Customer <span className="text-red-600">*</span>
-            </span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
-              onClick={() => setShowCreateCustomerModal(true)}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
-              />
-            </svg>
-          </label>
-
-          <input
-            type="text"
-            value={customerQuery}
-            onChange={(e) => setCustomerQuery(e.target.value)}
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-          />
-          {customerSuggestions.length > 0 && (
-            <ul className="mt-2 border border-gray-300 rounded-md bg-white shadow-lg max-h-40 overflow-y-auto">
-              {customerSuggestions.map((customer) => (
-                <li
-                  key={customer._id}
-                  onClick={() => {
-                    handleCustomerSearch(true, customer)
-                  }}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+      <div className="flex justify-center items-center h-full ">
+        <form
+          onSubmit={handleCreateEvent}
+          className="mx-auto border bg-white p-6 rounded-lg shadow-lg  grid grid-cols-2 gap-x-4 items-start justify-center"
+        >
+          <div className="mb-6 ">
+            <label className="block text-lg font-medium text-gray-700">
+              Event Name <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              value={eventName}
+              onChange={(e) => setEventName(e.target.value)}
+              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+              required
+            />
+          </div>
+          {role !== "customer" && (
+            <div className="mb-6">
+              <label className="flex justify-between text-lg font-medium text-gray-700">
+                <span>
+                  Customer <span className="text-red-600">*</span>
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                  onClick={() => setShowCreateCustomerModal(true)}
                 >
-                  {customer.name}
-                </li>
-              ))}
-            </ul>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
+                  />
+                </svg>
+              </label>
+              <div className=" relative">
+                <input
+                  type="text"
+                  value={customerQuery}
+                  // onChange={(e) => setCustomerQuery(e.target.value)}
+                  // onFocus={() => setinputFieldActive(true)}
+                  // onBlur={() => setinputFieldActive(false)}
+                  onClick={() => setinputFieldActive(true)}
+                  className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+                />
+                {customerData?.length && inputFieldActive > 0 && (
+                  <div className=" bg-white w-full absolute z-10 rounded-md shadow-lg  px-2 py-1 top-[calc(100%+0.25rem)]">
+                    <ul
+                      className={`flex gap-y-2 flex-col  max-h-28 ${
+                        customerData?.length > 4 && "overflow-y-scroll"
+                      }`}
+                    >
+                      {customerData?.map((customer) => (
+                        <li
+                          key={customer.id}
+                          onClick={() => {
+                            setcustomerID(customer.id);
+                            setinputFieldActive(false);
+                          }}
+                          className="bg-gray-100 px-1 py-1 cursor-pointer"
+                        >
+                          {customer.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
-        </div>}
-        <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700">
-            Date of Organising
-          </label>
-          <input
-            type="date"
-            value={dateOfOrganising}
-            onChange={(e) => setDateOfOrganising(e.target.value)}
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700">
-            Location
-          </label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700">
-            What do want to Edit ?<span className="text-red-600">*</span>
-          </label>
-          <select
-            className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-            onChange={(e) => setEditType(e.target.value)}
-            value={editType}
-          >
-            <option value="imageEdit">Image Edit</option>
-            <option value="videoEdit">Video Edit</option>
-            <option value="cardEdit">Pdf Edit</option>
-          </select>
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
-          >
-            Create Event
-          </button>
-        </div>
-      </form>
+          <div className="mb-6">
+            <label className="block text-lg font-medium text-gray-700">
+              Date of Organising
+            </label>
+            <input
+              type="date"
+              value={dateOfOrganising}
+              onChange={(e) => setDateOfOrganising(e.target.value)}
+              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-lg font-medium text-gray-700">
+              Location
+            </label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-lg font-medium text-gray-700">
+              What do want to Edit ?<span className="text-red-600">*</span>
+            </label>
+            <select
+              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+              onChange={(e) => setEditType(e.target.value)}
+              value={editType}
+            >
+              <option value="imageEdit">Image Edit</option>
+              <option value="videoEdit">Video Edit</option>
+              <option value="cardEdit">Pdf Edit</option>
+            </select>
+          </div>
+          <div className="flex items-center h-full">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 w-full"
+            >
+              Create Event
+            </button>
+          </div>
+        </form>
+      </div>
       <CreateCustomerJSX
         showModal={showCreateCustomerModal}
         setShowModal={setShowCreateCustomerModal}
