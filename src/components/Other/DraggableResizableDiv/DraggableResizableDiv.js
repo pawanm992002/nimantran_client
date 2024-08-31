@@ -58,6 +58,7 @@ const DraggableResizableDiv = ({
       size,
       fontColor: property.fontColor,
       fontWeight: property.fontWeight,
+      underline: property.underline,
       fontSize: property.fontSize,
       fontFamily: property.fontFamily,
       fontStyle: property.fontStyle,
@@ -74,8 +75,6 @@ const DraggableResizableDiv = ({
     text,
     property.page,
     property.hidden,
-    property.backgroundColor,
-    property.fontWeight,
   ]);
 
   useEffect(() => {
@@ -152,6 +151,7 @@ const DraggableResizableDiv = ({
                 fontFamily: property.fontFamily,
                 display: visible ? "flex" : "none",
                 fontWeight: property.fontWeight,
+                textDecoration: property.underline
               }}
               className="textInput"
               placeholder="Write Text..."

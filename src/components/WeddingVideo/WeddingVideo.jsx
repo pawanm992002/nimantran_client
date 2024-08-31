@@ -71,18 +71,20 @@ export default function WeddingVideo() {
       id: count,
       duration: 5,
       fontColor: "#000000",
-      fontWeight: "normal",
       fontFamily: "Josefin Slab",
       fontSize: 20,
       fontStyle: "normal",
+      fontWeight: "normal",
       position: { x: 0, y: 0 },
       size: { width: 200, height: 100 },
       startTime: 0,
       text: `{name}`,
       backgroundColor: "none",
       hidden: false,
+      underline: "none",
       transition: { type: "none", name: "Select Transition", options: {duration: 0} },
     };
+
     setCount(count + 1);
     setTexts([...texts, newText]);
   };

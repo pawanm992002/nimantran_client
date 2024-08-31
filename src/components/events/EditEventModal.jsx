@@ -44,8 +44,6 @@ const EditEventModal = ({
 
   if (!show) return null;
 
-  console.log(event);
-
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-black bg-opacity-50 absolute inset-0"></div>

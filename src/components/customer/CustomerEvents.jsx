@@ -32,7 +32,6 @@ const CustomerEvents = () => {
       const sortedEvents = sortEvents(customerData?.events || []);
       setEvents(sortedEvents);
       setLoading(false);
-      console.log(customerData);
     } catch (error) {
       console.error("Error fetching events:", error);
       setLoading(false);

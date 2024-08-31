@@ -97,8 +97,6 @@ const AdminTransaction = () => {
       .includes(searchTerm.toLowerCase());
   });
 
-  console.log(filteredTransactions);
-
   return (
     <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
       <table className="min-w-full divide-y divide-gray-200">

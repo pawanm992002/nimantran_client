@@ -30,10 +30,8 @@ const EventsList = () => {
         );
         return customer;
       });
-      console.log(sortedCustomers);
       setCustomers(sortedCustomers);
       setLoading(false);
-      console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching events:", error);
       setLoading(false);
@@ -86,7 +84,6 @@ const filteredCustomers = customers.filter((customer) => {
   return customerNameMatch || eventsMatch;
 });
 
-  console.log(filteredCustomers);
   return (
     <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
       {loading ? (
@@ -169,10 +166,10 @@ const filteredCustomers = customers.filter((customer) => {
                     {event.editType}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(event.dateOfOrganising).toLocaleDateString()}
+                    {!event?.dateOfOrganising ? "N/A" : new Date(event?.dateOfOrganising).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {event.location}
+                    {event.location || "N/A"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {customer.customerName}

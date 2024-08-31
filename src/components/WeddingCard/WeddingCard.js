@@ -92,14 +92,17 @@ export default function WeddingVideo() {
       fontFamily: "Josefin Slab",
       fontSize: 20,
       fontStyle: "normal",
+      fontWeight: "normal",
       position: { x: 0, y: 0 },
       size: { width: 150, height: 80 },
       startTime: 0,
       text: `{name}`,
       backgroundColor: "none",
       hidden: false,
+      underline: "none",
       page: currentPage,
     };
+    
     setCount(count + 1);
     setTexts([...texts, newText]);
   };

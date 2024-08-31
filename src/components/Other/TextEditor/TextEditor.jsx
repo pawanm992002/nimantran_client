@@ -53,6 +53,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     property?.transition
   );
   const [fontWeight, setFontWeight] = useState(property?.fontWeight);
+  const [underline, setUnderline] = useState(property?.underline);
   const [fontColor, setFontColor] = useState(property?.fontColor);
   const [fontStyle, setFontStyle] = useState(property?.fontStyle);
   const [fontSize, setFontSize] = useState(property?.fontSize);
@@ -70,6 +71,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       fontSize: fontSize,
       fontFamily: fontFamily,
       fontWeight: fontWeight,
+      underline: underline,
       fontStyle: fontStyle,
       startTime: startTime,
       duration: duration,
@@ -82,6 +84,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     fontColor,
     fontSize,
     fontWeight,
+    underline,
     startTime,
     duration,
     fontStyle,
@@ -97,6 +100,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     setFontSize(property?.fontSize);
     setFontColor(property?.fontColor);
     setFontWeight(property?.fontWeight);
+    setUnderline(property?.underline);
     setFontStyle(property?.fontStyle);
     setFontFamily(property?.fontFamily);
     setStartTime(property?.startTime);
@@ -121,7 +125,9 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
       setDuration(parseFloat(value));
     } else if (name === "backgroundColor") {
       setBackgroundColor(value);
-    } 
+    } else if (name === "underline") {
+      setUnderline(value === "underline" ? "none" : "underline");
+    }
     // else if (name === "transition") {
     //   setSelectedTransition(JSON.parse(value));
     // }
@@ -295,6 +301,17 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
             title="Toggle italic"
           >
             I
+          </button>
+          <button
+            name="underline"
+            className={`p-2 border rounded w-8 h-full m-0 ${
+              underline === "underline" ? 'underline  bg-blue-500 text-white' : "bg-white"
+            }`}
+            onClick={handleStyleChange}
+            value={underline}
+            title="Underline Text"
+          >
+            U
           </button>
         </div>
 

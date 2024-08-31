@@ -79,6 +79,7 @@ export default function WeddingImage() {
       startTime: 0,
       text: `{name}`,
       backgroundColor: "none",
+      underline: "none",
       hidden: false,
     };
     setCount(count + 1);

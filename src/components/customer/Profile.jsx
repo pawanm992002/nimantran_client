@@ -52,7 +52,7 @@ const Profile = () => {
         const dateB = new Date(b.createdAt);
         return dateB - dateA;
       });
-      console.log(sorted);
+      
       setFilteredData(sorted);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch requests");
