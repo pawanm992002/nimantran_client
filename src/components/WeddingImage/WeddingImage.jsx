@@ -176,6 +176,16 @@ export default function WeddingImage() {
         return toast.error("Please Enter Guest List");
       }
 
+      if(jsonData?.length <= 0) {
+        setIsLoading(false);
+        return toast.error("No Guests are Present in CSV");
+      }
+      
+      if(!jsonData[0]?.name || !jsonData[0].mobileNumber) {
+        setIsLoading(false);
+        return toast.error("name and mobileNumber coloums are required");
+      }
+
       const formData = new FormData();
       formData.append("video", video);
       formData.append("guestNames", JSON.stringify(jsonData));

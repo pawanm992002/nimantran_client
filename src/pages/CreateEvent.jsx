@@ -43,8 +43,7 @@ const CreateEvent = () => {
       toast.success("Event created successfully");
       navigate(`/event/${editType}?eventId=${response?.data?.data?._id}`);
     } catch (error) {
-      console.error("Error creating event:", error);
-      toast.error("Error creating event");
+      toast.error(error?.response?.data?.message || "Error creating event");
     }
   };
 

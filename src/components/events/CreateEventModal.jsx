@@ -36,8 +36,7 @@ const CreateEventModal = ({ show, onClose, onEventCreated }) => {
       onEventCreated();
       onClose();
     } catch (error) {
-      console.error("Error creating event:", error);
-      toast.error("Error creating event");
+      toast.error(error?.response?.data?.message || "Error creating event");
     }
   };
 
