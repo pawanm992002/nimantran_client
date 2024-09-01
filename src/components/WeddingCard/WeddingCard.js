@@ -49,13 +49,22 @@ export default function WeddingVideo() {
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [jsonData, setJsonData] = useState([
+    { name: "pawan mishra", mobileNumber: "1111111111" },
     {
-      name: "Random 1",
-      mobileNumber: "412658125",
+      name: "Dr. Venkatanarasimha Raghavan Srinivasachariyar Iyer",
+      mobileNumber: "2222222222",
     },
     {
-      name: "Random 2",
-      mobileNumber: "412658126",
+      name: "Raj",
+      mobileNumber: "3333333333",
+    },
+    {
+      name: "Kushagra Nalwaya",
+      mobileNumber: "4444444444",
+    },
+    {
+      name: "HARSHIL PAGARIA",
+      mobileNumber: "5555555555",
     },
   ]);
   const [showPreview, setShowPreview] = useState(false);
