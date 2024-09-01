@@ -55,7 +55,7 @@ export default function SideConfiguration({ texts, setTexts, handleSubmit }) {
             hidden,
           }) => (
             <div key={id} className="context-menu relative">
-              <div className="flex gap-8 items-center">
+              <div className="flex gap-8 items-center justify-between">
                 <span className="text-sm">Text Id : {id}</span>
                 <span className="flex gap-3">
                   {hidden ? (
