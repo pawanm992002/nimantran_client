@@ -131,7 +131,7 @@ const DraggableResizableDiv = ({
           width={size?.width}
           height={size?.height}
           minConstraints={[100, 40]}
-          maxConstraints={[400, 250]}
+          // maxConstraints={[400, 250]}
           onResizeStop={handleResize}
           className="resizable-box"
         >
