@@ -154,7 +154,7 @@ export default function WeddingVideo() {
         return toast.error("Please Upload the Video");
       }
 
-      if (!texts) {
+      if (texts?.length === 0) {
         setIsLoading(false);
         return toast.error("Add the Text Box");
       }
