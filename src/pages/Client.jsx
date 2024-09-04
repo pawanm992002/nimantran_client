@@ -72,7 +72,7 @@ const Client = () => {
           <div className="flex items-center">
             <div className="flex items-center">
               {/* <img className="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Profile" /> */}
-              <span className="p-2 rounded-md mr-2 border-2 justify-center items-center flex">
+              <span className="p-2 rounded-md mr-2 border-2 justify-center items-center flex cursor-pointer">
                 {role} Account
               </span>
               <div className="h-full flex items-center justify-center">
