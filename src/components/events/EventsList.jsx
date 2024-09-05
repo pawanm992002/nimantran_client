@@ -72,17 +72,17 @@ const EventsList = () => {
   const handleEventUpdated = () => {
     fetchEvents();
   };
-const filteredCustomers = customers.filter((customer) => {
-  const customerNameMatch = customer.customerName
-    .toLowerCase()
-    .includes(searchItem.toLowerCase());
+  const filteredCustomers = customers
+    .map((customer) => ({
+      ...customer,
+      events: customer.events.filter(
+        (event) =>
+          event.eventName.toLowerCase().includes(searchItem.toLowerCase()) ||
+          customer.customerName.toLowerCase().includes(searchItem.toLowerCase())
+      ),
+    }))
+    .filter((customer) => customer.events.length > 0);
 
-  const eventsMatch = customer.events.some((event) =>
-    event.eventName.toLowerCase().includes(searchItem.toLowerCase())
-  );
-
-  return customerNameMatch || eventsMatch;
-});
 
   return (
     <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
@@ -166,7 +166,9 @@ const filteredCustomers = customers.filter((customer) => {
                     {event.editType}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {!event?.dateOfOrganising ? "N/A" : new Date(event?.dateOfOrganising).toLocaleDateString()}
+                    {!event?.dateOfOrganising
+                      ? "N/A"
+                      : new Date(event?.dateOfOrganising).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {event.location || "N/A"}

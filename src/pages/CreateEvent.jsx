@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import CreateCustomerJSX from "../components/Other/CreateCustomerModal/CreateCustomerModal";
+import debounce from "lodash/debounce"; // Import debounce from lodash
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -10,11 +11,13 @@ const CreateEvent = () => {
   const [dateOfOrganising, setDateOfOrganising] = useState("");
   const [location, setLocation] = useState("");
   const [editType, setEditType] = useState("imageEdit");
-  const [customerQuery, setCustomerQuery] = useState("");
-  const [inputFieldActive, setinputFieldActive] = useState(false);
-  const [customerID, setcustomerID] = useState("");
-  const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [inputFieldActive, setInputFieldActive] = useState(false);
   const [customerData, setCustomerData] = useState([]);
+  const [filteredCustomerData, setFilteredCustomerData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false);
+  const [isInvalidCustomer, setIsInvalidCustomer] = useState(false);
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const customerIdFromLocal = localStorage.getItem("_id");
@@ -31,7 +34,7 @@ const CreateEvent = () => {
 
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/events/create-event/${
-          role === "customer" ? customerIdFromLocal : customerID
+          role === "customer" ? customerIdFromLocal : selectedCustomerId?.id
         }`,
         eventData,
         {
@@ -48,6 +51,7 @@ const CreateEvent = () => {
       toast.error(error?.response?.data?.message || "Error creating event");
     }
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,23 +66,74 @@ const CreateEvent = () => {
         );
 
         setCustomerData(response?.data?.customerNamesAndId);
+        setFilteredCustomerData(response?.data?.customerNamesAndId);
       } catch (error) {
         console.error("Error while fetching Clients Customer Names :", error);
         toast.error("Error while fetching Clients Customer Names");
       }
     };
     fetchData();
-  }, []);
-  console.log(customerID);
+  }, [token]);
+
+  const handleSearch = useCallback(
+    debounce((term) => {
+      const filteredData = customerData.filter((customer) =>
+        customer.name.toLowerCase().includes(term.toLowerCase())
+      );
+      setFilteredCustomerData(filteredData);
+
+      // Real-time validation
+      const selectedCustomer = customerData.find(
+        (customer) => customer.name.toLowerCase() === term.toLowerCase()
+      );
+      setIsInvalidCustomer(!selectedCustomer && term !== "");
+      toast.dismiss();
+      // Show error toast if customer name is invalid
+      if (!selectedCustomer && term !== "") {
+        // toast.dismiss()
+        toast.error("Please select a valid customer from the list");
+      }
+    }, 900), // Adjust debounce delay as needed
+    [customerData]
+  );
+
+  useEffect(() => {
+    handleSearch(searchTerm);
+  }, [searchTerm, handleSearch]);
+
+  const handleCustomerSelection = (customer) => {
+    setSelectedCustomerId({ id: customer.id, name: customer.name });
+    setInputFieldActive(false);
+    setSearchTerm(customer.name);
+    setIsInvalidCustomer(false);
+  };
+
+  const validateCustomerSelection = () => {
+    const selectedCustomer = customerData.find(
+      (customer) => customer.name.toLowerCase() === searchTerm.toLowerCase()
+    );
+    if (!selectedCustomer) {
+      setSelectedCustomerId(null);
+      setIsInvalidCustomer(true);
+
+      toast.error("Please select a valid customer from the list");
+    } else {
+      setIsInvalidCustomer(false);
+    }
+  };
+
   return (
     <div>
       <h2 className="text-3xl font-semibold mb-6 text-center">Create Event</h2>
-      <div className="flex justify-center items-center h-full ">
+      <div className="flex items-center h-full">
         <form
-          onSubmit={handleCreateEvent}
-          className="mx-auto border bg-white p-6 rounded-lg shadow-lg  grid grid-cols-2 gap-x-4 items-start justify-center"
+          onSubmit={(e) => {
+            validateCustomerSelection();
+            if (selectedCustomerId) handleCreateEvent(e);
+          }}
+          className="mx-auto border bg-white p-6 rounded-lg shadow-lg grid grid-cols-2 gap-x-4 items-start"
         >
-          <div className="mb-6 ">
+          <div className="mb-6">
             <label className="block text-lg font-medium text-gray-700">
               Event Name <span className="text-red-600">*</span>
             </label>
@@ -91,7 +146,7 @@ const CreateEvent = () => {
             />
           </div>
           {role !== "customer" && (
-            <div className="mb-6">
+            <div className="mb-6 relative">
               <label className="flex justify-between text-lg font-medium text-gray-700">
                 <span>
                   Customer <span className="text-red-600">*</span>
@@ -102,7 +157,7 @@ const CreateEvent = () => {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="size-6"
+                  className="size-6 cursor-pointer"
                   onClick={() => setShowCreateCustomerModal(true)}
                 >
                   <path
@@ -112,44 +167,41 @@ const CreateEvent = () => {
                   />
                 </svg>
               </label>
-              <div className=" relative">
-                <input
-                  type="text"
-                  value={customerQuery}
-                  // onChange={(e) => setCustomerQuery(e.target.value)}
-                  // onFocus={() => setinputFieldActive(true)}
-                  // onBlur={() => setinputFieldActive(false)}
-                  onClick={() => setinputFieldActive(true)}
-                  className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-                />
-                {customerData?.length && inputFieldActive > 0 && (
-                  <div className=" bg-white w-full absolute z-10 rounded-md shadow-lg  px-2 py-1 top-[calc(100%+0.25rem)]">
-                    <ul
-                      className={`flex gap-y-2 flex-col  max-h-28 ${
-                        customerData?.length > 4 && "overflow-y-scroll"
-                      }`}
-                    >
-                      {customerData?.map((customer) => (
-                        <li
-                          key={customer.id}
-                          onClick={() => {
-                            setcustomerID(customer.id);
-                            setinputFieldActive(false);
-                          }}
-                          className="bg-gray-100 px-1 py-1 cursor-pointer"
-                        >
-                          {customer.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+              <input
+                type="text"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClick={() => setInputFieldActive(true)}
+                value={searchTerm}
+                className={`mt-1 block w-full border rounded-md shadow-sm p-2 outline-none  ${
+                  isInvalidCustomer
+                    ? "focus:outline-red-500"
+                    : "focus:outline-blue-500"
+                }`}
+              />
+              {filteredCustomerData?.length > 0 && inputFieldActive && (
+                <div className="bg-white w-full absolute z-10 rounded-md shadow-lg px-2 py-1 top-[calc(100%+0.25rem)]">
+                  <ul
+                    className={`flex gap-y-2 flex-col max-h-28 ${
+                      filteredCustomerData?.length > 4 && "overflow-y-scroll"
+                    }`}
+                  >
+                    {filteredCustomerData?.map((customer) => (
+                      <li
+                        key={customer.id}
+                        onClick={() => handleCustomerSelection(customer)}
+                        className="bg-gray-100 px-1 py-1 cursor-pointer"
+                      >
+                        {customer.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
           <div className="mb-6">
             <label className="block text-lg font-medium text-gray-700">
-              Date of Organising
+              Date of Organizing
             </label>
             <input
               type="date"
@@ -171,32 +223,33 @@ const CreateEvent = () => {
           </div>
           <div className="mb-6">
             <label className="block text-lg font-medium text-gray-700">
-              What do want to Edit ?<span className="text-red-600">*</span>
+              Edit Type
             </label>
             <select
-              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-              onChange={(e) => setEditType(e.target.value)}
               value={editType}
+              onChange={(e) => setEditType(e.target.value)}
+              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
             >
               <option value="imageEdit">Image Edit</option>
               <option value="videoEdit">Video Edit</option>
-              <option value="cardEdit">Pdf Edit</option>
             </select>
           </div>
-          <div className="flex items-center h-full">
+          <div className="flex items-center w-full h-full mt-1">
             <button
               type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 w-full"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md w-full"
             >
               Create Event
             </button>
           </div>
         </form>
       </div>
-      <CreateCustomerJSX
-        showModal={showCreateCustomerModal}
-        setShowModal={setShowCreateCustomerModal}
-      />
+      {showCreateCustomerModal && (
+        <CreateCustomerJSX
+          onClose={() => setShowCreateCustomerModal(false)}
+          setCustomerData={setCustomerData}
+        />
+      )}
     </div>
   );
 };
