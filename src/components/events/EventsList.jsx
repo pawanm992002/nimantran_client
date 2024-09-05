@@ -42,9 +42,9 @@ const EventsList = () => {
     fetchEvents();
   }, []);
 
-  const handleEditClick = (customer, event) => {
+  const handleEditClick = (customerId, event) => {
     setSelectedEvent(event);
-    setCustomerId(customer.customerId);
+    setCustomerId(customerId);
     setShowModal(true);
   };
 
@@ -72,17 +72,17 @@ const EventsList = () => {
   const handleEventUpdated = () => {
     fetchEvents();
   };
-  const filteredCustomers = customers
-    .map((customer) => ({
-      ...customer,
-      events: customer.events.filter(
-        (event) =>
-          event.eventName.toLowerCase().includes(searchItem.toLowerCase()) ||
-          customer.customerName.toLowerCase().includes(searchItem.toLowerCase())
-      ),
-    }))
-    .filter((customer) => customer.events.length > 0);
+  const filteredCustomers = customers.filter((customer) => {
+    const customerNameMatch = customer.customerName
+      .toLowerCase()
+      .includes(searchItem.toLowerCase());
 
+    const eventsMatch = customer.events.some((event) =>
+      event.eventName.toLowerCase().includes(searchItem.toLowerCase())
+    );
+
+    return customerNameMatch || eventsMatch;
+  });
 
   return (
     <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
@@ -167,11 +167,11 @@ const EventsList = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {!event?.dateOfOrganising
-                      ? "N/A"
+                      ? "-"
                       : new Date(event?.dateOfOrganising).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {event.location || "N/A"}
+                    {event.location || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {customer.customerName}
@@ -185,7 +185,7 @@ const EventsList = () => {
                       className="w-6 h-6 cursor-pointer text-gray-500 hover:text-blue-500 transition duration-300"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleEditClick(customer, event);
+                        handleEditClick(event.customerId, event);
                       }}
                     >
                       <path

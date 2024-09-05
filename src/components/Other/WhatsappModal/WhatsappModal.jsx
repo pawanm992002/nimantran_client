@@ -159,16 +159,20 @@ const WhatsappModal = ({
               <div className="flex flex-col m-4 items-center">
                 <span>Scan QR Code with WhatsApp</span>
                 <span
-                  className="text-sm text-gray-800 hover:text-gray-500"
+                  className="text-sm text-gray-800 hover:text-gray-500 cursor-pointer"
                   onClick={() => generateQR()}
                 >
                   (Show QR)
                 </span>
-                {qrCode ? <img
-                  src={qrCode}
-                  alt="WhatsApp QR Code"
-                  className="max-w-[260px]"
-                /> : <p>Loading QR Code...</p> }
+                {qrCode ? (
+                  <img
+                    src={qrCode}
+                    alt="WhatsApp QR Code"
+                    className="max-w-[260px]"
+                  />
+                ) : (
+                  <p>Loading QR Code...</p>
+                )}
                 <span>{response}</span>
               </div>
               {/* ) : (

@@ -10,14 +10,21 @@ const Transactions = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortByDate, setSortByDate] = useState(false); // State for date sorting
+  const [sortByDate, setSortByDate] = useState(false);
+  const [sortByCredits, setSortByCredits] = useState(false);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSortToggle = () => {
-    setSortByDate(!sortByDate); // Toggle the sorting order
+  const handleSortToggle = (sortType) => {
+    if (sortType === "date") {
+      setSortByDate(!sortByDate);
+      setSortByCredits(false);
+    } else if (sortType === "credits") {
+      setSortByCredits(!sortByCredits);
+      setSortByDate(false);
+    }
   };
 
   const fetchTransactions = async () => {
@@ -59,7 +66,7 @@ const Transactions = () => {
   const combinedTransactions = [
     ...transactions.map((transaction) => ({
       statement: `Received by ${transaction?.recieverId?.name}`,
-      amount: transaction?.amount,
+      amount: [transaction?.amount, { type: "transfer" }],
       date: new Date(transaction?.transactionDate),
       status: transaction?.status,
       type: "Transfer",
@@ -70,19 +77,22 @@ const Transactions = () => {
           ? transaction?.eventId?.eventName
           : "no event name"
       } [${transaction?.areaOfUse}]`,
-      amount: transaction?.amount,
+      amount: [transaction?.amount, { type: "spend" }],
       date: new Date(transaction?.transactionDate),
       status: transaction?.status,
       type: "Credit Spending",
     })),
   ];
 
-  // Sort transactions by date
+  // Sort transactions
+  // Sort transactions
   const sortedTransactions = combinedTransactions.sort((a, b) => {
     if (sortByDate) {
-      return new Date(a.date) - new Date(b.date); // Ascending order
+      return new Date(a.date) - new Date(b.date);
+    } else if (sortByCredits) {
+      return b.amount - a.amount;
     } else {
-      return new Date(b.date) - new Date(a.date); // Descending order
+      return new Date(b.date) - new Date(a.date);
     }
   });
 
@@ -93,7 +103,7 @@ const Transactions = () => {
   if (loading) {
     return (
       <div className="flex h-full w-full justify-center items-center">
-        <div className="spinner"></div> {/* Spinner */}
+        <div className="spinner"></div>
       </div>
     );
   }
@@ -121,10 +131,26 @@ const Transactions = () => {
             <thead className="bg-gray-200 sticky top-0">
               <tr>
                 <th className="text-left p-4">Statement</th>
-                <th className="text-left p-4">Credit</th>
                 <th className="text-left p-4">
-                  Date{" "}
-                  <button className="mx-1" onClick={handleSortToggle}>
+                  Credits
+                  <button
+                    className="mx-1"
+                    onClick={() => handleSortToggle("credits")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faArrowRightArrowLeft}
+                      className={`rotate-90 text-sm ${
+                        sortByCredits ? "transform rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                </th>
+                <th className="text-left p-4">
+                  Date
+                  <button
+                    className="mx-1"
+                    onClick={() => handleSortToggle("date")}
+                  >
                     <FontAwesomeIcon
                       icon={faArrowRightArrowLeft}
                       className={`rotate-90 text-sm ${
@@ -140,7 +166,15 @@ const Transactions = () => {
               {filteredTransactions.map((transaction, index) => (
                 <tr key={index} className="hover:bg-gray-100">
                   <td className="p-4">{transaction.statement}</td>
-                  <td className="p-4 text-red-500">{transaction.amount}</td>
+                  <td
+                    className={`p-4 ${
+                      transaction.amount[1].type === "spend"
+                        ? "text-red-500"
+                        : "text-green-500"
+                    }`}
+                  >
+                    {transaction.amount[0]}
+                  </td>
                   <td className="p-4">
                     {transaction.date.toLocaleDateString()}
                   </td>
