@@ -485,7 +485,7 @@ export default function WeddingImage() {
                 {processedVideoUrls.map((val, i) => (
                   <div
                     key={i}
-                    className="w-[250px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]"
+                    className="min-w-[350px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]"
                   >
                     <img
                       src={val.link}

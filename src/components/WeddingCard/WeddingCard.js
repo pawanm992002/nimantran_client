@@ -21,6 +21,8 @@ import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import { debounce } from "lodash";
 import Loader from "../Other/Loader/Loader";
+import { app, firebaseStorage } from "../../firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function WeddingVideo() {
   const token = localStorage.getItem("token");
@@ -37,17 +39,16 @@ export default function WeddingVideo() {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const parentRef = useRef();
   const [pdfFile, setPdfFile] = useState(null);
-  const [pdfFileObj, setPdfFileObj] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
   const [count, setCount] = useState(1);
   const [onHover1, setOnHover1] = useState(false);
   const [onHover2, setOnHover2] = useState(false);
-  const [onHover4, setOnHover4] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
+  const [fileLoading, setFileLoading] = useState(false);
   const [jsonData, setJsonData] = useState([
     { name: "pawan mishra", mobileNumber: "1111111111" },
     {
@@ -87,6 +88,7 @@ export default function WeddingVideo() {
       w: viewport.width,
       h: viewport.height,
     });
+    setFileLoading(false);
   };
 
   const createTextDiv = () => {
@@ -111,15 +113,27 @@ export default function WeddingVideo() {
       underline: "none",
       page: currentPage,
     };
-    
+
     setCount(count + 1);
     setTexts([...texts, newText]);
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
+    setFileLoading(true);
     const file = event.target.files[0];
-    setPdfFile(URL.createObjectURL(file));
-    setPdfFileObj(file);
+    try {
+      if (file) {
+        let storageRef = ref(
+          firebaseStorage,
+          `uploads/${eventId}/inputFile.pdf`
+        );
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        setPdfFile(url);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const takeTextDetails = (details) => {
@@ -170,24 +184,15 @@ export default function WeddingVideo() {
         return toast.error("Please Enter Guest List");
       }
 
-      if(jsonData?.length <= 0) {
+      if (jsonData?.length <= 0) {
         setIsLoading(false);
         return toast.error("No Guests are Present in CSV");
       }
-      
-      if(!jsonData[0]?.name || !jsonData[0].mobileNumber) {
+
+      if (!jsonData[0]?.name || !jsonData[0].mobileNumber) {
         setIsLoading(false);
         return toast.error("name and mobileNumber coloums are required");
       }
-
-      const formData = new FormData();
-      formData.append("pdf", pdfFileObj);
-      formData.append("guestNames", JSON.stringify(jsonData));
-      formData.append("textProperty", JSON.stringify(texts));
-      formData.append("scalingFont", scalingFont);
-      formData.append("scalingW", scalingW);
-      formData.append("scalingH", scalingH);
-      formData.append("isSample", isSample);
 
       const xhr = new XMLHttpRequest();
       xhr.open(
@@ -197,6 +202,8 @@ export default function WeddingVideo() {
       );
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
       xhr.setRequestHeader("Accept", "text/event-stream");
+      xhr.setRequestHeader("Content-Type", "application/json"); 
+
 
       xhr.onprogress = function () {
         const responseText = xhr.responseText.trim();
@@ -228,6 +235,14 @@ export default function WeddingVideo() {
       };
 
       xhr.onloadend = function () {
+        if (xhr.status >= 400) {
+          // Handle backend error response and display the error message
+          const errorResponse = JSON.parse(xhr.responseText);
+          toast.error(errorResponse.message || "An error occurred!");
+          setIsLoading(false);
+          return;
+        }
+        
         if (isSample) {
           setShowPreview(true);
         } else {
@@ -236,7 +251,14 @@ export default function WeddingVideo() {
         setIsLoading(false); // Set isLoading to false after the response ends
       };
 
-      xhr.send(formData);
+      xhr.send(JSON.stringify({
+        guestNames: jsonData, 
+        textProperty: texts,
+        scalingFont,
+        scalingW,
+        scalingH,
+        isSample
+      }));
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong!");
       setIsLoading(false);
@@ -305,6 +327,12 @@ export default function WeddingVideo() {
       {isLoading && (
         <Loader
           text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
+        />
+      )}
+
+      {fileLoading && (
+        <Loader
+          text={`Please wait while its Loading`}
         />
       )}
 
@@ -469,9 +497,7 @@ export default function WeddingVideo() {
           />
         )}
       </div>
-
-      {!isLoading && showPreview && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-80 items-center justify-center z-50" style={{display: !isLoading && showPreview ? "flex" : 'none'}}> 
           <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
             {/* Close Button */}
             <button
@@ -489,13 +515,14 @@ export default function WeddingVideo() {
               <h2 className="text-2xl font-semibold mb-4">Previews</h2>
 
               {/* Horizontal Scrollable Container */}
-              <div className="flex space-x-4 p-2">
+              <div className="flex space-x-4 overflow-x-auto p-2">
                 {processedVideoUrls.map((val, i) => (
-                  <div key={i}
+                  <div
+                    key={i}
                     style={{
                       position: "relative",
                       display: "inline-block",
-                      width: "70vw",
+                      minWidth: "350px",
                       maxHeight: "500px",
                       overflow: "auto",
                       position: "relative",
@@ -510,7 +537,6 @@ export default function WeddingVideo() {
             </div>
           </div>
         </div>
-      )}
     </div>
   );
 }

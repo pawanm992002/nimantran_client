@@ -232,6 +232,7 @@ const CreateEvent = () => {
             >
               <option value="imageEdit">Image Edit</option>
               <option value="videoEdit">Video Edit</option>
+              <option value="cardEdit">Pdf Edit</option>
             </select>
           </div>
           <div className="flex items-center w-full h-full mt-1">

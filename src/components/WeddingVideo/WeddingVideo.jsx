@@ -14,6 +14,8 @@ import Papa from "papaparse";
 import TextEditor from "../Other/TextEditor/TextEditor";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Loader from "../Other/Loader/Loader";
+import { app, firebaseStorage } from "../../firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function WeddingVideo() {
   const navigate = useNavigate();
@@ -98,7 +100,7 @@ export default function WeddingVideo() {
     setTexts([...texts, newText]);
   };
 
-  const handleVideoUpload = (event) => {
+  const handleVideoUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const videoPlayer = document.getElementById("videoPlayer");
@@ -117,9 +119,10 @@ export default function WeddingVideo() {
           h: videoPlayer.videoHeight,
         });
       });
-
-      const fileURL = URL.createObjectURL(file);
-      videoPlayer.src = fileURL;
+      let storageRef = ref(firebaseStorage, `uploads/${eventId}/inputFile.mp4`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      videoPlayer.src = url;
       videoPlayer.load();
     }
     setVideo(event.target.files[0]);
@@ -183,16 +186,6 @@ export default function WeddingVideo() {
         return toast.error("name and mobileNumber coloums are required");
       }
 
-      const formData = new FormData();
-      formData.append("video", video);
-      formData.append("videoDuration", videoDuration);
-      formData.append("guestNames", JSON.stringify(jsonData));
-      formData.append("textProperty", JSON.stringify(texts));
-      formData.append("scalingFont", scalingFont);
-      formData.append("scalingW", scalingW);
-      formData.append("scalingH", scalingH);
-      formData.append("isSample", isSample);
-
       const xhr = new XMLHttpRequest();
       xhr.open(
         "POST",
@@ -201,6 +194,7 @@ export default function WeddingVideo() {
       );
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
       xhr.setRequestHeader("Accept", "text/event-stream");
+      xhr.setRequestHeader("Content-Type", "application/json"); 
 
       xhr.onprogress = function () {
         const responseText = xhr.responseText.trim();
@@ -232,6 +226,14 @@ export default function WeddingVideo() {
       };
 
       xhr.onloadend = function () {
+        if (xhr.status >= 400) {
+          // Handle backend error response and display the error message
+          const errorResponse = JSON.parse(xhr.responseText);
+          toast.error(errorResponse.message || "An error occurred!");
+          setIsLoading(false);
+          return;
+        }
+        
         if(isSample) {
           setShowPreview(true);
         } else {
@@ -240,7 +242,16 @@ export default function WeddingVideo() {
         setIsLoading(false); // Set isLoading to false after the response ends
       };
 
-      xhr.send(formData);
+      xhr.send(JSON.stringify({
+        guestNames: jsonData, 
+        textProperty: texts,
+        scalingFont,
+        scalingW,
+        scalingH,
+        isSample,
+        videoDuration
+      }));
+      
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong!");
       setIsLoading(false);
@@ -466,7 +477,7 @@ export default function WeddingVideo() {
                 {processedVideoUrls.map((val, i) => (
                   <div
                     key={i}
-                    className="w-[250px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]"
+                    className="min-w-[350px] bg-gray-200 rounded-lg shadow-lg max-h-[460px]"
                   >
                     <video
                       controls
