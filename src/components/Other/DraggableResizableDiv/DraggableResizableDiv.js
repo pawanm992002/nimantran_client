@@ -14,6 +14,7 @@ const DraggableResizableDiv = ({
   videoCenter,
   comp,
   widthHeight,
+  type,
 }) => {
   const [text, setText] = useState(property?.text);
   const [position, setPosition] = useState(property?.position);
@@ -22,15 +23,7 @@ const DraggableResizableDiv = ({
   const [isAtCenter, setIsAtCenter] = useState(false);
 
   const handleDrag = (e, data) => {
-    if (data.x >= 0 && data.y >= 0) {
-      setPosition({ x: data.x, y: data.y });
-    }
-    // if (data.y >= widthHeight.h - property?.size?.height) {
-    //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
-    // }
-    // if (data.x >= widthHeight.w - property?.size?.width) {
-    //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
-    // }
+    setPosition({ x: data.x, y: data.y });
     if (Math.abs(videoCenter - size?.width / 2 - data.x) < 2) {
       setIsAtCenter(true);
     } else {
@@ -39,10 +32,55 @@ const DraggableResizableDiv = ({
     const a = setTimeout(() => {
       setIsAtCenter(false);
     }, 3000);
-  };
+    if (!type) {
+      if (data.x >= 0 && data.y >= 0) {
+        setPosition({ x: data.x, y: data.y });
+      }
 
-  const handleResize = (e, { size }) => {
-    setSize({ width: size?.width, height: size?.height });
+      if (data.y >= widthHeight.h - property?.size?.height) {
+        setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
+      }
+      if (data.x >= widthHeight.w - property?.size?.width) {
+        setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
+      }
+
+      if (Math.abs(videoCenter - size?.width / 2 - data.x) < 2) {
+        setIsAtCenter(true);
+      } else {
+        setIsAtCenter(false);
+      }
+      const a = setTimeout(() => {
+        setIsAtCenter(false);
+      }, 3000);
+    }
+  };
+  const handleResize = (e, { size, handle }) => {
+    if (!type) {
+      let newWidth = size.width;
+      let newHeight = size.height;
+      let newX = position.x;
+      let newY = position.y;
+
+      // Check if the new size exceeds the image boundaries
+      if (newX + newWidth > widthHeight.w) {
+        newWidth = widthHeight.w - newX;
+      }
+      if (newY + newHeight > widthHeight.h) {
+        newHeight = widthHeight.h - newY;
+      }
+
+      // Adjust position if resizing from left or top
+      if (handle.includes("w")) {
+        newX = Math.max(0, position.x + size.width - newWidth);
+      }
+      if (handle.includes("n")) {
+        newY = Math.max(0, position.y + size.height - newHeight);
+      }
+      setSize({ width: newWidth, height: newHeight });
+      setPosition({ x: newX, y: newY });
+    } else {
+      setSize({ width: size?.width, height: size?.height });
+    }
   };
 
   const handleContextMenu = (e) => {
@@ -69,13 +107,7 @@ const DraggableResizableDiv = ({
       hidden: property.hidden,
       page: property.page,
     });
-  }, [
-    position,
-    size,
-    text,
-    property.page,
-    property.hidden,
-  ]);
+  }, [position, size, text, property.page, property.hidden]);
 
   useEffect(() => {
     // try {
@@ -151,7 +183,7 @@ const DraggableResizableDiv = ({
                 fontFamily: property.fontFamily,
                 display: visible ? "flex" : "none",
                 fontWeight: property.fontWeight,
-                textDecoration: property.underline
+                textDecoration: property.underline,
               }}
               className="textInput"
               placeholder="Write Text..."

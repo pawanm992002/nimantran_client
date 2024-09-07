@@ -21,6 +21,7 @@ const CreateEvent = () => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const customerIdFromLocal = localStorage.getItem("_id");
+  const [minDate, setMinDate] = useState("");
 
   const handleCreateEvent = async (e) => {
     e.preventDefault();
@@ -93,7 +94,7 @@ const CreateEvent = () => {
         // toast.dismiss()
         toast.error("Please select a valid customer from the list");
       }
-    }, 900), // Adjust debounce delay as needed
+    }, 1200), // Adjust debounce delay as needed
     [customerData]
   );
 
@@ -121,6 +122,10 @@ const CreateEvent = () => {
       setIsInvalidCustomer(false);
     }
   };
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    setMinDate(today);
+  }, []);
 
   return (
     <div>
@@ -205,6 +210,7 @@ const CreateEvent = () => {
             </label>
             <input
               type="date"
+              min={minDate}
               value={dateOfOrganising}
               onChange={(e) => setDateOfOrganising(e.target.value)}
               className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"

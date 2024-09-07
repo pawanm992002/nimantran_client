@@ -4,11 +4,15 @@ import { useNavigate } from "react-router-dom";
 import "./styles/AdminLogin.css"; // Ensure you save the CSS in this file
 import toast from "react-hot-toast";
 import Loader from "../Other/Loader/Loader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const AdminLogin = () => {
   const [mobile, setmobile] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [togglePassword, settogglePassword] = useState(false);
+
   const navigate = useNavigate();
 
   const loginUser = async () => {
@@ -33,34 +37,48 @@ const AdminLogin = () => {
     setLoading(false);
   };
 
-  return (<>
-  {
-    loading && <Loader text='Wait while login' /> 
-  }
-    <div className="admin-login-container">
-      <div className="login-avatar">
-        <img
-          src="https://png.pngtree.com/png-clipart/20191122/original/pngtree-user-icon-isolated-on-abstract-background-png-image_5192004.jpg"
-          alt="Avatar"
-        />
-      </div>
-      <h2>Login</h2>
-      <input
-        type="text"
-        placeholder="mobile"
-        value={mobile}
-        onChange={(e) => setmobile(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+  return (
+    <>
+      {loading && <Loader text="Wait while login" />}
+      <div className="w-full h-screen flex justify-center items-center">
+        <div className="admin-login-container ">
+          <div className="login-avatar">
+            <img
+              src="https://png.pngtree.com/png-clipart/20191122/original/pngtree-user-icon-isolated-on-abstract-background-png-image_5192004.jpg"
+              alt="Avatar"
+            />
+          </div>
+          <h2>Login</h2>
+          <input
+            type="text"
+            placeholder="mobile"
+            value={mobile}
+            onChange={(e) => setmobile(e.target.value)}
+          />
+          <div className=" relative w-full">
+            <input
+              type={`${togglePassword ? "text" : "password"}`}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <span
+              className=" absolute bottom-1/2 right-2.5 cursor-pointer text-blue-500"
+              onClick={() => settogglePassword((prev) => !prev)}
+            >
+              {togglePassword ? (
+                <FontAwesomeIcon icon={faEye} />
+              ) : (
+                <FontAwesomeIcon icon={faEyeSlash} />
+              )}
+            </span>
+          </div>
 
-      <button onClick={loginUser}>Login</button>
-    </div>
-    </>);
+          <button onClick={loginUser}>Login</button>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default AdminLogin;

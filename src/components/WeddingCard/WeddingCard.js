@@ -487,6 +487,7 @@ export default function WeddingVideo() {
                                       property={val}
                                       videoCenter={resized.w / 2}
                                       widthHeight={resized}
+                                      type={"pdf"}
                                     />
                                   )
                               )}
