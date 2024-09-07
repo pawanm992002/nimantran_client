@@ -68,7 +68,7 @@ export default function WeddingImage() {
     w: 0,
     h: 0,
   });
-  // const [zipUrl, setZipUrl] = useState("");
+  const [zipUrl, setZipUrl] = useState("");
 
   const createTextDiv = () => {
     if (!video) {
@@ -186,12 +186,12 @@ export default function WeddingImage() {
         return toast.error("Please Enter Guest List");
       }
 
-      if(jsonData?.length <= 0) {
+      if (jsonData?.length <= 0) {
         setIsLoading(false);
         return toast.error("No Guests are Present in CSV");
       }
-      
-      if(!jsonData[0]?.name || !jsonData[0].mobileNumber) {
+
+      if (!jsonData[0]?.name || !jsonData[0].mobileNumber) {
         setIsLoading(false);
         return toast.error("name and mobileNumber coloums are required");
       }
@@ -246,6 +246,15 @@ export default function WeddingImage() {
       xhr.onloadend = function () {
         if (isSample) {
           setShowPreview(true);
+          const responseText = xhr.responseText;
+          const zipUrlMatch = responseText.match(/zipUrl: (.*)/);
+          if (zipUrlMatch && zipUrlMatch[1]) {
+            const extractedZipUrl = zipUrlMatch[1].trim();
+            setZipUrl(extractedZipUrl);
+            console.log("Extracted zipUrl:", extractedZipUrl);
+          } else {
+            console.log("zipUrl not found in the response");
+          }
         } else {
           navigate(`/event/mediaGrid?eventId=${eventId}`);
         }
@@ -457,6 +466,8 @@ export default function WeddingImage() {
             texts={texts}
             setTexts={setTexts}
             handleSubmit={handleSubmit}
+            zipUrl={zipUrl}
+            type="Images"
           />
         )}
       </div>

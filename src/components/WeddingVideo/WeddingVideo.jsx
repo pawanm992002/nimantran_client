@@ -69,7 +69,7 @@ export default function WeddingVideo() {
     h: 0,
   });
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  // const [zipUrl, setZipUrl] = useState("");
+  const [zipUrl, setZipUrl] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [videoDuration, setVideoDuration] = useState(1);
 
@@ -93,7 +93,11 @@ export default function WeddingVideo() {
       backgroundColor: "none",
       hidden: false,
       underline: "none",
-      transition: { type: "none", name: "Select Transition", options: {duration: 0} },
+      transition: {
+        type: "none",
+        name: "Select Transition",
+        options: { duration: 0 },
+      },
     };
 
     setCount(count + 1);
@@ -176,12 +180,12 @@ export default function WeddingVideo() {
         return toast.error("Please Enter Guest List");
       }
 
-      if(jsonData?.length <= 0) {
+      if (jsonData?.length <= 0) {
         setIsLoading(false);
         return toast.error("No Guests are Present in CSV");
       }
-      
-      if(!jsonData[0]?.name || !jsonData[0].mobileNumber) {
+
+      if (!jsonData[0]?.name || !jsonData[0].mobileNumber) {
         setIsLoading(false);
         return toast.error("name and mobileNumber coloums are required");
       }
@@ -236,6 +240,16 @@ export default function WeddingVideo() {
         
         if(isSample) {
           setShowPreview(true);
+
+          const responseText = xhr.responseText;
+          const zipUrlMatch = responseText.match(/zipUrl: (.*)/);
+          if (zipUrlMatch && zipUrlMatch[1]) {
+            const extractedZipUrl = zipUrlMatch[1].trim();
+            setZipUrl(extractedZipUrl);
+            console.log("Extracted zipUrl:", extractedZipUrl);
+          } else {
+            console.log("zipUrl not found in the response");
+          }
         } else {
           navigate(`/event/mediaGrid?eventId=${eventId}`);
         }
@@ -257,7 +271,7 @@ export default function WeddingVideo() {
       setIsLoading(false);
     }
   };
-  
+
   // useEffect(() => {
   //   console.log(texts);
   //   if (texts.length !== 0) {
@@ -315,8 +329,8 @@ export default function WeddingVideo() {
 
       {isLoading && (
         <Loader
-        text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
-      />
+          text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
+        />
       )}
       <div className="mainContainer">
         {texts.length > 0 && openContextMenuId && (
@@ -357,24 +371,6 @@ export default function WeddingVideo() {
               </div>
               <FontAwesomeIcon icon={faSquarePlus} />
             </label>
-
-            {/* {zipUrl && (
-              <label
-                className="custom-file-upload"
-                onMouseOver={() => setOnHover4(true)}
-                onMouseOut={() => setOnHover4(false)}
-              >
-                <div
-                  className="tooltip"
-                  style={{ display: onHover4 && "flex" }}
-                >
-                  Download All Videos in Zip
-                </div>
-                <a href={zipUrl} download="processed_videos.zip">
-                  <FontAwesomeIcon icon={faFileArrowDown} />
-                </a>
-              </label>
-            )} */}
           </form>
 
           <div className="mainbar">
@@ -450,6 +446,8 @@ export default function WeddingVideo() {
             handleSubmit={handleSubmit}
             texts={texts}
             setTexts={setTexts}
+            zipUrl={zipUrl}
+            type="Videos"
           />
         )}
       </div>

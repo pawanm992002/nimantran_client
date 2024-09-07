@@ -1,7 +1,14 @@
 import React from "react";
 import "./SideConfiguration.css";
-
-export default function SideConfiguration({ texts, setTexts, handleSubmit }) {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
+export default function SideConfiguration({
+  texts,
+  setTexts,
+  handleSubmit,
+  zipUrl,
+  type,
+}) {
   const deleteText = (id) => {
     setTexts(texts.filter((val) => val.id !== id));
   };
@@ -28,6 +35,14 @@ export default function SideConfiguration({ texts, setTexts, handleSubmit }) {
           Show Preview
         </button>
 
+        {zipUrl !== "" && (
+          <a href={zipUrl} download={`processed_${type}.zip`} className="">
+            <button className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2">
+              Download {type} files
+              <FontAwesomeIcon icon={faFileArrowDown} />
+            </button>
+          </a>
+        )}
         <button
           type="button"
           className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"

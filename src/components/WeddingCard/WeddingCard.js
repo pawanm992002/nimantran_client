@@ -4,11 +4,7 @@ import "../WeddingVideo/WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFileArrowDown,
-  faFileArrowUp,
-  faSquarePlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFileArrowUp, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
@@ -78,7 +74,7 @@ export default function WeddingVideo() {
     h: 0,
   });
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  // const [zipUrl, setZipUrl] = useState("");
+  const [zipUrl, setZipUrl] = useState("");
 
   const onDocumentLoad = async ({ doc }) => {
     const page = await doc.getPage(1);
@@ -245,6 +241,16 @@ export default function WeddingVideo() {
         
         if (isSample) {
           setShowPreview(true);
+
+          const responseText = xhr.responseText;
+          const zipUrlMatch = responseText.match(/zipUrl: (.*)/);
+          if (zipUrlMatch && zipUrlMatch[1]) {
+            const extractedZipUrl = zipUrlMatch[1].trim();
+            setZipUrl(extractedZipUrl);
+            console.log("Extracted zipUrl:", extractedZipUrl);
+          } else {
+            console.log("zipUrl not found in the response");
+          }
         } else {
           navigate(`/event/mediaGrid?eventId=${eventId}`);
         }
@@ -494,6 +500,8 @@ export default function WeddingVideo() {
             texts={texts}
             setTexts={setTexts}
             handleSubmit={handleSubmit}
+            zipUrl={zipUrl}
+             type="Cards"
           />
         )}
       </div>
