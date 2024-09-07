@@ -113,9 +113,11 @@ const AdminEvents = () => {
                 Date:
               </h3>
               <p className="text-gray-800 text-md">
-                {new Date(
-                  singleEventView.dateOfOrganising
-                ).toLocaleDateString()}
+                {singleEventView.dateOfOrganising
+                  ? new Date(
+                      singleEventView.dateOfOrganising
+                    ).toLocaleDateString()
+                  : "-"}
               </p>
             </div>
           </div>
@@ -125,7 +127,7 @@ const AdminEvents = () => {
                 Location:
               </h3>
               <p className="text-gray-800 text-md">
-                {singleEventView.location}
+                {singleEventView.location ? singleEventView.location : "-"}
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
@@ -239,10 +241,12 @@ const AdminEvents = () => {
                 {event.eventName}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(event.dateOfOrganising).toLocaleDateString()}
+                {event.dateOfOrganising
+                  ? new Date(event.dateOfOrganising).toLocaleDateString()
+                  : "-"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {event.location}
+                {event.location.length > 0 ? event.location : "-"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {event.user.name}

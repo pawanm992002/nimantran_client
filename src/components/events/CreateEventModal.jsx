@@ -88,7 +88,7 @@ const CreateEventModal = ({ show, onClose, onEventCreated }) => {
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
-              Date of Organising
+              Date of Organizing
             </label>
             <input
               type="date"
