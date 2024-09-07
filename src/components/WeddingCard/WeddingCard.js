@@ -75,6 +75,8 @@ export default function WeddingVideo() {
   });
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [zipUrl, setZipUrl] = useState("");
+  const [isSample, setIsSample] = useState(true);
+  const [fileName, setFileName] = useState("");
 
   const onDocumentLoad = async ({ doc }) => {
     const page = await doc.getPage(1);
@@ -119,9 +121,11 @@ export default function WeddingVideo() {
     const file = event.target.files[0];
     try {
       if (file) {
+        const fileName = `inputFile.${file?.name?.split(".")[1]}`;
+        setFileName(fileName);
         let storageRef = ref(
           firebaseStorage,
-          `uploads/${eventId}/inputFile.pdf`
+          `uploads/${eventId}/${fileName}`
         );
         const snapshot = await uploadBytes(storageRef, file);
         const url = await getDownloadURL(snapshot.ref);
@@ -159,7 +163,7 @@ export default function WeddingVideo() {
     try {
       event.preventDefault();
       setIsLoading(true);
-
+      setIsSample(isSample);
       let resized = document.getElementById("pdfPage");
       let scalingW = OriginalSize.w / resized.clientWidth;
       let scalingH = OriginalSize.h / resized.clientHeight;
@@ -241,16 +245,13 @@ export default function WeddingVideo() {
         
         if (isSample) {
           setShowPreview(true);
-
           const responseText = xhr.responseText;
           const zipUrlMatch = responseText.match(/zipUrl: (.*)/);
           if (zipUrlMatch && zipUrlMatch[1]) {
             const extractedZipUrl = zipUrlMatch[1].trim();
             setZipUrl(extractedZipUrl);
             console.log("Extracted zipUrl:", extractedZipUrl);
-          } else {
-            console.log("zipUrl not found in the response");
-          }
+          } 
         } else {
           navigate(`/event/mediaGrid?eventId=${eventId}`);
         }
@@ -263,7 +264,8 @@ export default function WeddingVideo() {
         scalingFont,
         scalingW,
         scalingH,
-        isSample
+        isSample,
+        fileName
       }));
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong!");
@@ -332,8 +334,8 @@ export default function WeddingVideo() {
 
       {isLoading && (
         <Loader
-          text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
-        />
+        text={isSample ? `Please wait while Generating Sample Media: ${processedVideoUrls?.length} / 5 ` : `Please wait while Generating Media ${processedVideoUrls?.length} / ${jsonData?.length} `}
+      />
       )}
 
       {fileLoading && (

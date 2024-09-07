@@ -1,7 +1,5 @@
-import React from "react";
 import "./SideConfiguration.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
+
 export default function SideConfiguration({
   texts,
   setTexts,
@@ -38,8 +36,7 @@ export default function SideConfiguration({
         {zipUrl !== "" && (
           <a href={zipUrl} download={`processed_${type}.zip`} className="">
             <button className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2">
-              Download {type} files
-              <FontAwesomeIcon icon={faFileArrowDown} />
+              Download Zip File
             </button>
           </a>
         )}

@@ -4,7 +4,6 @@ import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResiz
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFileArrowDown,
   faFileArrowUp,
   faSquarePlus,
 } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +13,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import Loader from "../Other/Loader/Loader";
+import { firebaseStorage } from "../../firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function WeddingImage() {
   const token = localStorage.getItem("token");
@@ -27,6 +28,9 @@ export default function WeddingImage() {
   const videoRef = useRef();
   const [params] = useSearchParams();
   var eventId = params.get("eventId");
+  const [isSample, setIsSample] = useState(true);
+  const [fileLoading, setFileLoading] = useState(false);
+  const [fileName, setFileName] = useState("");
   const [jsonData, setJsonData] = useState([
     { name: "pawan mishra", mobileNumber: "1111111111" },
     {
@@ -102,20 +106,11 @@ export default function WeddingImage() {
   //  }
 
   const handleVideoUpload = async (event) => {
-    const inputFile = event.target.files[0];
-    // const formData = new FormData();
-    // formData.append("pawan", inputFile);
+    setFileLoading(true);
+    const file = event.target.files[0];
 
-    if (inputFile) {
+    if (file) {
       const videoPlayer = document.getElementById("videoPlayer");
-      // const response = await axios.post(
-      //   `${process.env.REACT_APP_BACKEND_URL}/texts/image?eventId=${eventId}`,
-      //   formData,
-      //   {
-      //     headers: { Authorization: `Bearer ${token}` },
-      //   }
-      // );
-      // console.log(response)
       const img = new Image();
       img.onload = () => {
         // Set the original size
@@ -131,10 +126,19 @@ export default function WeddingImage() {
         });
       };
 
-      const fileURL = URL.createObjectURL(inputFile);
-      img.src = fileURL;
-      videoPlayer.src = fileURL;
+      const fileName = `inputFile.${file?.name?.split(".")[1]}`;
+      setFileName(fileName);
+      let storageRef = ref(
+        firebaseStorage,
+        `uploads/${eventId}/${fileName}`
+      );
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      
+      img.src = url;
+      videoPlayer.src = url;
     }
+    setFileLoading(false);
     setVideo(event.target.files[0]);
   };
 
@@ -165,7 +169,7 @@ export default function WeddingImage() {
     try {
       event.preventDefault();
       setIsLoading(true);
-
+      setIsSample(isSample);
       let resized = document.getElementById("videoPlayer");
       let scalingW = OriginalSize.w / resized.clientWidth;
       let scalingH = OriginalSize.h / resized.clientHeight;
@@ -196,15 +200,6 @@ export default function WeddingImage() {
         return toast.error("name and mobileNumber coloums are required");
       }
 
-      const formData = new FormData();
-      formData.append("video", video);
-      formData.append("guestNames", JSON.stringify(jsonData));
-      formData.append("textProperty", JSON.stringify(texts));
-      formData.append("scalingFont", scalingFont);
-      formData.append("scalingW", scalingW);
-      formData.append("scalingH", scalingH);
-      formData.append("isSample", isSample);
-
       const xhr = new XMLHttpRequest();
       xhr.open(
         "POST",
@@ -213,6 +208,7 @@ export default function WeddingImage() {
       );
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
       xhr.setRequestHeader("Accept", "text/event-stream");
+      xhr.setRequestHeader("Content-Type", "application/json");
 
       xhr.onprogress = function () {
         const responseText = xhr.responseText.trim();
@@ -244,6 +240,14 @@ export default function WeddingImage() {
       };
 
       xhr.onloadend = function () {
+        if (xhr.status >= 400) {
+          // Handle backend error response and display the error message
+          const errorResponse = JSON.parse(xhr.responseText);
+          toast.error(errorResponse.message || "An error occurred!");
+          setIsLoading(false);
+          return;
+        }
+
         if (isSample) {
           setShowPreview(true);
           const responseText = xhr.responseText;
@@ -252,8 +256,6 @@ export default function WeddingImage() {
             const extractedZipUrl = zipUrlMatch[1].trim();
             setZipUrl(extractedZipUrl);
             console.log("Extracted zipUrl:", extractedZipUrl);
-          } else {
-            console.log("zipUrl not found in the response");
           }
         } else {
           navigate(`/event/mediaGrid?eventId=${eventId}`);
@@ -261,7 +263,17 @@ export default function WeddingImage() {
         setIsLoading(false); // Set isLoading to false after the response ends
       };
 
-      xhr.send(formData);
+      xhr.send(
+        JSON.stringify({
+          guestNames: jsonData,
+          textProperty: texts,
+          scalingFont,
+          scalingW,
+          scalingH,
+          isSample,
+          fileName
+        })
+      );
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong!");
       setIsLoading(false);
@@ -323,9 +335,15 @@ export default function WeddingImage() {
 
       {isLoading && (
         <Loader
-          text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
+          text={
+            isSample
+              ? `Please wait while Generating Sample Media: ${processedVideoUrls?.length} / 5 `
+              : `Please wait while Generating Media ${processedVideoUrls?.length} / ${jsonData?.length} `
+          }
         />
       )}
+
+      {fileLoading && <Loader text={`Please wait while its Loading`} />}
 
       <div className="mainContainer">
         {openContextMenuId && (

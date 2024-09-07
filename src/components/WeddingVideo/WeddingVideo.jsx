@@ -3,11 +3,7 @@ import "./WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFileArrowDown,
-  faFileArrowUp,
-  faSquarePlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFileArrowUp, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
@@ -41,6 +37,8 @@ export default function WeddingVideo() {
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
+  const [fileLoading, setFileLoading] = useState(false);
+  const [fileName, setFileName] = useState("");
   const [jsonData, setJsonData] = useState([
     { name: "pawan mishra", mobileNumber: "1111111111" },
     {
@@ -71,6 +69,7 @@ export default function WeddingVideo() {
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [zipUrl, setZipUrl] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+  const [isSample, setIsSample] = useState(true);
   const [videoDuration, setVideoDuration] = useState(1);
 
   const createTextDiv = () => {
@@ -105,6 +104,7 @@ export default function WeddingVideo() {
   };
 
   const handleVideoUpload = async (event) => {
+    setFileLoading(true);
     const file = event.target.files[0];
     if (file) {
       const videoPlayer = document.getElementById("videoPlayer");
@@ -123,11 +123,19 @@ export default function WeddingVideo() {
           h: videoPlayer.videoHeight,
         });
       });
-      let storageRef = ref(firebaseStorage, `uploads/${eventId}/inputFile.mp4`);
+
+      const fileName = `inputFile.${file?.name?.split(".")[1]}`;
+      setFileName(fileName);
+      let storageRef = ref(
+        firebaseStorage,
+        `uploads/${eventId}/${fileName}`
+      );
+
       const snapshot = await uploadBytes(storageRef, file);
       const url = await getDownloadURL(snapshot.ref);
       videoPlayer.src = url;
       videoPlayer.load();
+      setFileLoading(false);
     }
     setVideo(event.target.files[0]);
   };
@@ -159,6 +167,7 @@ export default function WeddingVideo() {
     try {
       event.preventDefault();
       setIsLoading(true);
+      setIsSample(isSample);
 
       let resized = document.getElementById("videoPlayer");
       let scalingW = OriginalSize.w / resized.clientWidth;
@@ -198,7 +207,7 @@ export default function WeddingVideo() {
       );
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
       xhr.setRequestHeader("Accept", "text/event-stream");
-      xhr.setRequestHeader("Content-Type", "application/json"); 
+      xhr.setRequestHeader("Content-Type", "application/json");
 
       xhr.onprogress = function () {
         const responseText = xhr.responseText.trim();
@@ -237,8 +246,8 @@ export default function WeddingVideo() {
           setIsLoading(false);
           return;
         }
-        
-        if(isSample) {
+
+        if (isSample) {
           setShowPreview(true);
 
           const responseText = xhr.responseText;
@@ -256,16 +265,18 @@ export default function WeddingVideo() {
         setIsLoading(false); // Set isLoading to false after the response ends
       };
 
-      xhr.send(JSON.stringify({
-        guestNames: jsonData, 
-        textProperty: texts,
-        scalingFont,
-        scalingW,
-        scalingH,
-        isSample,
-        videoDuration
-      }));
-      
+      xhr.send(
+        JSON.stringify({
+          guestNames: jsonData,
+          textProperty: texts,
+          scalingFont,
+          scalingW,
+          scalingH,
+          isSample,
+          videoDuration,
+          fileName
+        })
+      );
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong!");
       setIsLoading(false);
@@ -329,9 +340,16 @@ export default function WeddingVideo() {
 
       {isLoading && (
         <Loader
-          text={`Please wait while its Loading ${processedVideoUrls?.length} / ${jsonData?.length} `}
+          text={
+            isSample
+              ? `Please wait while Generating Sample Media: ${processedVideoUrls?.length} / 5 `
+              : `Please wait while Generating Media ${processedVideoUrls?.length} / ${jsonData?.length} `
+          }
         />
       )}
+
+      {fileLoading && <Loader text={`Please wait while its Loading`} />}
+
       <div className="mainContainer">
         {texts.length > 0 && openContextMenuId && (
           <TextEditor
