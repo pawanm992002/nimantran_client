@@ -108,8 +108,14 @@ export default function WeddingImage() {
   const handleVideoUpload = async (event) => {
     setFileLoading(true);
     const file = event.target.files[0];
-
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 100MB
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("File size exceeds 10MB. Please select a smaller video.");
+        setFileLoading(false);
+        return;
+      }
+      
       const videoPlayer = document.getElementById("videoPlayer");
       const img = new Image();
       img.onload = () => {

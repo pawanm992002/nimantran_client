@@ -106,7 +106,13 @@ export default function WeddingVideo() {
   const handleVideoUpload = async (event) => {
     setFileLoading(true);
     const file = event.target.files[0];
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("File size exceeds 100MB. Please select a smaller video.");
+        setFileLoading(false);
+        return;
+      }
       const videoPlayer = document.getElementById("videoPlayer");
 
       // Listen for when the video's metadata has loaded
@@ -126,10 +132,7 @@ export default function WeddingVideo() {
 
       const fileName = `inputFile.${file?.name?.split(".")[1]}`;
       setFileName(fileName);
-      let storageRef = ref(
-        firebaseStorage,
-        `uploads/${eventId}/${fileName}`
-      );
+      let storageRef = ref(firebaseStorage, `uploads/${eventId}/${fileName}`);
 
       const snapshot = await uploadBytes(storageRef, file);
       const url = await getDownloadURL(snapshot.ref);
@@ -274,7 +277,7 @@ export default function WeddingVideo() {
           scalingH,
           isSample,
           videoDuration,
-          fileName
+          fileName,
         })
       );
     } catch (error) {

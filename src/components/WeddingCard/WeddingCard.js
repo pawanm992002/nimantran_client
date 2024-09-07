@@ -120,13 +120,16 @@ export default function WeddingVideo() {
     setFileLoading(true);
     const file = event.target.files[0];
     try {
+      const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
       if (file) {
+        if (file.size > MAX_FILE_SIZE) {
+          toast.error("File size exceeds 100MB. Please select a smaller video.");
+          setFileLoading(false);
+          return;
+        }
         const fileName = `inputFile.${file?.name?.split(".")[1]}`;
         setFileName(fileName);
-        let storageRef = ref(
-          firebaseStorage,
-          `uploads/${eventId}/${fileName}`
-        );
+        let storageRef = ref(firebaseStorage, `uploads/${eventId}/${fileName}`);
         const snapshot = await uploadBytes(storageRef, file);
         const url = await getDownloadURL(snapshot.ref);
         setPdfFile(url);
@@ -202,8 +205,7 @@ export default function WeddingVideo() {
       );
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
       xhr.setRequestHeader("Accept", "text/event-stream");
-      xhr.setRequestHeader("Content-Type", "application/json"); 
-
+      xhr.setRequestHeader("Content-Type", "application/json");
 
       xhr.onprogress = function () {
         const responseText = xhr.responseText.trim();
@@ -242,7 +244,7 @@ export default function WeddingVideo() {
           setIsLoading(false);
           return;
         }
-        
+
         if (isSample) {
           setShowPreview(true);
           const responseText = xhr.responseText;
@@ -251,22 +253,24 @@ export default function WeddingVideo() {
             const extractedZipUrl = zipUrlMatch[1].trim();
             setZipUrl(extractedZipUrl);
             console.log("Extracted zipUrl:", extractedZipUrl);
-          } 
+          }
         } else {
           navigate(`/event/mediaGrid?eventId=${eventId}`);
         }
         setIsLoading(false); // Set isLoading to false after the response ends
       };
 
-      xhr.send(JSON.stringify({
-        guestNames: jsonData, 
-        textProperty: texts,
-        scalingFont,
-        scalingW,
-        scalingH,
-        isSample,
-        fileName
-      }));
+      xhr.send(
+        JSON.stringify({
+          guestNames: jsonData,
+          textProperty: texts,
+          scalingFont,
+          scalingW,
+          scalingH,
+          isSample,
+          fileName,
+        })
+      );
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong!");
       setIsLoading(false);
@@ -334,15 +338,15 @@ export default function WeddingVideo() {
 
       {isLoading && (
         <Loader
-        text={isSample ? `Please wait while Generating Sample Media: ${processedVideoUrls?.length} / 5 ` : `Please wait while Generating Media ${processedVideoUrls?.length} / ${jsonData?.length} `}
-      />
-      )}
-
-      {fileLoading && (
-        <Loader
-          text={`Please wait while its Loading`}
+          text={
+            isSample
+              ? `Please wait while Generating Sample Media: ${processedVideoUrls?.length} / 5 `
+              : `Please wait while Generating Media ${processedVideoUrls?.length} / ${jsonData?.length} `
+          }
         />
       )}
+
+      {fileLoading && <Loader text={`Please wait while its Loading`} />}
 
       <div className="mainContainer">
         {openContextMenuId && (
@@ -503,50 +507,53 @@ export default function WeddingVideo() {
             setTexts={setTexts}
             handleSubmit={handleSubmit}
             zipUrl={zipUrl}
-             type="Cards"
+            type="Cards"
           />
         )}
       </div>
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-80 items-center justify-center z-50" style={{display: !isLoading && showPreview ? "flex" : 'none'}}> 
-          <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
-            {/* Close Button */}
-            <button
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
-              onClick={() => {
-                setShowPreview(false);
-                setProcessedVideoUrls([]);
-              }}
-            >
-              &times;
-            </button>
+      <div
+        className="fixed inset-0 bg-gray-900 bg-opacity-80 items-center justify-center z-50"
+        style={{ display: !isLoading && showPreview ? "flex" : "none" }}
+      >
+        <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 max-w-4xl">
+          {/* Close Button */}
+          <button
+            className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+            onClick={() => {
+              setShowPreview(false);
+              setProcessedVideoUrls([]);
+            }}
+          >
+            &times;
+          </button>
 
-            {/* Modal Content */}
-            <div className="p-6">
-              <h2 className="text-2xl font-semibold mb-4">Previews</h2>
+          {/* Modal Content */}
+          <div className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Previews</h2>
 
-              {/* Horizontal Scrollable Container */}
-              <div className="flex space-x-4 overflow-x-auto p-2">
-                {processedVideoUrls.map((val, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      position: "relative",
-                      display: "inline-block",
-                      minWidth: "350px",
-                      maxHeight: "500px",
-                      overflow: "auto",
-                      position: "relative",
-                    }}
-                  >
-                    <Worker workerUrl={pdfjsWorker}>
-                      <Viewer fileUrl={val.link} />
-                    </Worker>
-                  </div>
-                ))}
-              </div>
+            {/* Horizontal Scrollable Container */}
+            <div className="flex space-x-4 overflow-x-auto p-2">
+              {processedVideoUrls.map((val, i) => (
+                <div
+                  key={i}
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    minWidth: "350px",
+                    maxHeight: "500px",
+                    overflow: "auto",
+                    position: "relative",
+                  }}
+                >
+                  <Worker workerUrl={pdfjsWorker}>
+                    <Viewer fileUrl={val.link} />
+                  </Worker>
+                </div>
+              ))}
             </div>
           </div>
         </div>
+      </div>
     </div>
   );
 }

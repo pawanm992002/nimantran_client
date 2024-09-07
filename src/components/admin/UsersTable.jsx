@@ -144,6 +144,9 @@ const UsersTable = () => {
             {activeTab === "customer" && (
               <>
                 <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
+                  Client Name
+                </th>
+                <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
                   Date of Birth
                 </th>
                 <th className="py-2 px-4 text-center border-b border-gray-200 bg-gray-100">
@@ -179,6 +182,9 @@ const UsersTable = () => {
               </td>
               {activeTab === "customer" && (
                 <>
+                  <td className="py-2 px-4 border-b text-center border-gray-200">
+                    {user.clientId.name}
+                  </td>
                   <td className="py-2 px-4 border-b text-center border-gray-200">
                     {new Date(user.dateOfBirth).toLocaleDateString()}
                   </td>
