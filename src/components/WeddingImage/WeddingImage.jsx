@@ -50,6 +50,7 @@ export default function WeddingImage() {
       mobileNumber: "5555555555",
     },
   ]);
+  const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
@@ -62,8 +63,8 @@ export default function WeddingImage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
-  const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
+  const [forZip, setForZip] = useState([]);
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -224,7 +225,7 @@ export default function WeddingImage() {
           if (response.startsWith("data: ")) {
             const data = JSON.parse(response.replace("data: ", ""));
             // Update processedVideoUrls ensuring uniqueness by mobileNumber
-            setProcessedVideoUrls((prev) => {
+             setProcessedVideoUrls((prev) => {
               const newList = [...prev];
               const existingIndex = newList.findIndex(
                 (item) => item.mobileNumber === data.mobileNumber
@@ -483,8 +484,8 @@ export default function WeddingImage() {
             texts={texts}
             setTexts={setTexts}
             handleSubmit={handleSubmit}
-            zipUrl={zipUrl}
-            type="Images"
+            eventId={eventId}
+            mediaItems={forZip}
           />
         )}
       </div>
@@ -497,6 +498,7 @@ export default function WeddingImage() {
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
               onClick={() => {
                 setShowPreview(false);
+                setForZip(processedVideoUrls);
                 setProcessedVideoUrls([]);
               }}
             >

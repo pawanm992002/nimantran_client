@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import "../WeddingVideo/WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
@@ -29,6 +28,7 @@ export default function WeddingVideo() {
       navigate("/login");
     }
   }, []);
+  const [forZip, setForZip] = useState([]);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
@@ -497,12 +497,12 @@ export default function WeddingVideo() {
         </div>
         {pdfFile && (
           <SideConfiguration
-            texts={texts}
-            setTexts={setTexts}
-            handleSubmit={handleSubmit}
-            zipUrl={zipUrl}
-            type="Cards"
-          />
+          texts={texts}
+          setTexts={setTexts}
+          handleSubmit={handleSubmit}
+          eventId={eventId}
+          mediaItems={forZip}
+        />
         )}
       </div>
       <div
@@ -515,6 +515,7 @@ export default function WeddingVideo() {
             className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
             onClick={() => {
               setShowPreview(false);
+              setForZip(processedVideoUrls);
               setProcessedVideoUrls([]);
             }}
           >

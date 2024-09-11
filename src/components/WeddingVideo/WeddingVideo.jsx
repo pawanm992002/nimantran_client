@@ -71,6 +71,7 @@ export default function WeddingVideo() {
   const [showPreview, setShowPreview] = useState(false);
   const [isSample, setIsSample] = useState(true);
   const [videoDuration, setVideoDuration] = useState(1);
+  const [forZip, setForZip] = useState([]);
 
   const createTextDiv = () => {
     if (!video) {
@@ -454,12 +455,12 @@ export default function WeddingVideo() {
         </div>
         {video && (
           <SideConfiguration
-            handleSubmit={handleSubmit}
-            texts={texts}
-            setTexts={setTexts}
-            zipUrl={zipUrl}
-            type="Videos"
-          />
+          texts={texts}
+          setTexts={setTexts}
+          handleSubmit={handleSubmit}
+          eventId={eventId}
+          mediaItems={forZip}
+        />
         )}
       </div>
 
@@ -471,6 +472,7 @@ export default function WeddingVideo() {
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
               onClick={() => {
                 setShowPreview(false);
+                setForZip(processedVideoUrls);
                 setProcessedVideoUrls([]);
               }}
             >

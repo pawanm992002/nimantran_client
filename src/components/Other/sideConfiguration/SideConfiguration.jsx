@@ -1,12 +1,18 @@
 import "./SideConfiguration.css";
+import JSZip from "jszip";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import Loader from "../Loader/Loader";
 
 export default function SideConfiguration({
   texts,
   setTexts,
   handleSubmit,
-  zipUrl,
-  type,
+  eventId,
+  mediaItems
 }) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const deleteText = (id) => {
     setTexts(texts.filter((val) => val.id !== id));
   };
@@ -17,6 +23,51 @@ export default function SideConfiguration({
     setTexts([...others, details]);
   };
 
+  const downloadFilesAsZip = async () => {
+    setIsDownloading(true);
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder("firebase_files");
+
+
+      console.log(mediaItems);
+      // Loop over each file URL
+      for (const item of mediaItems) {
+        try {
+          const response = await fetch(item.link);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch file: ${item.link}`);
+          }
+
+          const blob = await response.blob();
+          const fileName = decodeURIComponent(
+            item?.link?.split("/")?.pop()?.split("?")[0]
+          ).replace(`uploads/${eventId}/`, "");
+
+          folder.file(fileName, blob);
+        } catch (error) {
+          toast.error(`Error downloading ${item.link}: `);
+        }
+      }
+
+      // Generate the zip file
+      zip.generateAsync({ type: "blob" }).then((content) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = "Downloadfiles.zip";
+
+        // Append the link to the body and trigger the download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+      toast.success("Downloading Completed Successfully");
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+    setIsDownloading(false);
+  };
+
   const handleFinalProcessing = (e) => {
     e.preventDefault();
     handleSubmit(e, false);
@@ -24,6 +75,7 @@ export default function SideConfiguration({
 
   return (
     <div className="configuration">
+      {isDownloading && <Loader text={"Please wait while Generating Zip File"} />}
       <div className="NoText">
         <button
           type="button"
@@ -33,13 +85,13 @@ export default function SideConfiguration({
           Show Preview
         </button>
 
-        {zipUrl !== "" && (
-          <a href={zipUrl} download={`processed_${type}.zip`} className="">
+        {
+          <a onClick={() => downloadFilesAsZip()}>
             <button className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2">
-              Download Zip File
+              Download Preview Sample
             </button>
           </a>
-        )}
+        }
         <button
           type="button"
           className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"

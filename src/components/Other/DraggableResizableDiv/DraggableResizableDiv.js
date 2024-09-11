@@ -194,7 +194,6 @@ const DraggableResizableDiv = ({
         </ResizableBox>
         {isAtCenter && (
           <div
-            className="dotted-center-line"
             style={{
               position: "absolute",
               top: 0,
