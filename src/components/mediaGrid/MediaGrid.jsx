@@ -3,16 +3,15 @@ import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import Loader from "../Other/Loader/Loader";
 import WhatsappModal from "../Other/WhatsappModal/WhatsappModal";
+import JSZip from "jszip";
 
 const MediaGrid = () => {
   const token = localStorage.getItem("token");
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
   const navigate = useNavigate();
@@ -23,7 +22,51 @@ const MediaGrid = () => {
   const [selectedWhatsapp, setSelectedWhatsapp] = useState("");
   const [selectedMedia, setSelectedMedia] = useState("");
   const [sendMedia, setSendMedia] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const downloadFilesAsZip = async () => {
+    setIsDownloading(true);
+    try {
+    
+    const zip = new JSZip();
+    const folder = zip.folder("firebase_files");
+
+    // Loop over each file URL
+    for (const item of mediaItems?.guests) {
+      try {
+        const response = await fetch(item.link);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch file: ${item.link}`);
+        }
+
+        const blob = await response.blob();
+        const fileName = decodeURIComponent(
+          item?.link?.split("/")?.pop()?.split("?")[0]
+        ).replace(`uploads/${eventId}/`, "");
+
+        folder.file(fileName, blob);
+      } catch (error) {
+        toast.error(`Error downloading ${item.link}: `);
+      }
+    }
+
+    // Generate the zip file
+    zip.generateAsync({ type: "blob" }).then((content) => {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(content);
+      link.download = "Downloadfiles.zip";
+
+      // Append the link to the body and trigger the download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+    toast.success("Downloading Completed Successfully");
+  } catch (error) {
+      toast.error("Something went wrong");
+  }
+    setIsDownloading(false);
+  };
 
   const fetchGuestsMedia = async () => {
     try {
@@ -80,8 +123,10 @@ const MediaGrid = () => {
 
             <a
               className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
-              href={mediaItems.zipUrl}
-              download
+              onClick={() => {
+                downloadFilesAsZip();
+              }}
+              // download
             >
               <svg
                 className="w-5 h-5 mr-2"
@@ -116,6 +161,7 @@ const MediaGrid = () => {
               </svg>
             </button>
           </div>
+          {isDownloading && <Loader text={"Please wait while Generating Zip File"} />}
           <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {mediaItems?.guests?.map((media, index) => (
               <div className="relative max-w-60 h-auto m-2" key={index}>

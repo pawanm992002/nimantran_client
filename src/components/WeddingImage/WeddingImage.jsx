@@ -256,13 +256,6 @@ export default function WeddingImage() {
 
         if (isSample) {
           setShowPreview(true);
-          const responseText = xhr.responseText;
-          const zipUrlMatch = responseText.match(/zipUrl: (.*)/);
-          if (zipUrlMatch && zipUrlMatch[1]) {
-            const extractedZipUrl = zipUrlMatch[1].trim();
-            setZipUrl(extractedZipUrl);
-            console.log("Extracted zipUrl:", extractedZipUrl);
-          }
         } else {
           navigate(`/event/mediaGrid?eventId=${eventId}`);
         }

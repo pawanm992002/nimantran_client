@@ -252,16 +252,6 @@ export default function WeddingVideo() {
 
         if (isSample) {
           setShowPreview(true);
-
-          const responseText = xhr.responseText;
-          const zipUrlMatch = responseText.match(/zipUrl: (.*)/);
-          if (zipUrlMatch && zipUrlMatch[1]) {
-            const extractedZipUrl = zipUrlMatch[1].trim();
-            setZipUrl(extractedZipUrl);
-            console.log("Extracted zipUrl:", extractedZipUrl);
-          } else {
-            console.log("zipUrl not found in the response");
-          }
         } else {
           navigate(`/event/mediaGrid?eventId=${eventId}`);
         }
