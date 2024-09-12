@@ -253,8 +253,8 @@ const CreateEvent = () => {
       </div>
       {showCreateCustomerModal && (
         <CreateCustomerJSX
-          onClose={() => setShowCreateCustomerModal(false)}
-          setCustomerData={setCustomerData}
+          showModal={showCreateCustomerModal}
+          setShowModal={setShowCreateCustomerModal}
         />
       )}
     </div>

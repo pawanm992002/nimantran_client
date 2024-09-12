@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowRightArrowLeft,
-  
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const AdminTransaction = () => {
   const [transactions, setTransactions] = useState([]);
@@ -126,7 +123,7 @@ const AdminTransaction = () => {
               scope="col"
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center"
             >
-              Reciever name
+              Statement
               <div
                 className="relative flex  items-center
               "
@@ -174,7 +171,7 @@ const AdminTransaction = () => {
                 {new Date(transaction.transactionDate).toLocaleDateString()}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {transaction.recieverId.name}
+                transfer to {transaction.recieverId.name}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {transaction.amount}
