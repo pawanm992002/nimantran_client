@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRightArrowLeft,
+  faFolderClosed,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Transactions = () => {
   const token = localStorage.getItem("token");
   const [transactions, setTransactions] = useState([]);
+  const [credits, setcredits] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,7 +40,9 @@ const Transactions = () => {
         }
       );
 
-      setTransactions(response.data);
+      setTransactions(response.data.transaction);
+      setcredits(response.data.credits.credits);
+      console.log(response.data.credits);
     } catch (err) {
       setError(
         err.response
@@ -57,11 +63,13 @@ const Transactions = () => {
     let statement, amount, type;
 
     if (transaction.areaOfUse === "transfer") {
-      statement = `Received by ${transaction?.recieverId?.name}`;
+      statement = `${
+        transaction.senderId.role === "admin" ? "Transfer to" : "Received by"
+      }  ${transaction?.recieverId?.name}`;
       // Handle potential missing receiver name gracefully
       statement = statement || "Transfer Received";
       amount = parseFloat(transaction.amount); // Ensure numeric amount
-      type = "+"; // Explicitly show transfer as credit
+      type = transaction.type; // Explicitly show transfer as credit
     } else {
       statement = `Spent on ${
         transaction?.eventId?.eventName !== undefined
@@ -69,7 +77,7 @@ const Transactions = () => {
           : "no event name"
       } [${transaction?.areaOfUse}]`;
       amount = parseFloat(transaction.amount); // Negate amount for spending
-      type = "-";
+      type = transaction.type;
     }
 
     return {
@@ -81,12 +89,6 @@ const Transactions = () => {
       type,
     };
   });
-
-  // Calculate total balance considering transfers and spending
-  const totalBalance = formattedTransactions.reduce(
-    (acc, transaction) => acc + transaction.amount,
-    0 // Initial balance
-  );
 
   // Sort transactions
   const sortedTransactions = formattedTransactions.sort((a, b) => {
@@ -114,7 +116,7 @@ const Transactions = () => {
   }
 
   if (error) return <div>Error: {error}</div>;
-
+  console.log(credits);
   return (
     <div className="w-full flex flex-col no-scrollbar h-full mx-auto">
       <div className="w-full flex items-center justify-between px-3 py-2">
@@ -129,7 +131,15 @@ const Transactions = () => {
       </div>
 
       {filteredTransactions.length === 0 ? (
-        <div>No Transactions yet</div>
+        <div className="w-full h-full flex items-center justify-center flex-col">
+          <div className="">
+            <FontAwesomeIcon
+              className="size-36"
+              icon={faFolderClosed}
+            ></FontAwesomeIcon>
+          </div>
+          <div className="text-3xl font-bold"> No Transactions yet</div>
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white">
@@ -177,19 +187,26 @@ const Transactions = () => {
                   <td className="p-4">{transaction.statement}</td>
 
                   <td className="p-4">{transaction.status}</td>
-                  <td className="p-4">
+                  <td
+                    className={`p-4 ${
+                      transaction.type === "debit"
+                        ? "text-red-500 before:content-['-']"
+                        : "text-green-500 before:content-['+']"
+                    }`}
+                  >
                     {transaction.amount}
                   </td>
                 </tr>
               ))}
             </tbody>
+            <tfoot></tfoot>
           </table>
-          {/* <div className="w-full p-4 justify-end flex bg-gray-200 sticky bottom-0">
+          <div className="w-full p-2 justify-end flex bg-gray-200 sticky bottom-0">
             Total Balance:
-            <span className=" font-bold text-green-500 pr-10 pl-1">
-              {totalBalance.toFixed(2)}
+            <span className=" font-bold text-green-500 pr-14 pl-1 ">
+              {credits}
             </span>
-          </div> */}
+          </div>
         </div>
       )}
     </div>
