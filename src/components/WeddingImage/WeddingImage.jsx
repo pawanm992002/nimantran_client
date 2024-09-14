@@ -80,7 +80,7 @@ export default function WeddingImage() {
     setTexts([...texts, newText]);
   };
 
-  const handleVideoUpload = async (event, forGetStates, url) => {
+  const handleVideoUpload = async (event) => {
     setFileLoading(true);
     const file = event.target.files[0];
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 100MB
@@ -401,7 +401,7 @@ export default function WeddingImage() {
             {!inputUrl && (
               <label
                 className="upload-container"
-                onChange={(e) => handleVideoUpload(e, false)}
+                onChange={(e) => handleVideoUpload(e)}
                 style={{
                   height: inputUrl && "50px",
                   margin: inputUrl && "0 auto",
@@ -436,18 +436,21 @@ export default function WeddingImage() {
               <div
                 style={{
                   position: "relative",
-                  display: "inline-block",
+                  display: "flex",
                   width: "inherit",
                   height: "inherit",
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}
                 ref={videoRef}
               >
                 <img
                   style={{
                     backgroundColor: "#000",
-                    // maxHeight: "var(--contentMaxHeight)",
+                    maxHeight: "var(--contentMaxHeight)",
                     margin: "0px",
                     objectFit: "contain",
+                    maxWidth: "65vw"
                   }}
                   id="videoPlayer"
                 />

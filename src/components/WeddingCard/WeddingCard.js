@@ -14,11 +14,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import TextEditor from "../Other/TextEditor/TextEditor";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
-import { debounce } from "lodash";
 import Loader from "../Other/Loader/Loader";
 import { app, firebaseStorage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SampleGuestList } from "../../constants";
+import axios from "axios";
+import {debounce} from 'loadsh';
 
 export default function WeddingVideo() {
   const token = localStorage.getItem("token");
@@ -30,6 +31,7 @@ export default function WeddingVideo() {
     }
   }, []);
   const [forZip, setForZip] = useState([]);
+  const [inputUrl, setInputUrl] = useState("");
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
@@ -99,6 +101,78 @@ export default function WeddingVideo() {
     setTexts([...texts, newText]);
   };
 
+  useEffect(() => {
+    if (texts.length !== 0) {
+      var debouncedFetch = debounce(async () => {
+        try {
+          const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+            { texts, inputFile: pdfFile },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+        } catch (error) {
+          console.error("Error saving texts:", error);
+        }
+      }, 5000);
+      debouncedFetch();
+      return () => {
+        debouncedFetch.cancel();
+      };
+    }
+  }, [texts]);
+
+  var getText = async () => {
+    try {
+      setFileLoading(true);
+      var { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setTexts(data.texts);
+      setPdfFile(data.inputFile);
+
+      const fileName = `inputFile.${
+        data.inputFile
+          .split("/")
+          .pop()
+          .split("#")[0]
+          .split("?")[0]
+          .split(".")[1]
+      }`;
+      setFileName(fileName);
+
+      // const videoPlayer = document.getElementById("videoPlayer");
+      // const img = new Image();
+      // img.onload = () => {
+      //   // Set the original size
+      //   setOriginalSize({
+      //     w: img.naturalWidth,
+      //     h: img.naturalHeight,
+      //   });
+
+      //   // Set the resized size after the image is loaded and resized in the container
+      //   setResized({
+      //     w: videoPlayer.clientWidth,
+      //     h: videoPlayer.clientHeight,
+      //   });
+      // };
+
+      // setInputUrl(data.inputFile);
+      // img.src = data.inputFile;
+      // videoPlayer.src = data.inputFile;
+      setShowGuestList(false);
+    } catch (error) {}
+    setFileLoading(false);
+  };
+
+  useEffect(() => {
+    getText();
+  }, []);
+
   const handleFileChange = async (event) => {
     setFileLoading(true);
     const file = event.target.files[0];
@@ -106,7 +180,9 @@ export default function WeddingVideo() {
       const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
       if (file) {
         if (file.size > MAX_FILE_SIZE) {
-          toast.error("File size exceeds 100MB. Please select a smaller video.");
+          toast.error(
+            "File size exceeds 100MB. Please select a smaller video."
+          );
           setFileLoading(false);
           return;
         }
@@ -253,54 +329,6 @@ export default function WeddingVideo() {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(texts)
-  //   if(texts.length !== 0 ){
-  //   var debouncedFetch = debounce(async () => {
-
-  //     try {
-  //       const response = await axios.post(
-  //         `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-  //           {texts},
-  //         {
-  //           headers: { Authorization: `Bearer ${token}` },
-  //         }
-  //       );
-  //         console.log(response.data);
-  //       } catch (error) {
-  //         console.error("Error saving texts:", error);
-  //       }
-  //     }, 10000);
-  //       debouncedFetch()
-  //     return () => {
-  //       debouncedFetch.cancel();
-  //     };}
-  //   }, [texts]);
-
-  //   useEffect(() => {
-
-  // var getText = async () => {
-
-  //     try {
-  //       var response = await axios.get(
-  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-  //         {},
-  //         {
-  //           headers: { Authorization: `Bearer ${token}` },
-  //         }
-  //       );
-  //       // console.log(response.data[0].texts);
-  //       setTexts(response.data[0].texts)
-  //       console.log(texts)
-  //       return response.data[0].texts;
-
-  //       } catch (error) {
-  //         console.error("Error getting texts:", error);
-  //       }
-  //     }
-  //     getText();
-
-  //   }, [])
 
   return (
     <div className="main">
@@ -480,12 +508,12 @@ export default function WeddingVideo() {
         </div>
         {pdfFile && (
           <SideConfiguration
-          texts={texts}
-          setTexts={setTexts}
-          handleSubmit={handleSubmit}
-          eventId={eventId}
-          mediaItems={forZip}
-        />
+            texts={texts}
+            setTexts={setTexts}
+            handleSubmit={handleSubmit}
+            eventId={eventId}
+            mediaItems={forZip}
+          />
         )}
       </div>
       <div

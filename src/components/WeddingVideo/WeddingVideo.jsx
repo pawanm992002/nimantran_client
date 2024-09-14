@@ -13,6 +13,8 @@ import Loader from "../Other/Loader/Loader";
 import { app, firebaseStorage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SampleGuestList } from "../../constants";
+import { debounce } from "loadsh";
+import axios from "axios";
 
 export default function WeddingVideo() {
   const navigate = useNavigate();
@@ -27,14 +29,12 @@ export default function WeddingVideo() {
 
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
-  const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
   const [count, setCount] = useState(1);
   const [onHover1, setOnHover1] = useState(false);
   const [onHover2, setOnHover2] = useState(false);
-  // const [onHover4, setOnHover4] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
@@ -54,9 +54,10 @@ export default function WeddingVideo() {
   const [isSample, setIsSample] = useState(true);
   const [videoDuration, setVideoDuration] = useState(1);
   const [forZip, setForZip] = useState([]);
+  const [inputUrl, setInputUrl] = useState("");
 
   const createTextDiv = () => {
-    if (!video) {
+    if (!inputUrl) {
       toast.error("Please First Upload Video");
       return;
     }
@@ -91,7 +92,7 @@ export default function WeddingVideo() {
     const file = event.target.files[0];
     const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
     if (file) {
-      if (file.size > MAX_FILE_SIZE) {
+      if (file?.size > MAX_FILE_SIZE) {
         toast.error("File size exceeds 100MB. Please select a smaller video.");
         setFileLoading(false);
         return;
@@ -121,9 +122,9 @@ export default function WeddingVideo() {
       const url = await getDownloadURL(snapshot.ref);
       videoPlayer.src = url;
       videoPlayer.load();
-      setFileLoading(false);
+      setInputUrl(url);
     }
-    setVideo(event.target.files[0]);
+    setFileLoading(false);
   };
 
   const takeTextDetails = (details) => {
@@ -149,6 +150,77 @@ export default function WeddingVideo() {
     setShowGuestList(true);
   };
 
+  useEffect(() => {
+    if (texts.length !== 0) {
+      var debouncedFetch = debounce(async () => {
+        try {
+          const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+            { texts, inputFile: inputUrl },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+        } catch (error) {
+          console.error("Error saving texts:", error);
+        }
+      }, 5000);
+      debouncedFetch();
+      return () => {
+        debouncedFetch.cancel();
+      };
+    }
+  }, [texts]);
+
+  var getText = async () => {
+    try {
+      setFileLoading(true);
+      var { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setTexts(data.texts);
+      setInputUrl(data.inputFile);
+
+      const fileName = `inputFile.${
+        data.inputFile
+          .split("/")
+          .pop()
+          .split("#")[0]
+          .split("?")[0]
+          .split(".")[1]
+      }`;
+      setFileName(fileName);
+
+      const videoPlayer = document.getElementById("videoPlayer");
+
+      videoPlayer.addEventListener("loadedmetadata", () => {
+        setVideoDuration(videoPlayer.duration);
+
+        // You can also handle resize here if needed
+        setResized({
+          w: videoPlayer.clientWidth,
+          h: videoPlayer.clientHeight,
+        });
+        setOriginalSize({
+          w: videoPlayer.videoWidth,
+          h: videoPlayer.videoHeight,
+        });
+      });
+
+      setInputUrl(data.inputFile);
+      videoPlayer.src = data.inputFile;
+      setShowGuestList(false);
+    } catch (error) {}
+    setFileLoading(false);
+  };
+
+  useEffect(() => {
+    getText();
+  }, []);
+
   const handleSubmit = async (event, isSample) => {
     try {
       event.preventDefault();
@@ -160,7 +232,7 @@ export default function WeddingVideo() {
       let scalingH = OriginalSize.h / resized.clientHeight;
       let scalingFont = Math.min(scalingW, scalingH);
 
-      if (!video) {
+      if (!inputUrl) {
         setIsLoading(false);
         return toast.error("Please Upload the Video");
       }
@@ -368,14 +440,14 @@ export default function WeddingVideo() {
           </form>
 
           <div className="mainbar">
-            {!video && (
+            {!inputUrl && (
               <label
                 className="upload-container"
                 onChange={handleVideoUpload}
                 style={{
-                  height: video && "50px",
-                  margin: video && "0 auto",
-                  padding: video && "5px",
+                  height: inputUrl && "50px",
+                  margin: inputUrl && "0 auto",
+                  padding: inputUrl && "5px",
                 }}
               >
                 <input type="file" accept="video/*" />
@@ -383,26 +455,30 @@ export default function WeddingVideo() {
                   <h2
                     className="upload-button"
                     style={{
-                      fontSize: video && "15px",
-                      padding: video && "8px",
+                      fontSize: inputUrl && "15px",
+                      padding: inputUrl && "8px",
                     }}
                   >
                     Upload Video
                   </h2>
-                  {!video && <p>or Drag & Drop a file</p>}
+                  {!inputUrl && <p>or Drag & Drop a file</p>}
                   {/* <p className="paste-text">paste File or URL</p> */}
                 </div>
               </label>
             )}
             <div
               className="videoContainer"
-              style={{ display: !video ? "none" : "flex" }}
+              style={{ display: !inputUrl ? "none" : "flex" }}
             >
               {/* <div className="app"> */}
               <div
                 style={{
                   position: "relative",
-                  display: "inline-block",
+                  display: "flex",
+                  width: "inherit",
+                  height: "inherit",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
                 ref={videoRef}
               >
@@ -410,9 +486,10 @@ export default function WeddingVideo() {
                   controls
                   style={{
                     backgroundColor: "#000",
-                    width: "100%",
                     maxHeight: "var(--contentMaxHeight)",
                     margin: "0px",
+                    objectFit: "contain",
+                    maxWidth: "65vw",
                   }}
                   id="videoPlayer"
                 />
@@ -435,14 +512,14 @@ export default function WeddingVideo() {
             </div>
           </div>
         </div>
-        {video && (
+        {inputUrl && (
           <SideConfiguration
-          texts={texts}
-          setTexts={setTexts}
-          handleSubmit={handleSubmit}
-          eventId={eventId}
-          mediaItems={forZip}
-        />
+            texts={texts}
+            setTexts={setTexts}
+            handleSubmit={handleSubmit}
+            eventId={eventId}
+            mediaItems={forZip}
+          />
         )}
       </div>
 
