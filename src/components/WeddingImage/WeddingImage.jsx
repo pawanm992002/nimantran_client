@@ -3,10 +3,7 @@ import "../WeddingVideo/WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFileArrowUp,
-  faSquarePlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFileArrowUp, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
 import TextEditor from "../Other/TextEditor/TextEditor";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -15,6 +12,9 @@ import Papa from "papaparse";
 import Loader from "../Other/Loader/Loader";
 import { firebaseStorage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { SampleGuestList } from "../../constants";
+import { debounce } from "loadsh";
+import axios from "axios";
 
 export default function WeddingImage() {
   const token = localStorage.getItem("token");
@@ -31,40 +31,22 @@ export default function WeddingImage() {
   const [isSample, setIsSample] = useState(true);
   const [fileLoading, setFileLoading] = useState(false);
   const [fileName, setFileName] = useState("");
-  const [jsonData, setJsonData] = useState([
-    { name: "pawan mishra", mobileNumber: "1111111111" },
-    {
-      name: "Dr. Venkatanarasimha Raghavan Srinivasachariyar Iyer",
-      mobileNumber: "2222222222",
-    },
-    {
-      name: "Raj",
-      mobileNumber: "3333333333",
-    },
-    {
-      name: "Kushagra Nalwaya",
-      mobileNumber: "4444444444",
-    },
-    {
-      name: "HARSHIL PAGARIA",
-      mobileNumber: "5555555555",
-    },
-  ]);
+  const [jsonData, setJsonData] = useState(SampleGuestList);
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  const [video, setVideo] = useState(null);
+  // const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
   const [count, setCount] = useState(1);
   const [onHover1, setOnHover1] = useState(false);
   const [onHover2, setOnHover2] = useState(false);
-  // const [onHover4, setOnHover4] = useState(false);
   const [selectedText, setSelectedText] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const [forZip, setForZip] = useState([]);
+  const [inputUrl, setInputUrl] = useState("");
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -73,10 +55,8 @@ export default function WeddingImage() {
     w: 0,
     h: 0,
   });
-  const [zipUrl, setZipUrl] = useState("");
-
   const createTextDiv = () => {
-    if (!video) {
+    if (!inputUrl) {
       toast.error("Please First Upload Image");
       return;
     }
@@ -100,23 +80,17 @@ export default function WeddingImage() {
     setTexts([...texts, newText]);
   };
 
-  //  const handleVideoChange = () =>{
-  //   const file = event.target.files[0];
-  //   setVideo(URL.createObjectURL(file));
-  //   setVideoObj(file);
-  //  }
-
-  const handleVideoUpload = async (event) => {
+  const handleVideoUpload = async (event, forGetStates, url) => {
     setFileLoading(true);
     const file = event.target.files[0];
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 100MB
     if (file) {
-      if (file.size > MAX_FILE_SIZE) {
+      if (file?.size > MAX_FILE_SIZE) {
         toast.error("File size exceeds 10MB. Please select a smaller video.");
         setFileLoading(false);
         return;
       }
-      
+
       const videoPlayer = document.getElementById("videoPlayer");
       const img = new Image();
       img.onload = () => {
@@ -135,18 +109,15 @@ export default function WeddingImage() {
 
       const fileName = `inputFile.${file?.name?.split(".")[1]}`;
       setFileName(fileName);
-      let storageRef = ref(
-        firebaseStorage,
-        `uploads/${eventId}/${fileName}`
-      );
+      let storageRef = ref(firebaseStorage, `uploads/${eventId}/${fileName}`);
       const snapshot = await uploadBytes(storageRef, file);
       const url = await getDownloadURL(snapshot.ref);
-      
+      setInputUrl(url);
       img.src = url;
       videoPlayer.src = url;
     }
     setFileLoading(false);
-    setVideo(event.target.files[0]);
+    // setVideo(event.target.files[0]);
   };
 
   const takeTextDetails = (details) => {
@@ -182,7 +153,7 @@ export default function WeddingImage() {
       let scalingH = OriginalSize.h / resized.clientHeight;
       let scalingFont = Math.min(scalingW, scalingH);
 
-      if (!video) {
+      if (!inputUrl) {
         setIsLoading(false);
         return toast.error("Please Upload the Video");
       }
@@ -225,7 +196,7 @@ export default function WeddingImage() {
           if (response.startsWith("data: ")) {
             const data = JSON.parse(response.replace("data: ", ""));
             // Update processedVideoUrls ensuring uniqueness by mobileNumber
-             setProcessedVideoUrls((prev) => {
+            setProcessedVideoUrls((prev) => {
               const newList = [...prev];
               const existingIndex = newList.findIndex(
                 (item) => item.mobileNumber === data.mobileNumber
@@ -271,7 +242,7 @@ export default function WeddingImage() {
           scalingW,
           scalingH,
           isSample,
-          fileName
+          fileName,
         })
       );
     } catch (error) {
@@ -280,48 +251,71 @@ export default function WeddingImage() {
     }
   };
 
-  // useEffect(() => {
-  //   if (texts.length !== 0) {
-  //     var debouncedFetch = debounce(async () => {
-  //       try {
-  //         const response = await axios.post(
-  //           `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-  //           { texts },
-  //           {
-  //             headers: { Authorization: `Bearer ${token}` },
-  //           }
-  //         );
-  //         console.log(response.data);
-  //       } catch (error) {
-  //         console.error("Error saving texts:", error);
-  //       }
-  //     }, 10000);
-  //     debouncedFetch();
-  //     return () => {
-  //       debouncedFetch.cancel();
-  //     };
-  //   }
-  // }, [texts]);
+  useEffect(() => {
+    if (texts.length !== 0) {
+      var debouncedFetch = debounce(async () => {
+        try {
+          const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+            { texts, inputFile: inputUrl },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+        } catch (error) {
+          console.error("Error saving texts:", error);
+        }
+      }, 5000);
+      debouncedFetch();
+      return () => {
+        debouncedFetch.cancel();
+      };
+    }
+  }, [texts]);
 
-  // useEffect(() => {
-  //   var getText = async () => {
-  //     try {
-  //       var response = await axios.get(
-  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-  //         {
-  //           headers: { Authorization: `Bearer ${token}` },
-  //         }
-  //       );
-  //       // console.log(response.data[0].texts);
-  //       setTexts(response.data[0].texts);
-  //       console.log(texts);
-  //       return response.data[0].texts;
-  //     } catch (error) {
-  //       console.error("Error getting texts:", error);
-  //     }
-  //   };
-  //   getText();
-  // }, []);
+  var getText = async () => {
+    try {
+      setFileLoading(true);
+      var { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setTexts(data.texts);
+      setInputUrl(data.inputFile);
+
+      const fileName = `inputFile.${data.inputFile.split('/').pop().split('#')[0].split('?')[0].split(".")[1]}`
+      setFileName(fileName);
+
+      const videoPlayer = document.getElementById("videoPlayer");
+      const img = new Image();
+      img.onload = () => {
+        // Set the original size
+        setOriginalSize({
+          w: img.naturalWidth,
+          h: img.naturalHeight,
+        });
+        
+        // Set the resized size after the image is loaded and resized in the container
+        setResized({
+          w: videoPlayer.clientWidth,
+          h: videoPlayer.clientHeight,
+        });
+      };
+
+      setInputUrl(data.inputFile);
+      img.src = data.inputFile;
+      videoPlayer.src = data.inputFile;
+      setShowGuestList(false);
+    } catch (error) {
+    }
+    setFileLoading(false);
+  };
+
+  useEffect(() => {
+    getText();
+  }, []);
 
   return (
     <div className="main">
@@ -404,14 +398,14 @@ export default function WeddingImage() {
           </form>
 
           <div className="mainbar">
-            {!video && (
+            {!inputUrl && (
               <label
                 className="upload-container"
-                onChange={handleVideoUpload}
+                onChange={(e) => handleVideoUpload(e, false)}
                 style={{
-                  height: video && "50px",
-                  margin: video && "0 auto",
-                  padding: video && "5px",
+                  height: inputUrl && "50px",
+                  margin: inputUrl && "0 auto",
+                  padding: inputUrl && "5px",
                 }}
               >
                 <input type="file" accept="image/*" />
@@ -419,13 +413,13 @@ export default function WeddingImage() {
                   <h2
                     className="upload-button"
                     style={{
-                      fontSize: video && "15px",
-                      padding: video && "8px",
+                      fontSize: inputUrl && "15px",
+                      padding: inputUrl && "8px",
                     }}
                   >
                     Upload Image
                   </h2>
-                  {!video && <p>or Drag & Drop a file</p>}
+                  {!inputUrl && <p>or Drag & Drop a file</p>}
                   {/* <p className="paste-text">paste File or URL</p> */}
                 </div>
               </label>
@@ -433,7 +427,7 @@ export default function WeddingImage() {
             <div
               className="videoContainer"
               style={{
-                display: !video ? "none" : "flex",
+                display: !inputUrl ? "none" : "flex",
                 width: "inherit",
                 height: "inherit",
               }}
@@ -479,7 +473,7 @@ export default function WeddingImage() {
             </div>
           </div>
         </div>
-        {video && (
+        {inputUrl && (
           <SideConfiguration
             texts={texts}
             setTexts={setTexts}

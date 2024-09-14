@@ -12,6 +12,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Loader from "../Other/Loader/Loader";
 import { app, firebaseStorage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { SampleGuestList } from "../../constants";
 
 export default function WeddingVideo() {
   const navigate = useNavigate();
@@ -39,25 +40,7 @@ export default function WeddingVideo() {
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [fileLoading, setFileLoading] = useState(false);
   const [fileName, setFileName] = useState("");
-  const [jsonData, setJsonData] = useState([
-    { name: "pawan mishra", mobileNumber: "1111111111" },
-    {
-      name: "Dr. Venkatanarasimha Raghavan Srinivasachariyar Iyer",
-      mobileNumber: "2222222222",
-    },
-    {
-      name: "Raj",
-      mobileNumber: "3333333333",
-    },
-    {
-      name: "Kushagra Nalwaya",
-      mobileNumber: "4444444444",
-    },
-    {
-      name: "HARSHIL PAGARIA",
-      mobileNumber: "5555555555",
-    },
-  ]);
+  const [jsonData, setJsonData] = useState(SampleGuestList);
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -67,7 +50,6 @@ export default function WeddingVideo() {
     h: 0,
   });
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  const [zipUrl, setZipUrl] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [isSample, setIsSample] = useState(true);
   const [videoDuration, setVideoDuration] = useState(1);

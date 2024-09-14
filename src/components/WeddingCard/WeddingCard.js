@@ -18,6 +18,7 @@ import { debounce } from "lodash";
 import Loader from "../Other/Loader/Loader";
 import { app, firebaseStorage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { SampleGuestList } from "../../constants";
 
 export default function WeddingVideo() {
   const token = localStorage.getItem("token");
@@ -45,25 +46,7 @@ export default function WeddingVideo() {
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [fileLoading, setFileLoading] = useState(false);
-  const [jsonData, setJsonData] = useState([
-    { name: "pawan mishra", mobileNumber: "1111111111" },
-    {
-      name: "Dr. Venkatanarasimha Raghavan Srinivasachariyar Iyer",
-      mobileNumber: "2222222222",
-    },
-    {
-      name: "Raj",
-      mobileNumber: "3333333333",
-    },
-    {
-      name: "Kushagra Nalwaya",
-      mobileNumber: "4444444444",
-    },
-    {
-      name: "HARSHIL PAGARIA",
-      mobileNumber: "5555555555",
-    },
-  ]);
+  const [jsonData, setJsonData] = useState(SampleGuestList);
   const [showPreview, setShowPreview] = useState(false);
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
