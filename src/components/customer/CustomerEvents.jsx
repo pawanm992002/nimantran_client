@@ -93,41 +93,65 @@ const CustomerEvents = () => {
   );
 
   return (
-    <div className="w-full rounded-lg overflow-hidden">
+    <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
       {events.length > 0 ? (
-        <table className="min-w-full bg-white shadow-lg rounded-lg overflow-y-scroll ">
-          <thead>
-            <tr className="bg-gray-200 ">
-              <th className="px-4 py-2 text-left flex items-center gap-x-2">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50 sticky top-0">
+            <tr>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-x-2"
+              >
                 Event Name
                 <input
                   type="text"
-                  className="rounded-full px-2 text-black"
+                  className="px-2 py-1 rounded-full border-[1px] border-gray-400"
                   placeholder="Search here"
                   onChange={(e) => setsearchItem(e.target?.value?.trim())}
                 />
               </th>
-              <th className="px-4 py-2 text-left">Date</th>
-              <th className="px-4 py-2 text-left">Location</th>
-              <th className="px-4 py-2 text-left">Media Type</th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Date
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Location
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Media Type
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {filteredEvents.map((event) => (
-              <tr key={event._id} className=" transition duration-300 ">
+              <tr key={event._id} className="hover:bg-gray-100">
                 <td
-                  className="px-4 py-2 border-t cursor-pointer"
+                  className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-pointer"
                   onClick={() =>
                     navigate(`/event/${event.editType}?eventId=${event._id}`)
                   }
                 >
                   {event.eventName}
                 </td>
-                <td className="px-4 py-2 border-t ">
-                  {new Date(event.dateOfOrganising).toLocaleDateString()}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {event.dateOfOrganising
+                    ? new Date(event.dateOfOrganising).toLocaleDateString()
+                    : "-"}
                 </td>
-                <td className="px-4 py-2 border-t ">{event.location}</td>
-                <td className="px-4 py-2 border-t ">{event.editType}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {event.location}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {event.editType}
+                </td>
               </tr>
             ))}
           </tbody>

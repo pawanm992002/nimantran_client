@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { fontFamilies } from "../../../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,10 +8,29 @@ import {
 
 const DropDownMenu = ({ fontFamilies, select, setSelectedFont }) => {
   const [toggleState, settoggleState] = useState(false);
+  const dropdownRef = useRef(null);
+useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      settoggleState(false);
+    }
+  };
+
+  window.addEventListener("click", handleClickOutside);
+
+  return () => {
+    window.removeEventListener("click", handleClickOutside);
+  };
+}, []);
+
 
   return (
-    <div className="" onClick={() => settoggleState(!toggleState)}>
-      <div className="bg-gray-200 px-2 rounded-md flex  gap-x-2 justify-between w-max">
+    <div
+      className=""
+      onClick={() => settoggleState(!toggleState)}
+      ref={dropdownRef}
+    >
+      <div className="bg-gray-200 px-2 rounded-md flex  gap-x-2 justify-between w-max cursor-pointer">
         <div style={{ fontFamily: select }}>{select}</div>
         <div>
           <FontAwesomeIcon
@@ -45,7 +64,13 @@ const DropDownMenu = ({ fontFamilies, select, setSelectedFont }) => {
   );
 };
 
-const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
+const TextEditor = ({
+  takeTextDetails,
+  property,
+  openContextMenuId,
+  comp,
+  videoDuration,
+}) => {
   const [backgroundColor, setBackgroundColor] = useState(
     property?.backgroundColor
   );
@@ -91,7 +116,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
     fontFamily,
     backgroundColor,
     selectedTransition?.type,
-    selectedTransition?.options?.duration
+    selectedTransition?.options?.duration,
   ]);
 
   useEffect(() => {
@@ -279,7 +304,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
           </button>
           {/* </div> */}
         </div>
-        <div className="h-9 flex items-center">
+        <div className="h-9 flex items-center gap-x-1">
           <button
             name="weight"
             className={`p-2 border rounded font-bold w-8 h-full m-0 ${
@@ -305,7 +330,9 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
           <button
             name="underline"
             className={`p-2 border rounded w-8 h-full m-0 ${
-              underline === "underline" ? 'underline  bg-blue-500 text-white' : "bg-white"
+              underline === "underline"
+                ? "underline  bg-blue-500 text-white"
+                : "bg-white"
             }`}
             onClick={handleStyleChange}
             value={underline}
@@ -345,6 +372,8 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               step="0.1"
               value={startTime}
               onChange={handleStyleChange}
+              min="0"
+              max={duration - 0.1}
               title="Set start time"
             />
           </div>
@@ -375,6 +404,8 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               value={duration}
               onChange={handleStyleChange}
               title="Set duration"
+              min={startTime + 0.1}
+              max={videoDuration}
             />
           </div>
         )}
@@ -386,10 +417,12 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               name="transition"
               // defaultValue={JSON.stringify(property.transition)}
               value={selectedTransition.type}
-              onChange={(e) => setSelectedTransition((prev) => {
-                prev.type = e.target.value;
-                return { ...prev };
-              })}
+              onChange={(e) =>
+                setSelectedTransition((prev) => {
+                  prev.type = e.target.value;
+                  return { ...prev };
+                })
+              }
               title="Select transition"
             >
               {transitionArray.map((transition, i) => (
@@ -420,6 +453,7 @@ const TextEditor = ({ takeTextDetails, property, openContextMenuId, comp }) => {
               className="w-14 outline-none bg-gray-200 p-1 rounded-md"
               type="number"
               step="0.1"
+              min="0.1"
               value={selectedTransition?.options?.duration}
               onChange={(e) =>
                 setSelectedTransition((prev) => {

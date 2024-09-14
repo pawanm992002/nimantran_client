@@ -353,6 +353,7 @@ export default function WeddingVideo() {
             openContextMenuId={openContextMenuId}
             takeTextDetails={takeTextDetails}
             comp="video"
+            videoDuration={videoDuration}
           />
         )}
         <div className="main-wrapper">
@@ -455,12 +456,12 @@ export default function WeddingVideo() {
         </div>
         {video && (
           <SideConfiguration
-          texts={texts}
-          setTexts={setTexts}
-          handleSubmit={handleSubmit}
-          eventId={eventId}
-          mediaItems={forZip}
-        />
+            texts={texts}
+            setTexts={setTexts}
+            handleSubmit={handleSubmit}
+            eventId={eventId}
+            mediaItems={forZip}
+          />
         )}
       </div>
 

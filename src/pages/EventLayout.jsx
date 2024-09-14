@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 const EventLayout = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const location = useLocation();
   const role = localStorage.getItem("role");
   const customerIdFromLocal = localStorage.getItem("_id");
-
+  const [searchParams] = useSearchParams();
+  console.log(searchParams.get("eventId"));
+  const eventId = searchParams.get("eventId");
   useEffect(() => {
     const pathname = location.pathname;
     if (pathname.includes("/event/createEvent")) {
@@ -24,14 +31,31 @@ const EventLayout = () => {
       setCurrentStep(4);
     }
   }, [location.pathname]);
-  
+
   const gotoDashboard = () => {
-    if(role === "customer") {
-      navigate(`/customer/profile?customerId=${customerIdFromLocal}`)
+    if (role === "customer") {
+      navigate(`/customer/profile?customerId=${customerIdFromLocal}`);
     } else {
       navigate(`/${role}/dashboard`);
-    } 
-  }
+    }
+  };
+
+  const handleStepNavigation = (step) => {
+    if (currentStep >= step) {
+      switch (step) {
+        case 1:
+          navigate(`/event/imageEdit?eventId=${eventId}`);
+          break;
+        case 2:
+          navigate(`/event/mediaGrid?eventId=${eventId}`);
+          break;
+        case 3:
+          navigate(`/event/invitationTracker?eventId=${eventId}`);
+          break;
+      }
+    }
+  };
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-4">
       <ol className="flex justify-between items-center w-[80vw] mb-3">
@@ -54,12 +78,12 @@ const EventLayout = () => {
 
         <li
           className={`flex-1 ${
-            currentStep >= 1 ? "text-blue-600" : "text-gray-500"
+            currentStep >= 1 ? "text-blue-600 cursor-pointer" : "text-gray-500"
           } relative`}
         >
           <div
             className={`flex items-center justify-center w-10 h-10 ${
-              currentStep >= 1 ? "bg-blue-100" : "bg-gray-100"
+              currentStep >= 1 ? "bg-blue-100 cursor-pointer" : "bg-gray-100"
             } rounded-md w-max p-2`}
           >
             <svg
@@ -89,12 +113,13 @@ const EventLayout = () => {
         </li>
         <li
           className={`flex-1 ${
-            currentStep >= 2 ? "text-blue-600" : "text-gray-500"
+            currentStep >= 2 ? "text-blue-600 cursor-pointer" : "text-gray-500"
           } relative`}
         >
           <div
+            onClick={() => handleStepNavigation(1)}
             className={`flex items-center justify-center w-10 h-10 ${
-              currentStep >= 2 ? "bg-blue-100" : "bg-gray-100"
+              currentStep >= 2 ? "bg-blue-100 cursor-pointer" : "bg-gray-100"
             } rounded-md w-max p-2`}
           >
             <svg
@@ -123,12 +148,15 @@ const EventLayout = () => {
         </li>
         <li
           className={`flex-1 ${
-            currentStep >= 3 ? "text-blue-600" : "text-gray-500"
+            currentStep >= 3 ? "text-blue-600 cursor-pointer" : "text-gray-500"
           } relative`}
         >
           <div
+            onClick={() => handleStepNavigation(2)}
             className={`flex items-center justify-center w-10 h-10 ${
-              currentStep >= 3 ? "bg-blue-100" : "bg-gray-100"
+              currentStep >= 3
+                ? "bg-blue-100 cursor-pointer"
+                : "bg-gray-100 cursor-not-allowed"
             } rounded-md w-max p-2`}
           >
             <svg
@@ -151,18 +179,23 @@ const EventLayout = () => {
           </div>
           <div
             className={`absolute top-1/2 left-10 right-0 h-1 ${
-              currentStep >= 3 ? "bg-blue-100" : "bg-gray-100"
+              currentStep >= 3
+                ? "bg-blue-100"
+                : "bg-gray-100 cursor-not-allowed"
             } z-[-1]`}
           ></div>
         </li>
         <li
           className={`flex ${
-            currentStep >= 4 ? "text-blue-600" : "text-gray-500"
+            currentStep >= 4 ? "text-blue-600 cursor-pointer" : "text-gray-500"
           } relative`}
         >
           <div
+            onClick={() => handleStepNavigation(3)}
             className={`flex items-center justify-center w-10 h-10 ${
-              currentStep >= 4 ? "bg-blue-100" : "bg-gray-100"
+              currentStep >= 4
+                ? "bg-blue-100 cursor-pointer"
+                : "bg-gray-100 cursor-not-allowed"
             } rounded-md w-max p-2`}
           >
             <svg
@@ -180,13 +213,14 @@ const EventLayout = () => {
           </div>
           <div
             className={`absolute top-1/2 left-10 right-0 h-1 ${
-              currentStep >= 4 ? "bg-blue-100" : "bg-gray-100"
+              currentStep >= 4
+                ? "bg-blue-100"
+                : "bg-gray-100 cursor-not-allowed"
             } z-[-1]`}
           ></div>
         </li>
       </ol>
       <div className="w-full flex justify-center">
-        {/* components */}
         <Outlet />
       </div>
     </div>
