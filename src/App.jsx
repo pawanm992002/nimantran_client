@@ -14,7 +14,6 @@ import EventsList from "./components/events/EventsList";
 import "./App.css";
 import "./tailwind.css";
 
-
 import Customer from "./pages/Customer";
 import Profile from "./components/customer/Profile";
 import EditProfileCustomer from "./components/customer/EditProfileCustomer";
@@ -31,37 +30,63 @@ import CreateEvent from "./pages/CreateEvent";
 import EventLayout from "./pages/EventLayout";
 import MediaGrid from "./components/mediaGrid/MediaGrid";
 import InvitationTracker from "./components/events/InvitationTracker";
-
 export const fontFamilies = [
-  "Josefin Slab",
-  "Phudu",
-  "Londrina Shadow",
-  "Carattere",
-  "Permanent Marker",
-  "Noto Serif",
-  "Playfair Display",
-  "Ubuntu",
-  "Roboto",
+  "Akshar",
   "Alkatra",
-  "Tilt Warp",
-  "Kalnia",
-  "Grenze Gotisch",
+  "Amita",
   "Antonio",
-  "Genos",
-  "Podkova",
-  "Ojuju",
-  "Changa",
-  "DynaPuff",
-  "Danfo",
-  "Jaro",
-  "Edu QLD Beginner",
-  "Edu VIC WA NT Beginner",
-  "Edu SA Beginner",
-  "Grandstander",
-  "Merienda",
-  "Edu TAS Beginner",
+  "Cabin Sketch",
+  "Carattere",
   "Caveat",
+  "Changa",
+  "Courgette",
+  "Danfo",
   "Dancing Script",
+  "DynaPuff",
+  "Edu QLD Beginner",
+  "Edu SA Beginner",
+  "Edu TAS Beginner",
+  "Edu VIC WA NT Beginner",
+  "Eczar",
+  "Ewert",
+  "Genos",
+  "Gotu",
+  "Great Vibes",
+  "Grenze Gotisch",
+  "Hind",
+  "IBM Plex Sans Devanagari",
+  "Indie Flower",
+  "Inknut Antiqua",
+  "Jaro",
+  "Josefin Slab",
+  "Kalam",
+  "Kalnia",
+  "Lobster Two",
+  "Londrina Shadow",
+  "Merienda",
+  "Mukta",
+  "Noto Sans Kaithi",
+  "Noto Serif",
+  "Noto Serif Devanagari",
+  "Ojuju",
+  "Pacífico",
+  "Permanent Marker",
+  "Phudu",
+  "Playfair Display",
+  "Playwrite CU",
+  "Playwrite HR Lijeva",
+  "Playwrite IN",
+  "Podkova",
+  "Pragati Narrow",
+  "Ranga",
+  "Roboto",
+  "Sacramento",
+  "Satisfy",
+  "Sofia",
+  "Tapestry",
+  "Tillana",
+  "Ubuntu",
+  "Yatra One",
 ];
 
 const App = () => {
@@ -86,7 +111,7 @@ const App = () => {
           <Route path="eventlist" element={<EventsList />} />
           <Route path="credits" element={<ClientCredits />} />
         </Route>
-        
+
         <Route path="/event" element={<EventLayout />}>
           <Route path="createEvent" element={<CreateEvent />} />
           <Route path="imageEdit" element={<WeddingImage />} />
@@ -102,7 +127,7 @@ const App = () => {
           <Route path="events" element={<CustomerEvents />} />
           <Route path="credits" element={<Transactions />} />
         </Route>
-        
+
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>

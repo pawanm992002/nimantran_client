@@ -9,7 +9,7 @@ export default function SideConfiguration({
   setTexts,
   handleSubmit,
   eventId,
-  mediaItems
+  mediaItems,
 }) {
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -28,7 +28,6 @@ export default function SideConfiguration({
     try {
       const zip = new JSZip();
       const folder = zip.folder("firebase_files");
-
 
       console.log(mediaItems);
       // Loop over each file URL
@@ -75,11 +74,13 @@ export default function SideConfiguration({
 
   return (
     <div className="configuration">
-      {isDownloading && <Loader text={"Please wait while Generating Zip File"} />}
-      <div className="NoText">
+      {isDownloading && (
+        <Loader text={"Please wait while Generating Zip File"} />
+      )}
+      <div className="NoText w-full">
         <button
           type="button"
-          className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"
+          className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2 w-full"
           onClick={(e) => handleSubmit(e, true)}
         >
           Show Preview
@@ -87,14 +88,14 @@ export default function SideConfiguration({
 
         {
           <a onClick={() => downloadFilesAsZip()}>
-            <button className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2">
+            <button className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2 w-full">
               Download Preview Sample
             </button>
           </a>
         }
         <button
           type="button"
-          className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2"
+          className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2 w-full"
           onClick={(e) => handleFinalProcessing(e)}
         >
           Start Final Processing

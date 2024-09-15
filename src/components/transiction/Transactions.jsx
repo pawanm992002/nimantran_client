@@ -117,7 +117,7 @@ const Transactions = () => {
             </tbody>
           </table>
           <div className="w-full p-2 justify-end flex bg-gray-200 sticky bottom-0">
-            Total Balance:
+            Current Balance:
             <span className=" font-bold text-green-500 pr-14 pl-1 ">
               {credits}
             </span>

@@ -406,6 +406,7 @@ const CustomerTable = () => {
                   value={credits}
                   onChange={(e) => setCredits(e.target.value)}
                   onKeyPress={handleKeyPress}
+                  min={0}
                   className="mt-1 px-4 py-2 w-full border border-gray-300 rounded-lg"
                 />
               </div>

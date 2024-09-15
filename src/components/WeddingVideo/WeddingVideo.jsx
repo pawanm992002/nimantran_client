@@ -407,6 +407,7 @@ export default function WeddingVideo() {
             openContextMenuId={openContextMenuId}
             takeTextDetails={takeTextDetails}
             comp="video"
+            videoDuration={videoDuration}
           />
         )}
         <div className="main-wrapper">
