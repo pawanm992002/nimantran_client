@@ -37,14 +37,14 @@ const DraggableResizableDiv = ({
         setPosition({ x: data.x, y: data.y });
       }
 
-      if (data.y >= widthHeight.h - property?.size?.height) {
-        setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
-      }
-      if (data.x >= widthHeight.w - property?.size?.width) {
-        setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
-      }
+      // if (data.y >= widthHeight.h - property?.size?.height) {
+      //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
+      // }
+      // if (data.x >= widthHeight.w - property?.size?.width) {
+      //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
+      // }
 
-      if (Math.abs(videoCenter - size?.width / 2 - data.x) < 2) {
+      if (Math.abs(videoCenter - size?.width / 2 - data.x) < 10) {
         setIsAtCenter(true);
       } else {
         setIsAtCenter(false);

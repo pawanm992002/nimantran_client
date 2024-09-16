@@ -91,7 +91,7 @@ const MediaGrid = () => {
         <Loader text="Please wait while it's loading" />
       ) : (
         <>
-          {mediaItems?.length > 0 ? (
+          {mediaItems?.guests?.length > 0 ? (
             <>
               {openModal && (
                 <WhatsappModal

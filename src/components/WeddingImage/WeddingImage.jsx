@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import "../WeddingVideo/WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileArrowUp, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
-import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
+import {
+  EditingTopBar,
+  SideConfiguration,
+} from "../Other/sideConfiguration/SideConfiguration";
 import TextEditor from "../Other/TextEditor/TextEditor";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
@@ -33,13 +34,10 @@ export default function WeddingImage() {
   const [fileName, setFileName] = useState("");
   const [jsonData, setJsonData] = useState(SampleGuestList);
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  // const [video, setVideo] = useState(null);
   const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
   const [count, setCount] = useState(1);
-  const [onHover1, setOnHover1] = useState(false);
-  const [onHover2, setOnHover2] = useState(false);
   const [selectedText, setSelectedText] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
@@ -282,10 +280,17 @@ export default function WeddingImage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setTexts(data.texts);
       setInputUrl(data.inputFile);
+      setTexts(data.texts);
 
-      const fileName = `inputFile.${data.inputFile.split('/').pop().split('#')[0].split('?')[0].split(".")[1]}`
+      const fileName = `inputFile.${
+        data.inputFile
+          .split("/")
+          .pop()
+          .split("#")[0]
+          .split("?")[0]
+          .split(".")[1]
+      }`;
       setFileName(fileName);
 
       const videoPlayer = document.getElementById("videoPlayer");
@@ -296,7 +301,7 @@ export default function WeddingImage() {
           w: img.naturalWidth,
           h: img.naturalHeight,
         });
-        
+
         // Set the resized size after the image is loaded and resized in the container
         setResized({
           w: videoPlayer.clientWidth,
@@ -308,8 +313,7 @@ export default function WeddingImage() {
       img.src = data.inputFile;
       videoPlayer.src = data.inputFile;
       setShowGuestList(false);
-    } catch (error) {
-    }
+    } catch (error) {}
     setFileLoading(false);
   };
 
@@ -350,52 +354,14 @@ export default function WeddingImage() {
           />
         )}
         <div className="main-wrapper">
-          <form className="sidebar">
-            <label
-              className="custom-file-upload"
-              onChange={handleGuestNamesChange}
-              onMouseOver={() => setOnHover1(true)}
-              onMouseOut={() => setOnHover1(false)}
-              onClick={() => setCountModelOpenNumber(1)}
-            >
-              <div className="tooltip" style={{ display: onHover1 && "flex" }}>
-                Upload Guest List
-              </div>
-              <input type="file" accept="text/*" />
-              <FontAwesomeIcon icon={faFileArrowUp} />
-            </label>
-
-            <label
-              type="button"
-              className="custom-file-upload"
-              onClick={createTextDiv}
-              onMouseOver={() => setOnHover2(true)}
-              onMouseOut={() => setOnHover2(false)}
-            >
-              <div className="tooltip" style={{ display: onHover2 && "flex" }}>
-                Add Text - {count}
-              </div>
-              <FontAwesomeIcon icon={faSquarePlus} />
-            </label>
-
-            {/* {zipUrl && (
-              <label
-                className="custom-file-upload"
-                onMouseOver={() => setOnHover4(true)}
-                onMouseOut={() => setOnHover4(false)}
-              >
-                <div
-                  className="tooltip"
-                  style={{ display: onHover4 && "flex" }}
-                >
-                  Download All Videos in Zip
-                </div>
-                <a href={zipUrl} download="processed_videos.zip">
-                  <FontAwesomeIcon icon={faFileArrowDown} />
-                </a>
-              </label>
-            )} */}
-          </form>
+          <EditingTopBar
+            handleGuestNamesChange={handleGuestNamesChange}
+            setCountModelOpenNumber={setCountModelOpenNumber}
+            setShowGuestList={setShowGuestList}
+            handleVideoUpload={handleVideoUpload}
+            createTextDiv={createTextDiv}
+            comp={"Image"}
+          />
 
           <div className="mainbar">
             {!inputUrl && (
@@ -432,15 +398,14 @@ export default function WeddingImage() {
                 height: "inherit",
               }}
             >
-              {/* <div className="app"> */}
               <div
                 style={{
                   position: "relative",
                   display: "flex",
                   width: "inherit",
                   height: "inherit",
-                  justifyContent: 'center',
-                  alignItems: 'center'
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
                 ref={videoRef}
               >
@@ -450,7 +415,7 @@ export default function WeddingImage() {
                     maxHeight: "var(--contentMaxHeight)",
                     margin: "0px",
                     objectFit: "contain",
-                    maxWidth: "65vw"
+                    maxWidth: "65vw",
                   }}
                   id="videoPlayer"
                 />

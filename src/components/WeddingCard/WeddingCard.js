@@ -2,14 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import "../WeddingVideo/WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileArrowUp, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
+import {
+  EditingTopBar,
+  SideConfiguration,
+} from "../Other/sideConfiguration/SideConfiguration";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TextEditor from "../Other/TextEditor/TextEditor";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
@@ -19,7 +20,7 @@ import { app, firebaseStorage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SampleGuestList } from "../../constants";
 import axios from "axios";
-import {debounce} from 'loadsh';
+import { debounce } from "loadsh";
 
 export default function WeddingVideo() {
   const token = localStorage.getItem("token");
@@ -42,8 +43,6 @@ export default function WeddingVideo() {
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
   const [count, setCount] = useState(1);
-  const [onHover1, setOnHover1] = useState(false);
-  const [onHover2, setOnHover2] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
@@ -329,7 +328,6 @@ export default function WeddingVideo() {
     }
   };
 
-
   return (
     <div className="main">
       <ShowSampleModal
@@ -363,52 +361,14 @@ export default function WeddingVideo() {
           />
         )}
         <div className="main-wrapper">
-          <form className="sidebar">
-            <label
-              className="custom-file-upload"
-              onChange={handleGuestNamesChange}
-              onMouseOver={() => setOnHover1(true)}
-              onMouseOut={() => setOnHover1(false)}
-              onClick={() => setCountModelOpenNumber(1)}
-            >
-              <div className="tooltip" style={{ display: onHover1 && "flex" }}>
-                Upload Guest List
-              </div>
-              <input type="file" accept="text/*" />
-              <FontAwesomeIcon icon={faFileArrowUp} />
-            </label>
-
-            <label
-              type="button"
-              className="custom-file-upload"
-              onClick={createTextDiv}
-              onMouseOver={() => setOnHover2(true)}
-              onMouseOut={() => setOnHover2(false)}
-            >
-              <div className="tooltip" style={{ display: onHover2 && "flex" }}>
-                Add Text - {count}
-              </div>
-              <FontAwesomeIcon icon={faSquarePlus} />
-            </label>
-
-            {/* {zipUrl && (
-              <label
-                className="custom-file-upload"
-                onMouseOver={() => setOnHover4(true)}
-                onMouseOut={() => setOnHover4(false)}
-              >
-                <div
-                  className="tooltip"
-                  style={{ display: onHover4 && "flex" }}
-                >
-                  Download All Videos in Zip
-                </div>
-                <a href={zipUrl} download="processed_videos.zip">
-                  <FontAwesomeIcon icon={faFileArrowDown} />
-                </a>
-              </label>
-            )} */}
-          </form>
+          <EditingTopBar
+            handleGuestNamesChange={handleGuestNamesChange}
+            setCountModelOpenNumber={setCountModelOpenNumber}
+            setShowGuestList={setShowGuestList}
+            handleVideoUpload={handleFileChange}
+            createTextDiv={createTextDiv}
+            comp={"Pdf"}
+          />
 
           <div className="mainbar">
             {!pdfFile && (

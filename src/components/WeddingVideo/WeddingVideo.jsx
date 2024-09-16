@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import "./WeddingVideo.css";
 import DraggableResizableDiv from "../Other/DraggableResizableDiv/DraggableResizableDiv";
 import { toast } from "react-hot-toast";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileArrowUp, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
-import SideConfiguration from "../Other/sideConfiguration/SideConfiguration";
+import {
+  EditingTopBar,
+  SideConfiguration,
+} from "../Other/sideConfiguration/SideConfiguration";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import TextEditor from "../Other/TextEditor/TextEditor";
@@ -33,8 +34,6 @@ export default function WeddingVideo() {
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
   const [count, setCount] = useState(1);
-  const [onHover1, setOnHover1] = useState(false);
-  const [onHover2, setOnHover2] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
@@ -331,51 +330,6 @@ export default function WeddingVideo() {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(texts);
-  //   if (texts.length !== 0) {
-  //     var debouncedFetch = debounce(async () => {
-  //       try {
-  //         const response = await axios.post(
-  //           `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-  //           { texts },
-  //           {
-  //             headers: { Authorization: `Bearer ${token}` },
-  //           }
-  //         );
-  //         console.log(response.data);
-  //       } catch (error) {
-  //         console.error("Error saving texts:", error);
-  //       }
-  //     }, 10000);
-  //     debouncedFetch();
-  //     return () => {
-  //       debouncedFetch.cancel();
-  //     };
-  //   }
-  // }, [texts]);
-
-  // useEffect(() => {
-  //   var getText = async () => {
-  //     try {
-  //       var response = await axios.get(
-  //         `${process.env.REACT_APP_BACKEND_URL}/texts/get?eventId=${eventId}`,
-  //         {},
-  //         {
-  //           headers: { Authorization: `Bearer ${token}` },
-  //         }
-  //       );
-  //       // console.log(response.data[0].texts);
-  //       setTexts(response.data[0].texts);
-  //       console.log(texts);
-  //       return response.data[0].texts;
-  //     } catch (error) {
-  //       console.error("Error getting texts:", error);
-  //     }
-  //   };
-  //   getText();
-  // }, []);
-
   return (
     <div className="main">
       <ShowSampleModal
@@ -411,35 +365,14 @@ export default function WeddingVideo() {
           />
         )}
         <div className="main-wrapper">
-          <form className="sidebar">
-            <label
-              className="custom-file-upload"
-              onChange={handleGuestNamesChange}
-              onMouseOver={() => setOnHover1(true)}
-              onMouseOut={() => setOnHover1(false)}
-              onClick={() => setCountModelOpenNumber(1)}
-            >
-              <div className="tooltip" style={{ display: onHover1 && "flex" }}>
-                Upload Guest List
-              </div>
-              <input type="file" accept="text/*" />
-              <FontAwesomeIcon icon={faFileArrowUp} />
-            </label>
-
-            <label
-              type="button"
-              className="custom-file-upload"
-              onClick={createTextDiv}
-              onMouseOver={() => setOnHover2(true)}
-              onMouseOut={() => setOnHover2(false)}
-            >
-              <div className="tooltip" style={{ display: onHover2 && "flex" }}>
-                Add Text - {count}
-              </div>
-              <FontAwesomeIcon icon={faSquarePlus} />
-            </label>
-          </form>
-
+          <EditingTopBar
+            handleGuestNamesChange={handleGuestNamesChange}
+            setCountModelOpenNumber={setCountModelOpenNumber}
+            setShowGuestList={setShowGuestList}
+            handleVideoUpload={handleVideoUpload}
+            createTextDiv={createTextDiv}
+            comp={"Video"}
+          />
           <div className="mainbar">
             {!inputUrl && (
               <label

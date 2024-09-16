@@ -9,20 +9,19 @@ import {
 const DropDownMenu = ({ fontFamilies, select, setSelectedFont }) => {
   const [toggleState, settoggleState] = useState(false);
   const dropdownRef = useRef(null);
-useEffect(() => {
-  const handleClickOutside = (e) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-      settoggleState(false);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        settoggleState(false);
+      }
+    };
 
-  window.addEventListener("click", handleClickOutside);
+    window.addEventListener("click", handleClickOutside);
 
-  return () => {
-    window.removeEventListener("click", handleClickOutside);
-  };
-}, []);
-
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div
@@ -230,7 +229,7 @@ const TextEditor = ({
 
   return (
     openContextMenuId === property?.id && (
-      <div className="flex items-center pb-2 px-1 bg-white shadow-md space-x-2 m-2 rounded-md h-[35px]">
+      <div className="flex items-center pb-2 px-1 bg-white shadow-md space-x-2 m-2 mb-0 rounded-md h-[35px]">
         <DropDownMenu
           fontFamilies={fontFamilies}
           select={fontFamily}

@@ -3,8 +3,10 @@ import JSZip from "jszip";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileArrowUp, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 
-export default function SideConfiguration({
+export function SideConfiguration({
   texts,
   setTexts,
   handleSubmit,
@@ -224,3 +226,73 @@ export default function SideConfiguration({
     </div>
   );
 }
+
+export const EditingTopBar = ({
+  handleGuestNamesChange,
+  setCountModelOpenNumber,
+  setShowGuestList,
+  handleVideoUpload,
+  createTextDiv,
+  comp
+}) => {
+  const mediaType = () => {
+    if(comp === "Video") return "video/*";
+    if(comp === "Image") return "image/*";
+    if(comp === "Pdf") return "application/pdf";
+  }
+  return (
+    <form className="sidebar">
+      <label
+        className="custom-file-upload"
+        onChange={handleGuestNamesChange}
+        onClick={() => setCountModelOpenNumber(1)}
+      >
+        <input type="file" accept="text/*" />
+        <svg
+          // xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 -960 960 960"
+          width="24px"
+          fill="#e8eaed"
+        >
+          <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h360v80H200v560h560v-360h80v360q0 33-23.5 56.5T760-120H200Zm120-160v-80h320v80H320Zm0-120v-80h320v80H320Zm0-120v-80h320v80H320Zm360-80v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z" />
+        </svg>
+        <span className="text-sm ml-1">Upload Guest List</span>
+      </label>
+
+      <label
+        className="custom-file-upload"
+        onClick={() => setShowGuestList(true)}
+      >
+        <svg
+          // xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 -960 960 960"
+          width="24px"
+          fill="#e8eaed"
+        >
+          <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h440l200 200v440q0 33-23.5 56.5T760-120H200Zm0-80h560v-400H600v-160H200v560Zm80-80h400v-80H280v80Zm0-320h200v-80H280v80Zm0 160h400v-80H280v80Zm-80-320v160-160 560-560Z" />
+        </svg>
+        <span className="text-sm ml-1">Show Guest List</span>
+      </label>
+
+      <label
+        className="custom-file-upload"
+        onChange={(e) => handleVideoUpload(e)}
+      >
+        <input type="file" accept={mediaType()}  />
+        <FontAwesomeIcon icon={faFileArrowUp} />
+        <span className="text-sm ml-1">Upload {comp}</span>
+      </label>
+
+      <label
+        type="button"
+        className="custom-file-upload"
+        onClick={createTextDiv}
+      >
+        <FontAwesomeIcon icon={faSquarePlus} />
+        <span className="text-sm ml-1">Add Text</span>
+      </label>
+    </form>
+  );
+};
