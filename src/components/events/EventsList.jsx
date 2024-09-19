@@ -5,14 +5,14 @@ import EditEventModal from "./EditEventModal";
 import { useNavigate } from "react-router-dom";
 
 const EventsList = () => {
-  const [customers, setCustomers] = useState([]);
+  const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
   const [customerId, setCustomerId] = useState(null);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const [searchItem, setsearchItem] = useState("");
+  const [searchItem, setSearchItem] = useState("");
 
   const fetchEvents = async () => {
     try {
@@ -23,14 +23,7 @@ const EventsList = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      const sortedCustomers = response?.data?.data.map((customer) => {
-        customer.events.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        return customer;
-      });
-      setCustomers(sortedCustomers);
+      setEvents(response.data.data.events);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -53,43 +46,19 @@ const EventsList = () => {
     setSelectedEvent(null);
   };
 
-  // const handleDeleteEvent = async (customer, event) => {
-  //   try {
-  //     await axios.delete(
-  //       `${process.env.REACT_APP_BACKEND_URL}/events/delete-event/${event._id}/${customer.customerId}`,
-  //       {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       }
-  //     );
-  //     fetchEvents();
-  //     toast.success("Event deleted successfully");
-  //   } catch (error) {
-  //     console.error("Error deleting event:", error);
-  //     toast.error("Error deleting event");
-  //   }
-  // };
-
   const handleEventUpdated = () => {
     fetchEvents();
   };
-  const filteredCustomers = customers.flatMap((customer) =>
-    customer.events
-      .filter(
-        (event) =>
-          event.eventName.toLowerCase().includes(searchItem.toLowerCase()) 
-      )
-      .map((event) => ({
-        ...event,
-        customerName: customer.customerName,
-      }))
+
+  const filteredEvents = events.filter((event) =>
+    event.eventName.toLowerCase().includes(searchItem.toLowerCase())
   );
 
-  console.log(filteredCustomers);
   return (
     <div className="w-full flex flex-col overflow-scroll no-scrollbar h-full">
       {loading ? (
         <div className="flex h-full w-full justify-center items-center">
-          <div className="spinner"></div> {/* Spinner */}
+          <div className="spinner"></div>
         </div>
       ) : (
         <table className="min-w-full divide-y divide-gray-200">
@@ -105,7 +74,7 @@ const EventsList = () => {
                     type="text"
                     className="px-2 py-1 rounded-full border-[1px] border-gray-400"
                     placeholder="Search here"
-                    onChange={(e) => setsearchItem(e.target.value)}
+                    onChange={(e) => setSearchItem(e.target.value)}
                   />
                 </div>
               </th>
@@ -145,16 +114,10 @@ const EventsList = () => {
               >
                 Edit
               </th>
-              {/* <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Delete
-              </th> */}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredCustomers.map((event) => (
+            {filteredEvents.map((event) => (
               <tr key={event._id} className="hover:bg-gray-100">
                 <td
                   className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-pointer"
@@ -169,10 +132,10 @@ const EventsList = () => {
                   {event.eventName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {event.editType === "imageEdit" && "Image"}
-                    {event.editType === "videoEdit" && "Video"}
-                    {event.editType === "cardEdit" && "PDF"}
-                  </td>
+                  {event.editType === "imageEdit" && "Image"}
+                  {event.editType === "videoEdit" && "Video"}
+                  {event.editType === "cardEdit" && "PDF"}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {!event?.dateOfOrganising
                     ? "-"
@@ -185,8 +148,8 @@ const EventsList = () => {
                   {event.customerName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {event.processingStatus}
-                  </td>
+                  {event.processingStatus || "-"}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <svg
                     fill="none"
