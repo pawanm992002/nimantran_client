@@ -32,7 +32,7 @@ export default function WeddingVideo() {
     }
   }, []);
   const [forZip, setForZip] = useState([]);
-  const [inputUrl, setInputUrl] = useState("");
+  const [savingState, setSavingState] = useState("saved"); // not saved, saving, saved
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
@@ -101,6 +101,7 @@ export default function WeddingVideo() {
   };
 
   useEffect(() => {
+    setSavingState("saving");
     if (texts.length !== 0) {
       var debouncedFetch = debounce(async () => {
         try {
@@ -114,7 +115,8 @@ export default function WeddingVideo() {
         } catch (error) {
           console.error("Error saving texts:", error);
         }
-      }, 5000);
+        setSavingState("saved");
+      }, 3000);
       debouncedFetch();
       return () => {
         debouncedFetch.cancel();
@@ -473,6 +475,7 @@ export default function WeddingVideo() {
             handleSubmit={handleSubmit}
             eventId={eventId}
             mediaItems={forZip}
+            savingState={savingState}
           />
         )}
       </div>

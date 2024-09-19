@@ -45,6 +45,7 @@ export default function WeddingImage() {
   const [showPreview, setShowPreview] = useState(false);
   const [forZip, setForZip] = useState([]);
   const [inputUrl, setInputUrl] = useState("");
+  const [savingState, setSavingState] = useState("saved"); // not saved, saving, saved
   const [OriginalSize, setOriginalSize] = useState({
     w: 0,
     h: 0,
@@ -251,6 +252,7 @@ export default function WeddingImage() {
 
   useEffect(() => {
     if (texts.length !== 0) {
+      setSavingState("saving");
       var debouncedFetch = debounce(async () => {
         try {
           const response = await axios.post(
@@ -263,7 +265,8 @@ export default function WeddingImage() {
         } catch (error) {
           console.error("Error saving texts:", error);
         }
-      }, 5000);
+        setSavingState("saved");
+      }, 3000);
       debouncedFetch();
       return () => {
         debouncedFetch.cancel();
@@ -448,6 +451,7 @@ export default function WeddingImage() {
             handleSubmit={handleSubmit}
             eventId={eventId}
             mediaItems={forZip}
+            savingState={savingState}
           />
         )}
       </div>

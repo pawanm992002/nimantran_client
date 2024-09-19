@@ -29,11 +29,17 @@
   flex-direction: row;
   flex-wrap: wrap;
   /* gap: 10px; */
-  width: 86vw;
+  width: 88vw;
   /* padding: 8px; */
   border: 1px solid black;
   justify-content: space-between;
   margin: auto;
+}
+
+@media screen and (max-width: 600px) {
+  .mainContainer {
+    width: 98vw;
+  }
 }
 
 .sidebar {

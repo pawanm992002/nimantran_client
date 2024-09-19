@@ -236,7 +236,7 @@ const TextEditor = ({
           setSelectedFont={setFontFamily}
         />
         <div className="flex rounded-md m-2">
-          <input
+          <input min={5}
             className="w-14 outline-none bg-gray-200 p-1 rounded-md"
             type="number"
             name="size"
@@ -259,7 +259,7 @@ const TextEditor = ({
             id="fontColor"
             value={fontColor}
             onChange={handleStyleChange}
-            style={{ visibility: "hidden", width: 0, height: 0 }}
+            style={{ visibility: "hidden", width: 0, height: 0, display: 'none' }}
           />
         </div>
         <div className="h-9 flex items-center bg-gray-200">
@@ -291,7 +291,7 @@ const TextEditor = ({
             value={backgroundColor}
             onChange={handleStyleChange}
             title="Set background color"
-            style={{ visibility: "hidden", width: 0, height: 0 }}
+            style={{ visibility: "hidden", width: 0, height: 0, display: 'none' }}
           />
           {/* <div> */}
           <button

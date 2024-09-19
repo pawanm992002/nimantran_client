@@ -1,4 +1,6 @@
-import React from "react";
+import "./App.css";
+import "./tailwind.css";
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./components/user/Login";
 import AdminDashboard from "./components/admin/AdminDashboard";
@@ -11,9 +13,6 @@ import WeddingImage from "./components/WeddingImage/WeddingImage";
 import Client from "./pages/Client";
 import CustomerTable from "./components/customer/CustomerTable";
 import EventsList from "./components/events/EventsList";
-import "./App.css";
-import "./tailwind.css";
-
 import Customer from "./pages/Customer";
 import Profile from "./components/customer/Profile";
 import EditProfileCustomer from "./components/customer/EditProfileCustomer";
@@ -30,6 +29,7 @@ import CreateEvent from "./pages/CreateEvent";
 import EventLayout from "./pages/EventLayout";
 import MediaGrid from "./components/mediaGrid/MediaGrid";
 import InvitationTracker from "./components/events/InvitationTracker";
+
 export const fontFamilies = [
   "Akshar",
   "Alkatra",

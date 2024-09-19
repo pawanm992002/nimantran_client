@@ -31,6 +31,7 @@ export default function WeddingVideo() {
   const [params] = useSearchParams();
   const eventId = params.get("eventId");
   const [guestNames, setGuestNames] = useState(null);
+  const [savingState, setSavingState] = useState("saved"); // not saved, saving, saved
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
   const [count, setCount] = useState(1);
@@ -150,6 +151,7 @@ export default function WeddingVideo() {
   };
 
   useEffect(() => {
+    setSavingState("saving");
     if (texts.length !== 0) {
       var debouncedFetch = debounce(async () => {
         try {
@@ -163,7 +165,8 @@ export default function WeddingVideo() {
         } catch (error) {
           console.error("Error saving texts:", error);
         }
-      }, 5000);
+        setSavingState("saved");
+      }, 3000);
       debouncedFetch();
       return () => {
         debouncedFetch.cancel();
@@ -453,6 +456,7 @@ export default function WeddingVideo() {
             handleSubmit={handleSubmit}
             eventId={eventId}
             mediaItems={forZip}
+            savingState={savingState}
           />
         )}
       </div>
