@@ -102,7 +102,12 @@ const AdminDashboard = () => {
   const handleFiltersStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   };
-
+ const handleKeyPress = (event) => {
+   const charCode = event.which ? event.which : event.keyCode;
+   if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+     event.preventDefault();
+   }
+ };
   const filteredData =
     selectedStatus === "All"
       ? requests
@@ -147,51 +152,49 @@ const AdminDashboard = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed z-30 inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md flex flex-col items-center p-6">
             <h2 className="text-xl font-bold mb-4">Create Client</h2>
-            <form onSubmit={createClient}>
-              <div className="mb-4">
-                <label htmlFor="name" className="block text-gray-700 mb-2">
+            <form onSubmit={createClient} className="w-full flex flex-col ">
+              <div className="mb-4 flex flex-col gap-y-1.5">
+                <label htmlFor="name" className=" text-gray-700 ">
                   Name
                 </label>
                 <input
                   id="name"
                   type="text"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-2 py-2 m-0 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <div className="mb-4">
-                <label htmlFor="mobile" className="block text-gray-700 mb-2">
+              <div className="mb-4 flex flex-col gap-y-1.5">
+                <label htmlFor="mobile" className=" text-gray-700 ">
                   Mobile
                 </label>
                 <input
                   id="mobile"
                   type="text"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full m-0 px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={mobile}
+                  onKeyPress={handleKeyPress}
                   onChange={(e) => setMobile(e.target.value)}
                 />
               </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="temp_password"
-                  className="block text-gray-700 mb-2"
-                >
+              <div className="mb-4 flex flex-col gap-y-1.5">
+                <label htmlFor="temp_password" className=" text-gray-700 ">
                   Temporary Password
                 </label>
-                <div className="relative flex  items-center">
+                <div className="relative w-full">
                   <input
                     id="temp_password"
                     type="text"
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full m-0 px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
                     onClick={() => setPassword(generateRandomPassword())}
-                    className=" absolute right-2 "
+                    className=" absolute right-2 top-2"
                   >
                     <FontAwesomeIcon
                       icon={faWandMagicSparkles}
@@ -235,27 +238,25 @@ const AdminDashboard = () => {
               >
                 Cancel
               </button>
-              {
-                (acceptedRequestId.split("#")[1] === "accept" ? (
-                  <button
-                    onClick={() =>
-                      handleAcceptRequest(acceptedRequestId.split("#")[0])
-                    }
-                    className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
-                  >
-                    Accept
-                  </button>
-                ) : (
-                  <button
-                    onClick={() =>
-                      handleRejectRequest(acceptedRequestId.split("#")[0])
-                    }
-                    className="px-6 py-2 font-semibold rounded-lg bg-red-500 text-white"
-                  >
-                    Reject
-                  </button>
-                ))
-              }
+              {acceptedRequestId.split("#")[1] === "accept" ? (
+                <button
+                  onClick={() =>
+                    handleAcceptRequest(acceptedRequestId.split("#")[0])
+                  }
+                  className="px-6 py-2 font-semibold rounded-lg bg-blue-500 text-white"
+                >
+                  Accept
+                </button>
+              ) : (
+                <button
+                  onClick={() =>
+                    handleRejectRequest(acceptedRequestId.split("#")[0])
+                  }
+                  className="px-6 py-2 font-semibold rounded-lg bg-red-500 text-white"
+                >
+                  Reject
+                </button>
+              )}
             </div>
           </div>
         </div>

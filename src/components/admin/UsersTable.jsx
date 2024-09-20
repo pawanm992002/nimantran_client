@@ -186,7 +186,9 @@ const UsersTable = () => {
                     {user.clientId.name}
                   </td>
                   <td className="py-2 px-4 border-b text-center border-gray-200">
-                    {new Date(user.dateOfBirth).toLocaleDateString()}
+                    {user.dateOfBirth
+                      ? new Date(user.dateOfBirth).toLocaleDateString()
+                      : "-"}
                   </td>
                   <td className="py-2 px-4 border-b text-center border-gray-200">
                     {user.location}

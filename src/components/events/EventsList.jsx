@@ -24,6 +24,7 @@ const EventsList = () => {
         }
       );
       setEvents(response.data.data.events);
+      console.log(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching events:", error);
