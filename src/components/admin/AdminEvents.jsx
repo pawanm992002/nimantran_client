@@ -132,7 +132,7 @@ const AdminEvents = () => {
             </div>
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
               <h3 className="text-blue-600 text-lg font-semibold mb-2">
-                Username:
+                Username
               </h3>
               <p className="text-gray-800 text-md">
                 {singleEventView.user.name}
@@ -214,7 +214,13 @@ const AdminEvents = () => {
               scope="col"
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Username
+              Client
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Customer
             </th>
             <th
               scope="col"
@@ -247,6 +253,9 @@ const AdminEvents = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {event.location.length > 0 ? event.location : "-"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {event.user.clientName}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {event.user.name}
