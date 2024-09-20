@@ -397,8 +397,6 @@ export default function WeddingImage() {
               className="videoContainer"
               style={{
                 display: !inputUrl ? "none" : "flex",
-                width: "inherit",
-                height: "inherit",
               }}
             >
               <div

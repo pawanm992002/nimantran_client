@@ -233,6 +233,7 @@ const UsersTable = () => {
                 <input
                   type="number"
                   id="credits"
+                  min={0}
                   value={creditsToTransfer}
                   onChange={(e) => setCreditsToTransfer(e.target.value)}
                   onKeyPress={handleKeyPress}

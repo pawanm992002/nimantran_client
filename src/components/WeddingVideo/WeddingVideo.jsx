@@ -407,7 +407,6 @@ export default function WeddingVideo() {
               className="videoContainer"
               style={{ display: !inputUrl ? "none" : "flex" }}
             >
-              {/* <div className="app"> */}
               <div
                 style={{
                   position: "relative",

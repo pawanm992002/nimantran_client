@@ -49,12 +49,14 @@ const AdminLogin = () => {
             />
           </div>
           <h2>Login</h2>
+          <div className=" relative w-full">
           <input
             type="text"
             placeholder="mobile"
             value={mobile}
             onChange={(e) => setmobile(e.target.value)}
           />
+          </div>
           <div className=" relative w-full">
             <input
               type={`${togglePassword ? "text" : "password"}`}
@@ -63,7 +65,7 @@ const AdminLogin = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <span
-              className=" absolute bottom-1/2 right-2.5 cursor-pointer text-blue-500"
+              className=" absolute cursor-pointer text-blue-500 right-2 top-6"
               onClick={() => settogglePassword((prev) => !prev)}
             >
               {togglePassword ? (
@@ -73,8 +75,9 @@ const AdminLogin = () => {
               )}
             </span>
           </div>
-
+          <div className=" relative w-full ml-5">
           <button onClick={loginUser}>Login</button>
+          </div>
         </div>
       </div>
     </>

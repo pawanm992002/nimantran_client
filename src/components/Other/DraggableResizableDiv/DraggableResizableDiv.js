@@ -32,10 +32,10 @@ const DraggableResizableDiv = ({
     const a = setTimeout(() => {
       setIsAtCenter(false);
     }, 3000);
+    if (data.x >= 0 && data.y >= 0) {
+      setPosition({ x: data.x, y: data.y });
+    }
     if (!type) {
-      if (data.x >= 0 && data.y >= 0) {
-        setPosition({ x: data.x, y: data.y });
-      }
 
       // if (data.y >= widthHeight.h - property?.size?.height) {
       //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });

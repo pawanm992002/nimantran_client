@@ -168,13 +168,13 @@ const AdminTransaction = () => {
                 {transaction._id}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(transaction.transactionDate).toLocaleDateString()}
+                {new Date(transaction.transactionDate).toLocaleString()}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 transfer to {transaction.recieverId.name}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {transaction.amount}
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-red-900">
+                -{transaction.amount}
               </td>
             </tr>
           ))}

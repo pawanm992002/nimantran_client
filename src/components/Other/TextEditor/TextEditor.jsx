@@ -259,7 +259,7 @@ const TextEditor = ({
             id="fontColor"
             value={fontColor}
             onChange={handleStyleChange}
-            style={{ visibility: "hidden", width: 0, height: 0, display: 'none' }}
+            style={{ visibility: "hidden", width: 0, height: 0, margin: 0 }}
           />
         </div>
         <div className="h-9 flex items-center bg-gray-200">
@@ -291,7 +291,7 @@ const TextEditor = ({
             value={backgroundColor}
             onChange={handleStyleChange}
             title="Set background color"
-            style={{ visibility: "hidden", width: 0, height: 0, display: 'none' }}
+            style={{ visibility: "hidden", width: 0, height: 0, margin: 0 }}
           />
           {/* <div> */}
           <button
