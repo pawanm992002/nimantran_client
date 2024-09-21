@@ -123,7 +123,7 @@ const EventsList = () => {
                 <td
                   className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-pointer"
                   onClick={() => {
-                    event.guests && event.guests.length !== 0
+                    event.processingStatus === 'completed'
                       ? navigate(`/event/mediaGrid?eventId=${event._id}`)
                       : navigate(
                           `/event/${event.editType}?eventId=${event._id}`

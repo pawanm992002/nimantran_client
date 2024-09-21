@@ -23,7 +23,15 @@ const DraggableResizableDiv = ({
   const [isAtCenter, setIsAtCenter] = useState(false);
 
   const handleDrag = (e, data) => {
-    setPosition({ x: data.x, y: data.y });
+    if (data.x >= 0 && data.y >= 0) {
+      setPosition({ x: data.x, y: data.y });
+    }
+    // if (data.y >= widthHeight.h - property?.size?.height) {
+    //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
+    // }
+    // if (data.x >= widthHeight.w - property?.size?.width) {
+    //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
+    // }
     if (Math.abs(videoCenter - size?.width / 2 - data.x) < 2) {
       setIsAtCenter(true);
     } else {
@@ -31,29 +39,9 @@ const DraggableResizableDiv = ({
     }
     const a = setTimeout(() => {
       setIsAtCenter(false);
-    }, 3000);
-    if (data.x >= 0 && data.y >= 0) {
-      setPosition({ x: data.x, y: data.y });
-    }
-    if (!type) {
-
-      // if (data.y >= widthHeight.h - property?.size?.height) {
-      //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
-      // }
-      // if (data.x >= widthHeight.w - property?.size?.width) {
-      //   setPosition({ x: widthHeight.w / 2, y: widthHeight.h / 2 });
-      // }
-
-      if (Math.abs(videoCenter - size?.width / 2 - data.x) < 10) {
-        setIsAtCenter(true);
-      } else {
-        setIsAtCenter(false);
-      }
-      const a = setTimeout(() => {
-        setIsAtCenter(false);
-      }, 3000);
-    }
+    }, 4000);
   };
+
   const handleResize = (e, { size, handle }) => {
     if (!type) {
       let newWidth = size.width;

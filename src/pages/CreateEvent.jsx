@@ -22,6 +22,7 @@ const CreateEvent = () => {
   const role = localStorage.getItem("role");
   const customerIdFromLocal = localStorage.getItem("_id");
   const [minDate, setMinDate] = useState("");
+  const customerSearchParams = localStorage.getItem('customerId');
 
   const handleCreateEvent = async (e) => {
     e.preventDefault();
@@ -53,27 +54,31 @@ const CreateEvent = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/client/clientCustomers`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/client/clientCustomers`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-        setCustomerData(response?.data?.customerNamesAndId);
-        setFilteredCustomerData(response?.data?.customerNamesAndId);
-      } catch (error) {
-        console.error("Error while fetching Clients Customer Names :", error);
-        toast.error("Error while fetching Clients Customer Names");
-      }
-    };
-    fetchData();
+      setCustomerData(response?.data?.customerNamesAndId);
+      setFilteredCustomerData(response?.data?.customerNamesAndId);
+    } catch (error) {
+      console.error("Error while fetching Clients Customer Names :", error);
+      toast.error("Error while fetching Clients Customer Names");
+    }
+  };
+  useEffect(() => {
+    if(!customerSearchParams) {
+      fetchData();
+    } else {
+      setSelectedCustomerId(customerSearchParams)
+    }
   }, [token]);
 
   const handleSearch = useCallback(
@@ -99,7 +104,9 @@ const CreateEvent = () => {
   );
 
   useEffect(() => {
+    if(!customerSearchParams) {
     handleSearch(searchTerm);
+    }
   }, [searchTerm, handleSearch]);
 
   const handleCustomerSelection = (customer) => {

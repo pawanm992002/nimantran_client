@@ -171,7 +171,7 @@ const UsersTable = () => {
           {filterData.map((user) => (
             <tr
               key={user._id}
-              // onClick={() => handleCustomerProfile(user._id)}
+              onClick={() => handleCustomerProfile(user._id)}
               className="cursor-pointer"
             >
               <td className="py-2 px-4 border-b text-center border-gray-200">
