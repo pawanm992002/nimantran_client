@@ -27,10 +27,9 @@ const CustomerEvents = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      const customerData = response?.data?.data;
-      setCustomer(customerData);
-      const sortedEvents = sortEvents(customerData?.events || []);
-      setEvents(sortedEvents);
+
+      setEvents(response.data.data);
+      console.log(events);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -41,13 +40,7 @@ const CustomerEvents = () => {
   useEffect(() => {
     fetchEvents();
   }, [id, token]);
-  const sortEvents = (events) => {
-    return events.slice().sort((a, b) => {
-      const dateA = new Date(a.createdAt);
-      const dateB = new Date(b.createdAt);
-      return dateB - dateA;
-    });
-  };
+
   const handleCloseEditModal = () => {
     setShowEditModal(false);
     setSelectedEvent(null);
@@ -79,6 +72,10 @@ const CustomerEvents = () => {
 
   const handleEventCreated = () => {
     fetchEvents();
+  };
+  const handleEditClick = (customerId, event) => {
+    setSelectedEvent(event);
+    setShowEditModal(true);
   };
 
   if (loading) {
@@ -114,7 +111,13 @@ const CustomerEvents = () => {
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Date
+                Media Type
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Date of Organizing
               </th>
               <th
                 scope="col"
@@ -126,7 +129,13 @@ const CustomerEvents = () => {
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Media Type
+                Processing
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Edit
               </th>
             </tr>
           </thead>
@@ -142,15 +151,37 @@ const CustomerEvents = () => {
                   {event.eventName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {event.editType}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {event.dateOfOrganising
                     ? new Date(event.dateOfOrganising).toLocaleDateString()
                     : "-"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {event.location}
+                  {event.location ? event.location : "-"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {event.editType}
+                  {event.processingStatus}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <svg
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6 cursor-pointer text-gray-500 hover:text-blue-500 transition duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditClick(event.customerId, event);
+                    }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                    />
+                  </svg>
                 </td>
               </tr>
             ))}

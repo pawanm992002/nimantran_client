@@ -261,7 +261,7 @@ const MediaGrid = () => {
                     <div className="bg-white p-4 rounded-lg relative">
                       <button
                         onClick={() => setSelectedMedia("")}
-                        className="absolute top-4 right-4 text-black bg-gray-200 hover:bg-gray-300 rounded-full flex justify-center items-center w-8 h-8"
+                        className="absolute top-4 right-4 text-black bg-gray-200 hover:bg-gray-300 rounded-full flex justify-center items-center size-8 z-30"
                       >
                         &times;
                       </button>
@@ -281,6 +281,7 @@ const MediaGrid = () => {
                       )}
                       {mediaItems.editType === "cardEdit" && (
                         <div
+                          className="no-scrollbar"
                           style={{
                             position: "relative",
                             display: "inline-block",

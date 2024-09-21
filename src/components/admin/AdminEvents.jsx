@@ -188,7 +188,7 @@ const AdminEvents = () => {
           <tr>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center"
             >
               Event Name
               <input
@@ -197,6 +197,12 @@ const AdminEvents = () => {
                 placeholder="Search"
                 onChange={(event) => setsearchItem(event.target.value)}
               />
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              MEDIA TYPE
             </th>
             <th
               scope="col"
@@ -226,6 +232,12 @@ const AdminEvents = () => {
               scope="col"
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
+              PROCESSING
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               Edit
             </th>
             {/* <th
@@ -246,6 +258,9 @@ const AdminEvents = () => {
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {event.eventName}
               </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {event.editType}
+              </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {event.dateOfOrganising
                   ? new Date(event.dateOfOrganising).toLocaleDateString()
@@ -259,6 +274,9 @@ const AdminEvents = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {event.user.name}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {event.processingStatus ? event.processingStatus : "-"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <svg
