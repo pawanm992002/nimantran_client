@@ -350,7 +350,7 @@ const CustomerTable = () => {
                       className={`px-4 py-2 text-center ${
                         request.status === "pending"
                           ? "text-yellow-600"
-                          : request.status === "accepted"
+                          : request.status === "completed"
                           ? "text-green-600"
                           : "text-red-600"
                       }`}

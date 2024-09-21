@@ -22,6 +22,7 @@ const Transactions = () => {
 
   const handleSortToggle = (sortType) => {
     if (sortType === "date") {
+      setTransactions((prevTransactions) => [...prevTransactions].reverse());
       setSortByDate(!sortByDate);
       setSortByCredits(false);
     } else if (sortType === "credits") {
@@ -39,7 +40,7 @@ const Transactions = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-     console.log(response.data);
+
       setTransactions(response.data.transaction);
       setcredits(response.data.credits.credits);
     } catch (err) {
@@ -90,15 +91,9 @@ const Transactions = () => {
   });
 
   // Sort transactions
-  const sortedTransactions = formattedTransactions.sort((a, b) => {
-    if (sortByDate) {
-      return new Date(a.date) - new Date(b.date);
-    } else if (sortByCredits) {
-      return b.amount - a.amount; // Sort by numerical amount (descending for credit)
-    } else {
-      return new Date(b.date) - new Date(a.date); // Default sort by recent
-    }
-  });
+  const sortedTransactions = sortByCredits
+    ? [...formattedTransactions].sort((a, b) => b.amount - a.amount)
+    : formattedTransactions;
 
   const filteredTransactions = sortedTransactions.filter(
     (transaction) =>
@@ -115,7 +110,7 @@ const Transactions = () => {
   }
 
   if (error) return <div>Error: {error}</div>;
-  console.log(credits);
+
   return (
     <div className="w-full flex flex-col no-scrollbar h-full mx-auto">
       <div className="w-full flex items-center justify-between px-3 py-2">
