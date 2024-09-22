@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import CreateCustomerJSX from "../components/Other/CreateCustomerModal/CreateCustomerModal";
 import debounce from "lodash/debounce"; // Import debounce from lodash
-
+import { Country, State, City } from "country-state-city";
 const CreateEvent = () => {
   const navigate = useNavigate();
   const [eventName, setEventName] = useState("");
@@ -22,8 +22,52 @@ const CreateEvent = () => {
   const role = localStorage.getItem("role");
   const customerIdFromLocal = localStorage.getItem("_id");
   const [minDate, setMinDate] = useState("");
-  const customerSearchParams = localStorage.getItem('customerId');
+  const customerSearchParams = localStorage.getItem("customerId");
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  useEffect(() => {
+    // Load countries when component mounts
+    const allCountries = Country.getAllCountries();
+    setCountries(allCountries);
+  }, []);
 
+  const handleCountryChange = (e) => {
+    const countryCode = e.target.value;
+    setSelectedCountry(countryCode);
+    setSelectedState(""); // Reset state and city
+    setSelectedCity("");
+    setLocation(""); // Reset location
+    const allStates = State.getStatesOfCountry(countryCode);
+    setStates(allStates);
+  };
+
+  const handleStateChange = (e) => {
+    const stateCode = e.target.value;
+    setSelectedState(stateCode);
+    setSelectedCity("");
+    setLocation(""); // Reset location
+    const allCities = City.getCitiesOfState(selectedCountry, stateCode);
+    setCities(allCities);
+  };
+
+  const handleCityChange = (e) => {
+    const cityName = e.target.value;
+    setSelectedCity(cityName);
+    // Set the location as a combination of country, state, and city
+    if (selectedCountry && selectedState) {
+      const countryName = countries.find(
+        (country) => country.isoCode === selectedCountry
+      )?.name;
+      const stateName = states.find(
+        (state) => state.isoCode === selectedState
+      )?.name;
+      setLocation(`${cityName}, ${stateName}, ${countryName}`);
+    }
+  };
   const handleCreateEvent = async (e) => {
     e.preventDefault();
     try {
@@ -74,10 +118,10 @@ const CreateEvent = () => {
     }
   };
   useEffect(() => {
-    if(!customerSearchParams) {
+    if (!customerSearchParams) {
       fetchData();
     } else {
-      setSelectedCustomerId(customerSearchParams)
+      setSelectedCustomerId(customerSearchParams);
     }
   }, [token]);
 
@@ -104,8 +148,8 @@ const CreateEvent = () => {
   );
 
   useEffect(() => {
-    if(!customerSearchParams) {
-    handleSearch(searchTerm);
+    if (!customerSearchParams) {
+      handleSearch(searchTerm);
     }
   }, [searchTerm, handleSearch]);
 
@@ -137,23 +181,23 @@ const CreateEvent = () => {
   return (
     <div>
       <h2 className="text-3xl font-semibold mb-6 text-center">Create Event</h2>
-      <div className="flex items-center h-full">
+      <div className="flex items-center h-full w-full">
         <form
           onSubmit={(e) => {
             validateCustomerSelection();
             if (selectedCustomerId) handleCreateEvent(e);
           }}
-          className="mx-auto border bg-white p-6 rounded-lg shadow-lg grid grid-cols-2 gap-x-4 items-start"
+          className="mx-auto border bg-white p-6 rounded-lg shadow-lg grid grid-cols-2 gap-x-4 items-start w-full"
         >
           <div className="mb-6">
-            <label className="block text-lg font-medium text-gray-700">
+            <label className="mx-0 text-lg font-medium text-gray-700">
               Event Name <span className="text-red-600">*</span>
             </label>
             <input
               type="text"
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}
-              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+              className="mt-1 mx-0 w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
               required
             />
           </div>
@@ -184,7 +228,7 @@ const CreateEvent = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onClick={() => setInputFieldActive(true)}
                 value={searchTerm}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 outline-none  ${
+                className={`mt-1 mx-0 w-full border rounded-md shadow-sm p-2 outline-none  ${
                   isInvalidCustomer
                     ? "focus:outline-red-500"
                     : "focus:outline-blue-500"
@@ -212,7 +256,7 @@ const CreateEvent = () => {
             </div>
           )}
           <div className="mb-6">
-            <label className="block text-lg font-medium text-gray-700">
+            <label className="mx-0 text-lg font-medium text-gray-700">
               Date of Organizing
             </label>
             <input
@@ -220,22 +264,12 @@ const CreateEvent = () => {
               min={minDate}
               value={dateOfOrganising}
               onChange={(e) => setDateOfOrganising(e.target.value)}
-              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+              className="mt-1 mx-0 w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
             />
           </div>
-          <div className="mb-6">
-            <label className="block text-lg font-medium text-gray-700">
-              Location
-            </label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="mt-1 block w-full border rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-lg font-medium text-gray-700">
+
+          <div className="mb-6 ">
+            <label className="mx-0 text-lg font-medium text-gray-700">
               Edit Type
             </label>
             <select
@@ -248,13 +282,66 @@ const CreateEvent = () => {
               <option value="cardEdit">Pdf Edit</option>
             </select>
           </div>
-          <div className="flex items-center w-full h-full mt-1">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md w-full"
-            >
-              Create Event
-            </button>
+
+          <div className="flex gap-x-2">
+            <div className="">
+              <label className="block text-lg font-medium text-gray-700">
+                Location
+              </label>
+              <div className="flex gap-x-2 ">
+                <select
+                  onChange={handleCountryChange}
+                  value={selectedCountry}
+                  className="py-2 px-1 rounded-md max-w-28"
+                >
+                  <option value="">Select Country</option>
+                  {countries.map((country) => (
+                    <option key={country.isoCode} value={country.isoCode}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  onChange={handleStateChange}
+                  value={selectedState}
+                  disabled={!selectedCountry}
+                  className="py-2 px-1 rounded-md max-w-28 outline-1 outline-gray-800 bg-gray-200"
+                >
+                  <option value="">Select State</option>
+                  {states.map((state) => (
+                    <option key={state.isoCode} value={state.isoCode}>
+                      {state.name}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  onChange={handleCityChange}
+                  value={selectedCity}
+                  disabled={!selectedState}
+                  className="py-2 px-1 rounded-md max-w-28 outline-1 outline-gray-800 bg-gray-200"
+                >
+                  <option value="">Select City</option>
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className=" w-full flex items-center justify-end">
+            <div className="flex items-center justify-end w-full mt-6">
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md w-full"
+              >
+                Create Event
+              </button>
+            </div>
           </div>
         </form>
       </div>
