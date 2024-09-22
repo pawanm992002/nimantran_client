@@ -86,7 +86,7 @@ export default function WeddingVideo() {
       fontSize: 20,
       fontStyle: "normal",
       fontWeight: "normal",
-      position: { x: 0, y: 0 },
+      position: { x: 10, y: 10 },
       size: { width: 150, height: 80 },
       startTime: 0,
       text: `{name}`,
