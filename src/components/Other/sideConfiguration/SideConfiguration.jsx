@@ -92,13 +92,12 @@ export function SideConfiguration({
           Show Preview
         </button>
 
-        {
-          <a onClick={() => downloadFilesAsZip()}>
-            <button className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2 w-full">
-              Download Sample's
-            </button>
-          </a>
-        }
+        <a onClick={() => downloadFilesAsZip()}>
+          <button className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2 w-full">
+            Download Sample's
+          </button>
+        </a>
+
         <button
           type="button"
           className="bg-slate-50 rounded-md m-1 text-[#570000] hover:bg-[#c44141] font-bold text-sm p-2 w-full"
@@ -109,7 +108,7 @@ export function SideConfiguration({
       </div>
 
       <h2>Text Configuration</h2>
-      <div className='max-h-56 overflow-auto gap-1 flex flex-col no-scrollbar'>
+      <div className="max-h-56 overflow-auto gap-1 flex flex-col no-scrollbar">
         {texts.length > 0 ? (
           texts?.map(
             ({
@@ -126,9 +125,14 @@ export function SideConfiguration({
               backgroundColor,
               hidden,
             }) => (
-              <div key={id} className="w-full relative bg-slate-50 p-2 rounded-md">
+              <div
+                key={id}
+                className="w-full relative bg-slate-50 p-2 rounded-md"
+              >
                 <div className="flex gap-6 items-center justify-between">
-                  <span className="text-[12px] italic whitespace-nowrap">Text Id : {id}</span>
+                  <span className="text-[12px] italic whitespace-nowrap">
+                    Text Id : {id}
+                  </span>
                   <span className="flex gap-3">
                     {hidden ? (
                       <label
@@ -246,14 +250,42 @@ export const EditingTopBar = ({
     if (comp === "Image") return "image/*";
     if (comp === "Pdf") return "application/pdf";
   };
+
+  const [addGuestListModel, setAddGuestListModel] = useState(false);
+  const [contacts, setContacts] = useState([{ name: "", mobileNumber: "" }]);
+
+  // Handle input change in each text field
+  const handleInputChange = (index, event) => {
+    const { name, value } = event.target;
+    const updatedContacts = [...contacts];
+    updatedContacts[index][name] = value;
+    setContacts(updatedContacts);
+  };
+
+  // Add a new text field row
+  const handleAddField = () => {
+    if (
+      contacts?.at(contacts.length - 1).name === "" ||
+      contacts?.at(contacts.length - 1).mobileNumber === ""
+    ) {
+      return;
+    }
+    setContacts([...contacts, { name: "", mobileNumber: "" }]);
+  };
+
+  // Remove a specific field row
+  const handleRemoveField = (index) => {
+    const updatedContacts = contacts.filter((_, i) => i !== index);
+    setContacts(updatedContacts);
+  };
+
   return (
     <form className="sidebar">
       <label
         className="custom-file-upload"
-        onChange={handleGuestNamesChange}
-        onClick={() => setCountModelOpenNumber(1)}
+        onClick={() => setAddGuestListModel(true)}
       >
-        <input type="file" accept="text/*" />
+        {/* <input type="file" accept="text/*" /> */}
         <svg
           // xmlns="http://www.w3.org/2000/svg"
           height="24px"
@@ -263,8 +295,158 @@ export const EditingTopBar = ({
         >
           <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h360v80H200v560h560v-360h80v360q0 33-23.5 56.5T760-120H200Zm120-160v-80h320v80H320Zm0-120v-80h320v80H320Zm0-120v-80h320v80H320Zm360-80v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z" />
         </svg>
-        <span className="text-sm ml-1">Upload Guest List</span>
+        <span className="text-sm ml-1">Add Guest List</span>
       </label>
+
+      {addGuestListModel && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50 z-[99]">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex items-center">
+              <h2 className="text-2xl font-semibold justify-between w-full">
+                Uploaded CSV
+              </h2>
+              <span
+                className="font-semibold text-2xl"
+                onClick={() => setAddGuestListModel(false)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              </span>
+            </div>
+            <div className="container mx-auto mt-3 h-96 overflow-y-auto no-scrollbar">
+              <label
+                className="custom-file-upload mx-auto mb-2"
+                onChange={(e) => {
+                  handleGuestNamesChange(e, false, null);
+                  setAddGuestListModel(false);
+                }}
+                onClick={() => setCountModelOpenNumber(1)}
+              >
+                <input type="file" accept="text/*" />
+                <svg
+                  // xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#e8eaed"
+                >
+                  <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h360v80H200v560h560v-360h80v360q0 33-23.5 56.5T760-120H200Zm120-160v-80h320v80H320Zm0-120v-80h320v80H320Zm0-120v-80h320v80H320Zm360-80v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z" />
+                </svg>
+                <span className="text-sm ml-1">Upload Guest List</span>
+              </label>
+              <div className="flex flex-col mt-2 items-center border-t-2 pt-1">
+                <h2 className="text-lg bold underline mb-2">
+                  Add Guest Manually
+                </h2>
+
+                {/* Table format for name and number fields */}
+                <table border="1" style={{ width: "100%" }}>
+                  <thead>
+                    <tr>
+                      <th className="w-28">Name</th>
+                      <th className="w-28">Mobile Number</th>
+                      <th className="w-28">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {contacts.map((contact, index) => (
+                      <tr key={index}>
+                        <td>
+                          <input
+                            className="w-28 text-center"
+                            type="text"
+                            name="name"
+                            placeholder="Name"
+                            value={contact.name}
+                            onChange={(e) => handleInputChange(index, e)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="w-28 text-center"
+                            type="text"
+                            name="mobileNumber"
+                            placeholder="Mobile Number"
+                            value={contact.mobileNumber}
+                            onChange={(e) => handleInputChange(index, e)}
+                          />
+                        </td>
+                        <td className="text-center">
+                          {/* Optional remove button to remove the contact */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveField(index)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="size-6"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M12 9.75 14.25 12m0 0 2.25 2.25M14.25 12l2.25-2.25M14.25 12 12 14.25m-2.58 4.92-6.374-6.375a1.125 1.125 0 0 1 0-1.59L9.42 4.83c.21-.211.497-.33.795-.33H19.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-9.284c-.298 0-.585-.119-.795-.33Z"
+                              />
+                            </svg>
+                          </button>
+                          {index === contacts?.length - 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleAddField()}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="size-6"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                />
+                              </svg>
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {contacts.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      handleGuestNamesChange(e, true, contacts);
+                      setAddGuestListModel(false);
+                    }}
+                    className="custom-file-upload mx-auto mb-2 text-sm"
+                  >
+                    Save
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <label
         className="custom-file-upload"

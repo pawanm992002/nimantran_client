@@ -39,7 +39,6 @@ export default function WeddingVideo() {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const parentRef = useRef();
   const [pdfFile, setPdfFile] = useState(null);
-  const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
   const [count, setCount] = useState(1);
@@ -58,7 +57,6 @@ export default function WeddingVideo() {
     h: 0,
   });
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  const [zipUrl, setZipUrl] = useState("");
   const [isSample, setIsSample] = useState(true);
   const [fileName, setFileName] = useState("");
 
@@ -204,21 +202,23 @@ export default function WeddingVideo() {
     setTexts([...others, details]);
   };
 
-  const handleGuestNamesChange = (event) => {
-    event.preventDefault();
-    const file = event.target.files[0];
-    setGuestNames(file);
+  const handleGuestNamesChange = (event, isManual, contacts) => {
+    if (isManual) {
+      setJsonData(contacts);
+    } else {
+      event.preventDefault();
+      const file = event.target.files[0];
 
-    if (file) {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          setJsonData(results.data);
-        },
-      });
+      if (file) {
+        Papa.parse(file, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            setJsonData(results.data);
+          },
+        });
+      }
     }
-
     setShowGuestList(true);
   };
 
@@ -242,14 +242,9 @@ export default function WeddingVideo() {
         return toast.error("Add the Text Box");
       }
 
-      if (!guestNames && !isSample) {
+      if (!isSample && jsonData?.length <= 0) {
         setIsLoading(false);
-        return toast.error("Please Enter Guest List");
-      }
-
-      if (jsonData?.length <= 0) {
-        setIsLoading(false);
-        return toast.error("No Guests are Present in CSV");
+        return toast.error("Please Add into Guest List");
       }
 
       if (!jsonData[0]?.name || !jsonData[0].mobileNumber) {
@@ -315,7 +310,7 @@ export default function WeddingVideo() {
 
       xhr.send(
         JSON.stringify({
-          guestNames: jsonData,
+          guestNames: !isSample && jsonData,
           textProperty: texts,
           scalingFont,
           scalingW,
