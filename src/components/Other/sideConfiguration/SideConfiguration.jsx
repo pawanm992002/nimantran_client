@@ -264,21 +264,55 @@ export const EditingTopBar = ({
 
   // Add a new text field row
   const handleAddField = () => {
+    const lastContact = contacts[contacts.length - 1];
     if (
-      contacts?.at(contacts.length - 1).name === "" ||
-      contacts?.at(contacts.length - 1).mobileNumber === ""
+      lastContact.name.trim() === "" ||
+      lastContact.mobileNumber.trim() === ""
     ) {
+      toast.error(
+        "Please fill in both name and mobile number before adding a new field."
+      );
       return;
     }
     setContacts([...contacts, { name: "", mobileNumber: "" }]);
   };
 
-  // Remove a specific field row
   const handleRemoveField = (index) => {
+    if (contacts.length <= 1) {
+      toast.error("You must have at least one contact.");
+      return;
+    }
     const updatedContacts = contacts.filter((_, i) => i !== index);
     setContacts(updatedContacts);
   };
+  const validateContacts = () => {
+    for (let contact of contacts) {
+      if (contact.name.trim() === "" || contact.mobileNumber.trim() === "") {
+        toast.error("Please fill in all fields before saving.");
+        return false;
+      }
+      if (contact.mobileNumber.length !== 10) {
+        toast.error("Mobile number must be 10 digits long.");
+        return false;
+      }
+    }
+    return true;
+  };
+  const handleSave = (e) => {
+    e.preventDefault();
+    if (validateContacts()) {
+      handleGuestNamesChange(e, true, contacts);
+      setAddGuestListModel(false);
+      toast.success("Guest list saved successfully!");
+    }
+  };
 
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+    }
+  };
   return (
     <form className="sidebar">
       <label
@@ -371,6 +405,7 @@ export const EditingTopBar = ({
                             placeholder="Name"
                             value={contact.name}
                             onChange={(e) => handleInputChange(index, e)}
+                            required
                           />
                         </td>
                         <td>
@@ -381,6 +416,11 @@ export const EditingTopBar = ({
                             placeholder="Mobile Number"
                             value={contact.mobileNumber}
                             onChange={(e) => handleInputChange(index, e)}
+                            onKeyPress={handleKeyPress}
+                            pattern="^[0-9]*$"
+                            title="Please enter a valid 10-digit mobile number."
+                            maxLength="10"
+                            required
                           />
                         </td>
                         <td className="text-center">
@@ -388,6 +428,7 @@ export const EditingTopBar = ({
                           <button
                             type="button"
                             onClick={() => handleRemoveField(index)}
+                            disabled={contacts.length === 1}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -433,10 +474,7 @@ export const EditingTopBar = ({
                 {contacts.length > 0 && (
                   <button
                     type="button"
-                    onClick={(e) => {
-                      handleGuestNamesChange(e, true, contacts);
-                      setAddGuestListModel(false);
-                    }}
+                    onClick={handleSave}
                     className="custom-file-upload mx-auto mb-2 text-sm"
                   >
                     Save
