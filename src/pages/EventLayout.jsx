@@ -44,8 +44,8 @@ const EventLayout = () => {
     if (currentStep >= step) {
       switch (step) {
         case 1:
-          navigate(`/event/imageEdit?eventId=${eventId}`);
-          break;
+          // navigate(`/event/imageEdit?eventId=${eventId}`);
+          // break;
         case 2:
           navigate(`/event/mediaGrid?eventId=${eventId}`);
           break;

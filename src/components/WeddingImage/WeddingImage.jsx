@@ -163,7 +163,7 @@ export default function WeddingImage() {
         setIsLoading(false);
         return toast.error("Add the Text Box");
       }
-      
+
       if (!isSample && jsonData?.length <= 0) {
         setIsLoading(false);
         return toast.error("Please Add into Guest List");
@@ -284,12 +284,12 @@ export default function WeddingImage() {
       setTexts(data.texts);
 
       const fileName = `inputFile.${
-        data.inputFile
-          .split("/")
-          .pop()
-          .split("#")[0]
-          .split("?")[0]
-          .split(".")[1]
+        data?.inputFile
+          ?.split("/")
+          ?.pop()
+          ?.split("#")[0]
+          ?.split("?")[0]
+          ?.split(".")[1]
       }`;
       setFileName(fileName);
 

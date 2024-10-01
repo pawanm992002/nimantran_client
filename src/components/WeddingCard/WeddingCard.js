@@ -136,11 +136,11 @@ export default function WeddingVideo() {
 
       const fileName = `inputFile.${
         data.inputFile
-          .split("/")
-          .pop()
-          .split("#")[0]
-          .split("?")[0]
-          .split(".")[1]
+          ?.split("/")
+          ?.pop()
+          ?.split("#")[0]
+          ?.split("?")[0]
+          ?.split(".")[1]
       }`;
       setFileName(fileName);
 

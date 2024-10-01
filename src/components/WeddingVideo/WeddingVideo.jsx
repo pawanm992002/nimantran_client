@@ -188,12 +188,12 @@ export default function WeddingVideo() {
       setInputUrl(data.inputFile);
 
       const fileName = `inputFile.${
-        data.inputFile
-          .split("/")
-          .pop()
-          .split("#")[0]
-          .split("?")[0]
-          .split(".")[1]
+        data?.inputFile
+          ?.split("/")
+          ?.pop()
+          ?.split("#")[0]
+          ?.split("?")[0]
+          ?.split(".")[1]
       }`;
       setFileName(fileName);
 
