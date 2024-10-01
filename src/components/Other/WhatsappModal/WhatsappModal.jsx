@@ -11,21 +11,68 @@ const WhatsappModal = ({
   const token = localStorage.getItem("token");
   const [response, setResponse] = useState("");
   const [qrCode, setQrCode] = useState(null);
+  const [status, setStatus] = useState("");
 
-  const generateQR = async () => {
-    try {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/whatsapp/generate-qr`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+  const generateQR = () => {
+    const xhr = new XMLHttpRequest();
 
-      setQrCode(data.qrCode);
-    } catch (error) {
-      toast.error("QR is not Fetched");
-    }
+    // Define the event to handle incoming data from the server
+    xhr.onprogress = () => {
+      const responseText = xhr.responseText.trim();
+      const responses = responseText.split("\n\n"); // SSE events are separated by double newline
+
+      if (responseText.startsWith("status: ")) {
+        responses.forEach((line) => {
+          if (line.startsWith("qrCode: ")) {
+            setQrCode(line.replace("qrCode: ", "").trim()); // Update your state with the received QR code
+          }
+
+          if (line.startsWith("status: ")) {
+            setStatus(line.replace("status: ", "").trim());
+          }
+
+          if (line.startsWith("error: ")) {
+            setStatus(line.replace("error: ", "").trim());
+          }
+
+          if (line.startsWith("complete: ")) {
+            setStatus(line.replace("complete: ", "").trim());
+          }
+
+        });
+      }
+    };
+
+    // Open the connection with your backend server (SSE)
+    xhr.open(
+      "GET",
+      `${process.env.REACT_APP_BACKEND_URL}/whatsapp/generate-qr?eventId=${eventId}`,
+      true
+    );
+
+    // Set the Authorization header
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.setRequestHeader("Accept", "text/event-stream");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    // Send the request
+    xhr.send();
   };
+
+  // const generateQR = async () => {
+  //   try {
+  //     const { data } = await axios.get(
+  //       `${process.env.REACT_APP_BACKEND_URL}/whatsapp/generate-qr?eventId=${eventId}`,
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       }
+  //     );
+
+  //     console.log('......................', data)
+  //     setQrCode(data.qrCode);
+  //   } catch (error) {
+  //     toast.error("QR is not Fetched");
+  //   }
+  // };
 
   // useEffect(() => {
   //   generateQR();
@@ -162,7 +209,7 @@ const WhatsappModal = ({
                   className="text-sm text-gray-800 hover:text-gray-500 cursor-pointer"
                   onClick={() => generateQR()}
                 >
-                  (Show QR)
+                  (Show QR): {status}
                 </span>
                 {qrCode ? (
                   <img
