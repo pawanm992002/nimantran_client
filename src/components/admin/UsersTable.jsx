@@ -30,10 +30,25 @@ const UsersTable = () => {
     }
   };
 
-  const handleCustomerProfile = (id) => {
+  // const handleCustomerProfile = (id) => {
+  //   if (activeTab === "customer") {
+  //     localStorage.setItem("customerId", id);
+  //     navigate(`/customer/profile?customerId=${id}`);
+  //   }
+  // };
+  // const handleClientProfile = (id) => {
+  //   if (activeTab === "client") {
+  //     localStorage.setItem("clientId", id);
+  //     navigate(`/client/profile?clientId=${id}`);
+  //   }
+  // };
+  const handleProfile = (id, role) => {
     if (activeTab === "customer") {
       localStorage.setItem("customerId", id);
       navigate(`/customer/profile?customerId=${id}`);
+    } else {
+      // localStorage.setItem("clientId", id);
+      // navigate(`/client/dashboard?clientId=${id}`);
     }
   };
 
@@ -171,9 +186,10 @@ const UsersTable = () => {
           {filterData.map((user) => (
             <tr
               key={user._id}
-              onClick={() => handleCustomerProfile(user._id)}
+              onClick={() => handleProfile(user._id, user.role)}
               className="cursor-pointer"
             >
+              {console.log(user.role)}
               <td className="py-2 px-4 border-b text-center border-gray-200">
                 {user.name}
               </td>

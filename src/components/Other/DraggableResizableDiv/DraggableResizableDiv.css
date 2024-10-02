@@ -3,8 +3,10 @@
   border: 1px solid #000;
   /* z-index: 1; */
   position: absolute !important;
-  
+
 }
+
+
 
 .resizable-box {
   display: flex;

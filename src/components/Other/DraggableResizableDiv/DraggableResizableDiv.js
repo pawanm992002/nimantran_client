@@ -23,6 +23,9 @@ const DraggableResizableDiv = ({
   const [isAtCenter, setIsAtCenter] = useState(false);
 
   const handleDrag = (e, data) => {
+    if (e.target.className.includes("react-resizable-handle")) {
+      return false; // Prevent dragging when resizing
+    }
     if (data.x >= 0 && data.y >= 0) {
       setPosition({ x: data.x, y: data.y });
     }
@@ -121,42 +124,24 @@ const DraggableResizableDiv = ({
   }, [property.startTime, property.duration, videoRef]);
 
   return (
-    <Draggable
-      key={property.id}
-      handle=".handle"
-      onDrag={handleDrag}
-      position={position}
-    >
+    <Draggable key={property.id} onDrag={handleDrag} position={position}>
       <div
-        className="draggable-container"
+        className="draggable-container "
         onClick={handleContextMenu}
         style={{
           zIndex: openContextMenuId === property.id ? 40 : 1,
           display: property.hidden ? "none" : "inline-block",
         }}
       >
-        <div
-          className="handle"
-          style={{
-            cursor: "move",
-            background: "black",
-            // padding: "5px",
-            borderBottom: "1px solid #ccc",
-            fontSize: "12px",
-            height: "4px",
-            width: "100%",
-          }}
-        ></div>
         <ResizableBox
           width={size?.width}
           height={size?.height}
           minConstraints={[100, 40]}
-          // maxConstraints={[400, 250]}
           onResizeStop={handleResize}
-          className="resizable-box"
+          className="resizable-box "
         >
           <div
-            className="editable-box"
+            className="editable-box "
             style={{
               display: visible ? "flex" : "none",
               background: `${property.backgroundColor}`,
