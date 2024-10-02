@@ -174,7 +174,7 @@ const AdminTransaction = () => {
                 transfer to {transaction.recieverId.name}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-red-900">
-                -{transaction.amount}
+                {transaction.amount}
               </td>
             </tr>
           ))}
