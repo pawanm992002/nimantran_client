@@ -16,6 +16,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SampleGuestList } from "../../constants";
 import { debounce } from "loadsh";
 import axios from "axios";
+import { v4 as uuid } from 'uuid';
 
 export default function WeddingImage() {
   const token = localStorage.getItem("token");
@@ -34,10 +35,8 @@ export default function WeddingImage() {
   const [fileName, setFileName] = useState("");
   const [jsonData, setJsonData] = useState(SampleGuestList);
   const [processedVideoUrls, setProcessedVideoUrls] = useState([]);
-  // const [guestNames, setGuestNames] = useState(null);
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
-  const [count, setCount] = useState(1);
   const [selectedText, setSelectedText] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
@@ -54,13 +53,14 @@ export default function WeddingImage() {
     w: 0,
     h: 0,
   });
+
   const createTextDiv = () => {
     if (!inputUrl) {
       toast.error("Please First Upload Image");
       return;
     }
     const newText = {
-      id: count,
+      id: uuid(),
       duration: 5,
       fontColor: "#000000",
       fontFamily: "Josefin Slab",
@@ -74,8 +74,8 @@ export default function WeddingImage() {
       backgroundColor: "none",
       underline: "none",
       hidden: false,
+      backgroundOpacity: "1",
     };
-    setCount(count + 1);
     setTexts([...texts, newText]);
   };
 
@@ -116,7 +116,6 @@ export default function WeddingImage() {
       videoPlayer.src = url;
     }
     setFileLoading(false);
-    // setVideo(event.target.files[0]);
   };
 
   const takeTextDetails = (details) => {
@@ -128,7 +127,7 @@ export default function WeddingImage() {
     if (isManual) {
       setJsonData(contacts);
     } else {
-      event.preventDefault();
+      // event.preventDefault();
       const file = event.target.files[0];
 
       if (file) {
@@ -248,7 +247,7 @@ export default function WeddingImage() {
   };
 
   useEffect(() => {
-    if (texts.length !== 0) {
+    // if (texts.length !== 0) {
       setSavingState("saving");
       var debouncedFetch = debounce(async () => {
         try {
@@ -259,16 +258,14 @@ export default function WeddingImage() {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-        } catch (error) {
-          console.error("Error saving texts:", error);
-        }
+        } catch (error) {}
         setSavingState("saved");
       }, 3000);
       debouncedFetch();
       return () => {
         debouncedFetch.cancel();
       };
-    }
+    // }
   }, [texts]);
 
   var getText = async () => {
@@ -361,6 +358,7 @@ export default function WeddingImage() {
             handleVideoUpload={handleVideoUpload}
             createTextDiv={createTextDiv}
             comp={"Image"}
+            jsonData={jsonData}
           />
 
           <div className="mainbar">

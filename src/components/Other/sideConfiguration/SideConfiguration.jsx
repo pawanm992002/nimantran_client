@@ -1,6 +1,6 @@
 import "./SideConfiguration.css";
 import JSZip from "jszip";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -131,7 +131,7 @@ export function SideConfiguration({
               >
                 <div className="flex gap-6 items-center justify-between">
                   <span className="text-[12px] italic whitespace-nowrap">
-                    Text Id : {id}
+                    Text Box
                   </span>
                   <span className="flex gap-3">
                     {hidden ? (
@@ -244,6 +244,7 @@ export const EditingTopBar = ({
   handleVideoUpload,
   createTextDiv,
   comp,
+  jsonData,
 }) => {
   const mediaType = () => {
     if (comp === "Video") return "video/*";
@@ -252,7 +253,11 @@ export const EditingTopBar = ({
   };
 
   const [addGuestListModel, setAddGuestListModel] = useState(false);
-  const [contacts, setContacts] = useState([{ name: "", mobileNumber: "" }]);
+  const [contacts, setContacts] = useState(jsonData);
+
+  useEffect(() => {
+    setContacts(jsonData);
+  }, [jsonData]);
 
   // Handle input change in each text field
   const handleInputChange = (index, event) => {
@@ -291,10 +296,10 @@ export const EditingTopBar = ({
         toast.error("Please fill in all fields before saving.");
         return false;
       }
-      if (contact.mobileNumber.length !== 10) {
-        toast.error("Mobile number must be 10 digits long.");
-        return false;
-      }
+      // if (contact.mobileNumber.length !== 10) {
+      //   toast.error("Mobile number must be 10 digits long.");
+      //   return false;
+      // }
     }
     return true;
   };
@@ -419,7 +424,7 @@ export const EditingTopBar = ({
                             onKeyPress={handleKeyPress}
                             pattern="^[0-9]*$"
                             title="Please enter a valid 10-digit mobile number."
-                            maxLength="10"
+                            // maxLength="10"
                             required
                           />
                         </td>

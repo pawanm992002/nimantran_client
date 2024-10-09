@@ -94,6 +94,7 @@ const DraggableResizableDiv = ({
       startTime: property.startTime,
       duration: property.duration,
       backgroundColor: property.backgroundColor,
+      backgroundOpacity: property.backgroundOpacity,
       transition: property.transition,
       hidden: property.hidden,
       page: property.page,
@@ -145,6 +146,7 @@ const DraggableResizableDiv = ({
             style={{
               display: visible ? "flex" : "none",
               background: `${property.backgroundColor}`,
+              opacity: property.backgroundOpacity
             }}
           >
             <input

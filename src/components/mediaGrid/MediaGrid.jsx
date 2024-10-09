@@ -19,10 +19,9 @@ const MediaGrid = () => {
   const [mediaItems, setMediaItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
-  const [selectedWhatsapp, setSelectedWhatsapp] = useState("");
   const [selectedMedia, setSelectedMedia] = useState("");
-  const [sendMedia, setSendMedia] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
+  const [sendSelectedModal, setSendSelectedModal] = useState([]);
 
   const downloadFilesAsZip = async () => {
     setIsDownloading(true);
@@ -96,9 +95,8 @@ const MediaGrid = () => {
               {openModal && (
                 <WhatsappModal
                   setOpenModal={setOpenModal}
-                  selectedWhatsapp={selectedWhatsapp}
                   eventId={eventId}
-                  sendMedia={sendMedia}
+                  sendSelectedModal={sendSelectedModal}
                 />
               )}
               <div className="flex space-x-4 p-4 bg-white shadow-lg rounded-lg">
@@ -106,8 +104,7 @@ const MediaGrid = () => {
                   className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
                   onClick={() => {
                     setOpenModal(true);
-                    setSelectedWhatsapp("all");
-                    setSendMedia("");
+                    setSendSelectedModal(mediaItems?.guests);
                   }}
                 >
                   <svg
@@ -232,8 +229,7 @@ const MediaGrid = () => {
                       <button
                         onClick={() => {
                           setOpenModal(true);
-                          setSelectedWhatsapp(media.mobileNumber);
-                          setSendMedia(media.link);
+                          setSendSelectedModal([media]);
                         }}
                         className="hover:bg-slate-200 text-[#570000] font-semibold rounded-full h-8 align-middle p-1"
                       >

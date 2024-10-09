@@ -16,6 +16,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SampleGuestList } from "../../constants";
 import { debounce } from "loadsh";
 import axios from "axios";
+import { v4 as uuid } from 'uuid';
 
 export default function WeddingVideo() {
   const navigate = useNavigate();
@@ -33,7 +34,6 @@ export default function WeddingVideo() {
   const [savingState, setSavingState] = useState("saved"); // not saved, saving, saved
   const [texts, setTexts] = useState([]);
   const [openContextMenuId, setOpenContextMenuId] = useState(null);
-  const [count, setCount] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [showGuestList, setShowGuestList] = useState(true);
   const [CountModelOpenNumber, setCountModelOpenNumber] = useState(0);
@@ -61,7 +61,7 @@ export default function WeddingVideo() {
       return;
     }
     const newText = {
-      id: count,
+      id: uuid(),
       duration: 5,
       fontColor: "#000000",
       fontFamily: "Josefin Slab",
@@ -80,9 +80,8 @@ export default function WeddingVideo() {
         name: "Select Transition",
         options: { duration: 0 },
       },
+      backgroundOpacity: "1",
     };
-
-    setCount(count + 1);
     setTexts([...texts, newText]);
   };
 
@@ -152,8 +151,8 @@ export default function WeddingVideo() {
   };
 
   useEffect(() => {
-    setSavingState("saving");
-    if (texts.length !== 0) {
+    // if (texts.length !== 0) {
+      setSavingState("saving");
       var debouncedFetch = debounce(async () => {
         try {
           const response = await axios.post(
@@ -163,16 +162,14 @@ export default function WeddingVideo() {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-        } catch (error) {
-          console.error("Error saving texts:", error);
-        }
+        } catch (error) {}
         setSavingState("saved");
       }, 3000);
       debouncedFetch();
       return () => {
         debouncedFetch.cancel();
       };
-    }
+    // }
   }, [texts]);
 
   var getText = async () => {
@@ -371,6 +368,7 @@ export default function WeddingVideo() {
             handleVideoUpload={handleVideoUpload}
             createTextDiv={createTextDiv}
             comp={"Video"}
+            jsonData={jsonData}
           />
           <div className="mainbar">
             {!inputUrl && (
