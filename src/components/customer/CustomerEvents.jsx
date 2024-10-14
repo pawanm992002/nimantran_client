@@ -29,10 +29,8 @@ const CustomerEvents = () => {
       );
 
       setEvents(response.data.data);
-      console.log(events);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching events:", error);
       setLoading(false);
     }
   };
@@ -154,6 +152,7 @@ const CustomerEvents = () => {
                   {event.editType}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {console.log(event.dateOfOrganising)}
                   {event.dateOfOrganising
                     ? new Date(event.dateOfOrganising).toLocaleDateString()
                     : "-"}

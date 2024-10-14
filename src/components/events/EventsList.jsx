@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
 import EditEventModal from "./EditEventModal";
 import { useNavigate } from "react-router-dom";
 
@@ -24,7 +23,6 @@ const EventsList = () => {
         }
       );
       setEvents(response.data.data.events);
-      console.log(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching events:", error);

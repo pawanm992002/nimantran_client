@@ -19,24 +19,24 @@ const EditProfileCustomer = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  
+  const fetchCustomerDetails = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/customers/customerInfo/${customerId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setFormData(data?.data);
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.response.data.message);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCustomerDetails = async () => {
-      try {
-        const { data } = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/customers/customerInfo/${customerId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setFormData(data?.data);
-        setLoading(false);
-      } catch (error) {
-        toast.error(error.response.data.message);
-        setLoading(false);
-      }
-    };
-
     fetchCustomerDetails();
   }, [customerId, token]);
 
@@ -61,7 +61,6 @@ const EditProfileCustomer = () => {
       toast.success("Customer details updated successfully");
       navigate(`/customer/profile?customerId=${customerId}`);
     } catch (error) {
-      console.error("Error updating customer details:", error);
       toast.error("Error updating customer details");
     }
   };
@@ -93,10 +92,14 @@ const EditProfileCustomer = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   {field.label}
                 </label>
+                {console.log(new Date(formData.dateOfBirth).toLocaleDateString())}
                 <input
                   type={field.type}
                   name={field.name}
-                  value={formData[field.name]}
+                  value={field.name === 'dateOfBirth' ? 
+                    (formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString().split('T')[0] : '') : 
+                    formData[field.name]
+                  }
                   onChange={handleChange}
                   className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />

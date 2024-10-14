@@ -11,6 +11,7 @@ const EditEventModal = ({
   onEventUpdated,
 }) => {
   const eventNameRef = useRef(event?.eventName || "");
+  const role = localStorage.getItem("role");
   const dateOfOrganisingRef = useRef(
     event ? new Date(event.dateOfOrganising).toISOString().split("T")[0] : ""
   );
@@ -37,7 +38,6 @@ const EditEventModal = ({
       onEventUpdated(); // Notify parent component about the update
       onClose(); // Close the modal
     } catch (error) {
-      console.error("Error updating event:", error);
       toast.error("Error updating event");
     }
   };
@@ -49,7 +49,6 @@ const EditEventModal = ({
       <div className="bg-black bg-opacity-50 absolute inset-0"></div>
       <div className="bg-white p-6 rounded-lg relative z-10 w-1/2">
         <h2 className="text-xl font-semibold mb-4">Edit Event</h2>
-        <h3>{event._id}</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700">Event Name</label>
@@ -102,12 +101,14 @@ const EditEventModal = ({
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-            >
-              Save
-            </button>
+            {(role === "client" || role === "admin") && (
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+              >
+                Save
+              </button>
+            )}
           </div>
         </form>
       </div>

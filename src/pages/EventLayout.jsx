@@ -13,8 +13,8 @@ const EventLayout = () => {
   const role = localStorage.getItem("role");
   const customerIdFromLocal = localStorage.getItem("_id");
   const [searchParams] = useSearchParams();
-  console.log(searchParams.get("eventId"));
   const eventId = searchParams.get("eventId");
+
   useEffect(() => {
     const pathname = location.pathname;
     if (pathname.includes("/event/createEvent")) {
@@ -45,13 +45,14 @@ const EventLayout = () => {
       switch (step) {
         case 1:
           // navigate(`/event/imageEdit?eventId=${eventId}`);
-          // break;
+          break;
         case 2:
           navigate(`/event/mediaGrid?eventId=${eventId}`);
           break;
         case 3:
           navigate(`/event/invitationTracker?eventId=${eventId}`);
           break;
+        default:
       }
     }
   };

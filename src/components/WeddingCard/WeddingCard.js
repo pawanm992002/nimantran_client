@@ -16,18 +16,18 @@ import TextEditor from "../Other/TextEditor/TextEditor";
 import ShowSampleModal from "../Other/modal/ShowSampleModal";
 import Papa from "papaparse";
 import Loader from "../Other/Loader/Loader";
-import { app, firebaseStorage } from "../../firebaseConfig";
+import { firebaseStorage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SampleGuestList } from "../../constants";
 import axios from "axios";
 import { debounce } from "loadsh";
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
 export default function WeddingVideo() {
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
   const navigate = useNavigate();
   useEffect(() => {
-    const role = localStorage.getItem("role");
     if (role == null || token == null) {
       navigate("/login");
     }
@@ -68,6 +68,7 @@ export default function WeddingVideo() {
       w: viewport.width,
       h: viewport.height,
     });
+
     setFileLoading(false);
   };
 
@@ -77,8 +78,8 @@ export default function WeddingVideo() {
       return;
     }
     const newText = {
-      id: uuid(),
-      duration: 5,
+      id: "text#" + uuid(),
+      duration: null,
       fontColor: "#000000",
       fontFamily: "Josefin Slab",
       fontSize: 20,
@@ -86,36 +87,75 @@ export default function WeddingVideo() {
       fontWeight: "normal",
       position: { x: 10, y: 10 },
       size: { width: 150, height: 80 },
-      startTime: 0,
+      startTime: null,
       text: `{name}`,
       backgroundColor: "none",
-      hidden: false,
       underline: "none",
+      hidden: false,
       page: currentPage,
-      backgroundOpacity: '1',
+      backgroundOpacity: "1",
+      transition: null,
     };
     setTexts([...texts, newText]);
   };
 
+  const createImageDiv = async (e) => {
+    if (!pdfFile) {
+      toast.error("Please First Upload Image");
+      return;
+    }
+    const uploadedImage = e.target.files[0];
+    const overlayImageId = 'image#'+uuid();
+    if(uploadedImage) {
+      const fileName = `${overlayImageId}.${uploadedImage.name.split('.')[1]}`;
+      let storageRef = ref(firebaseStorage, `eventsImages/${eventId}/${fileName}`);
+      const snapshot = await uploadBytes(storageRef, uploadedImage);
+      const url = await getDownloadURL(snapshot.ref);
+
+      const newOverlayImage = {
+        id: overlayImageId,
+        duration: null,
+        fontColor: null,
+        fontFamily: null,
+        fontSize: null,
+        fontStyle: null,
+        fontWeight: null,
+        position: { x: 10, y: 10 },
+        size: { width: 200, height: 100 },
+        startTime: null,
+        text: null,
+        backgroundColor: null,
+        underline: null,
+        hidden: false,
+        page: currentPage,
+        backgroundOpacity: "1",
+        transition: null,
+        link: url
+      };
+
+      setTexts([...texts, newOverlayImage]);
+    }
+  }
+
   useEffect(() => {
     // if (texts.length !== 0) {
-      setSavingState("saving");
-      var debouncedFetch = debounce(async () => {
-        try {
-          const response = await axios.post(
-            `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
-            { texts, inputFile: pdfFile },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-        } catch (error) {}
-        setSavingState("saved");
-      }, 3000);
-      debouncedFetch();
-      return () => {
-        debouncedFetch.cancel();
-      };
+    setSavingState("saving");
+    var debouncedFetch = debounce(async () => {
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/texts/save?eventId=${eventId}`,
+          { texts, inputFile: pdfFile },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+      } catch (error) {}
+      setSavingState("saved");
+    }, 3000);
+    debouncedFetch();
+    return () => {
+      debouncedFetch.cancel();
+    };
     // }
   }, [texts]);
 
@@ -223,9 +263,8 @@ export default function WeddingVideo() {
       event.preventDefault();
       setIsLoading(true);
       setIsSample(isSample);
-      let resized = document.getElementById("pdfPage");
-      let scalingW = OriginalSize.w / resized.clientWidth;
-      let scalingH = OriginalSize.h / resized.clientHeight;
+      let scalingW = OriginalSize.w / resized.w;
+      let scalingH = OriginalSize.h / resized.h;
       let scalingFont = Math.min(scalingW, scalingH);
 
       if (!pdfFile) {
@@ -362,6 +401,7 @@ export default function WeddingVideo() {
             createTextDiv={createTextDiv}
             comp={"Pdf"}
             jsonData={jsonData}
+            createImageDiv={createImageDiv}
           />
 
           <div className="mainbar">
@@ -419,6 +459,15 @@ export default function WeddingVideo() {
                       renderPage={(props) => {
                         const { canvasLayer, textLayer, annotationLayer } =
                           props;
+
+                        if (
+                          resized.w !== props.width ||
+                          resized.h !== props.height
+                        ) {
+                          setResized({ w: props.width, h: props.height });
+                        }
+
+                        // setResized({ w: props.width, h: props.height });
                         return (
                           <div
                             style={{ width: "100%", height: "100%" }}
@@ -431,6 +480,7 @@ export default function WeddingVideo() {
                             <div
                               style={{ position: "absolute", top: 0, left: 0 }}
                             >
+                              {console.log(texts)}
                               {texts?.map(
                                 (val) =>
                                   val.page === currentPage && (
@@ -443,8 +493,7 @@ export default function WeddingVideo() {
                                       videoRef={parentRef}
                                       takeTextDetails={takeTextDetails}
                                       property={val}
-                                      videoCenter={resized.w / 2}
-                                      widthHeight={resized}
+                                      resizedSize={resized}
                                       type={"pdf"}
                                     />
                                   )

@@ -189,7 +189,6 @@ const UsersTable = () => {
               onClick={() => handleProfile(user._id, user.role)}
               className="cursor-pointer"
             >
-              {console.log(user.role)}
               <td className="py-2 px-4 border-b text-center border-gray-200">
                 {user.name}
               </td>

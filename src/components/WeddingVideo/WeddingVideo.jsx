@@ -11,7 +11,7 @@ import Papa from "papaparse";
 import TextEditor from "../Other/TextEditor/TextEditor";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Loader from "../Other/Loader/Loader";
-import { app, firebaseStorage } from "../../firebaseConfig";
+import { firebaseStorage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SampleGuestList } from "../../constants";
 import { debounce } from "loadsh";
@@ -61,7 +61,7 @@ export default function WeddingVideo() {
       return;
     }
     const newText = {
-      id: uuid(),
+      id: 'text#'+uuid(),
       duration: 5,
       fontColor: "#000000",
       fontFamily: "Josefin Slab",
@@ -81,9 +81,52 @@ export default function WeddingVideo() {
         options: { duration: 0 },
       },
       backgroundOpacity: "1",
+      page: null
     };
     setTexts([...texts, newText]);
   };
+
+  const createImageDiv = async (e) => {
+    if (!inputUrl) {
+      toast.error("Please First Upload Image");
+      return;
+    }
+    const uploadedImage = e.target.files[0];
+    const overlayImageId = 'image#'+uuid();
+    if(uploadedImage) {
+      const fileName = `${overlayImageId}.${uploadedImage.name.split('.')[1]}`;
+      let storageRef = ref(firebaseStorage, `eventsImages/${eventId}/${fileName}`);
+      const snapshot = await uploadBytes(storageRef, uploadedImage);
+      const url = await getDownloadURL(snapshot.ref);
+
+      const newOverlayImage = {
+        id: overlayImageId,
+        duration: 4,
+        fontColor: null,
+        fontFamily: null,
+        fontSize: null,
+        fontStyle: null,
+        fontWeight: null,
+        position: { x: 10, y: 10 },
+        size: { width: 200, height: 100 },
+        startTime: 0,
+        text: null,
+        backgroundColor: null,
+        underline: null,
+        hidden: false,
+        page: null,
+        backgroundOpacity: "1",
+        transition: {
+          type: "none",
+          name: "Select Transition",
+          options: { duration: 0 },
+        },
+        link: url
+      };
+
+      setTexts([...texts, newOverlayImage]);
+    }
+  }
 
   const handleVideoUpload = async (event) => {
     setFileLoading(true);
@@ -369,6 +412,7 @@ export default function WeddingVideo() {
             createTextDiv={createTextDiv}
             comp={"Video"}
             jsonData={jsonData}
+            createImageDiv={createImageDiv}
           />
           <div className="mainbar">
             {!inputUrl && (
@@ -432,9 +476,7 @@ export default function WeddingVideo() {
                       videoRef={videoRef}
                       takeTextDetails={takeTextDetails}
                       property={val}
-                      videoCenter={resized.w / 2}
-                      comp="video"
-                      widthHeight={resized}
+                      resizedSize={resized}
                     />
                   ))}
                 </div>
