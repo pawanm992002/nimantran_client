@@ -106,7 +106,7 @@ const EditProfileCustomer = () => {
               </div>
             ))}
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-start">
             <button
               type="submit"
               className="py-2 px-4 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

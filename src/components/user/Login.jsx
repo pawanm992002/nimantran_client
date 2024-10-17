@@ -4,24 +4,24 @@ import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { auth } from "../../firebaseConfig"; // Firebase config
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import Loader from "../Other/Loader/Loader";
 
 const Login = () => {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState({ mobile: "", password: "" });
-  const [togglePassword, settogglePassword] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [otp, setOtp] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [error, setError] = useState({ mobile: "", password: "", otp: "" });
+  const [togglePassword, setTogglePassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const navigate = useNavigate();
-  const handleKeyPress = (event) => {
-    const charCode = event.which ? event.which : event.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-      event.preventDefault();
-    }
-  };
+
   const handleMobileChange = (e) => {
-    const mobileRegex = /^\d{10}$/;
+    const mobileRegex = /^\d{10,}$/;
     const isValid = mobileRegex.test(e.target.value);
 
     if (isValid) {
@@ -36,85 +36,101 @@ const Login = () => {
     }
   };
 
-  const validatePassword = (value) => {
-    if (value.length < 6) {
-      setError((prevError) => ({
-        ...prevError,
-        password: "Password must be at least 6 characters long",
-      }));
-    } else {
-      setError((prevError) => ({ ...prevError, password: "" }));
+  const onCaptchVerify = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          // size: "invisible",
+          callback: () => handlePhoneLogin(),
+        }
+      );
     }
   };
 
-  const loginUser = async (event) => {
-    setLoading(true)
-    event.preventDefault();
-    if (error.mobile || error.password) {
-      return; // Exit the function if there are errors
+  const handlePhoneLogin = async () => {
+    onCaptchVerify();
+    const appVerifier = window.recaptchaVerifier;
+    const phoneNumberWithCountryCode = `+${mobile}`;
+
+    const confimation = await signInWithPhoneNumber(
+      auth,
+      phoneNumberWithCountryCode,
+      appVerifier
+    );
+    if (confimation) {
+      setConfirmationResult(confimation);
+      setShowOtpModal(true);
+      setError((prevError) => ({ ...prevError, otp: "" }));
+      return true;
     }
+    setError((prevError) => ({
+      ...prevError,
+      otp: "Failed to send OTP. Please try again.",
+    }));
+    return false;
+  };
+
+  const handleOtpVerification = () => {
+    if (confirmationResult) {
+      confirmationResult
+        .confirm(otp)
+        .then(() => {
+          setError((prevError) => ({ ...prevError, otp: "" }));
+          navigate(`/client/dashboard`); // OTP verified, navigate to dashboard
+        })
+        .catch(() => {
+          setError((prevError) => ({
+            ...prevError,
+            otp: "Invalid OTP. Please try again.",
+          }));
+        });
+    }
+  };
+
+  const loginUser = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/users/login`,
         { mobile, password }
       );
 
-      // Check if response data is null
-      if (!response?.data) {
-        toast.error("No response data received");
-        return;
-      }
-
       const { data } = response.data;
+      if (response.status === 200 && data) {
+        setLoading(false);
+        const verified = await handlePhoneLogin(); // Call phone login after the successful backend response
+        if (verified) {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("mobile", data.mobile);
+          localStorage.setItem("_id", data._id);
+          localStorage.setItem("role", data.role);
 
-      // Check if login was successful
-      if (response.status !== 200 || !data) {
+          toast.success(response.data.message);
+        }
+      } else {
         toast.error(response.data.message || "Login failed");
-        return;
-      }
-
-      // Store user details in local storage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("mobile", data.mobile);
-      localStorage.setItem("_id", data._id);
-      localStorage.setItem("role", data.role);
-      
-      toast.success(response.data.message);
-      
-      // Navigate based on user role
-      if (data.role === "client") {
-        navigate(`/client/dashboard`);
-      } else if (data.role === "customer") {
-        localStorage.setItem("customerId", data._id);
-        navigate(`/customer/profile?customerId=${data._id}`);
       }
     } catch (error) {
-      if (error.response) {
-        // Server responded with a status other than 200 range
-        toast.error(error.response.data.message || "An error occurred");
-      } else if (error.request) {
-        // Request was made but no response received
-        toast.error("No response received from server");
-      } else {
-        // Something happened in setting up the request
-        toast.error("An error occurred while setting up the request");
-      }
+      toast.error(error.response?.data?.message || "An error occurred");
+      setLoading(false);
     }
-    setLoading(false)
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      {loading && <Loader text='Wait while login' />}
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4">
+      {loading && <Loader text="Wait while login" />}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-md">
-        <div className="flex justify-center mt-6">
-          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-gray-400">Logo</span>
-          </div>
-        </div>
         <div className="p-8">
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <img src={'/nimantran logo.png'} alt="Logo" className="h-16 w-auto" />
+          </div>
+          
           <form onSubmit={loginUser} className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
               Login
             </h2>
             <div>
@@ -130,8 +146,7 @@ const Login = () => {
                 id="mobile"
                 placeholder="Enter your mobile number"
                 value={mobile}
-                onChange={(e) => handleMobileChange(e)}
-                onKeyPress={handleKeyPress}
+                onChange={handleMobileChange}
                 className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none ${
                   error.mobile
                     ? "focus:ring-red-500 focus:border-red-500"
@@ -145,29 +160,22 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 "
+                className="block text-sm font-medium text-gray-700"
               >
                 Password
               </label>
-              <div className=" relative">
+              <div className="relative">
                 <input
-                  type={`${togglePassword ? "text" : "password"}`}
+                  type={togglePassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    validatePassword(e.target.value);
-                  }}
-                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none ${
-                    error.password
-                      ? "focus:ring-red-500 focus:border-red-500"
-                      : "focus:ring-blue-500 focus:border-blue-500"
-                  } sm:text-sm transition duration-150 ease-in-out`}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
                 <span
-                  className=" absolute bottom-2 right-2.5 cursor-pointer text-blue-500"
-                  onClick={() => settogglePassword((prev) => !prev)}
+                  className="absolute bottom-2 right-2.5 cursor-pointer text-blue-500"
+                  onClick={() => setTogglePassword((prev) => !prev)}
                 >
                   {togglePassword ? (
                     <FontAwesomeIcon icon={faEye} />
@@ -176,10 +184,6 @@ const Login = () => {
                   )}
                 </span>
               </div>
-
-              {error.password && (
-                <p className="text-red-500 text-sm mt-1">{error.password}</p>
-              )}
             </div>
             <div>
               <button
@@ -189,18 +193,51 @@ const Login = () => {
                 Login
               </button>
             </div>
-            {/* <p className="text-sm text-gray-600 text-center">
-              Don't have an account?
+            
+            {/* Recaptcha */}
+            <div id="recaptcha-container" className="mt-4"></div>
+            
+            <p className="text-sm text-gray-600 text-center mt-4">
+              Don't have an account?{" "}
               <Link
                 to={"/register"}
-                className="text-blue-400 hover:text-blue-600 transition duration-150 ease-in-out"
+                className="text-blue-400 hover:text-blue-600"
               >
                 Register Now
               </Link>
-            </p> */}
+            </p>
           </form>
         </div>
       </div>
+
+      {/* OTP Modal */}
+      {showOtpModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h2 className="text-2xl font-bold text-center mb-4">Enter OTP</h2>
+            <input
+              type="text"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              placeholder="Enter OTP"
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+            />
+            {error.otp && <p className="text-red-500 text-sm">{error.otp}</p>}
+            <button
+              onClick={handleOtpVerification}
+              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+            >
+              Confirm OTP
+            </button>
+            <button
+              onClick={() => setShowOtpModal(false)}
+              className="w-full bg-blue-500 text-white py-2 mt-4 rounded-lg hover:bg-blue-600 transition duration-300"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

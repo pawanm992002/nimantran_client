@@ -59,7 +59,7 @@ const Transactions = () => {
         <div className="spinner"></div>
       </div>
     );
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <div className="w-full h-full flex justify-center items-center text-xl font-bold">Error: {error}</div>;
 
   return (
     <div className="w-full flex flex-col overflow-hidden no-scrollbar h-full mx-auto">

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
@@ -7,11 +7,29 @@ import {
   faWandMagicSparkles,
 } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
+import Select from "react-select";
+import { Country } from "country-state-city";
 
 const CreateCustomerJSX = ({ showModal, setShowModal }) => {
   const token = localStorage.getItem("token");
   const [togglePassword, settogglePassword] = useState(false);
   const [passwordGenerationCount, setPasswordGenerationCount] = useState(0);
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState({});
+
+  useEffect(() => {
+    const allCountries = Country.getAllCountries().map((country) => ({
+      label: `(${country.phonecode}) ${country.isoCode}`,
+      value: country.phonecode,
+      code: country.isoCode,
+    }));
+    setCountryOptions(allCountries);
+    setSelectedCountry(allCountries[0]);
+  }, []);
+
+  const handleCountryChange = (selectedOption) => {
+    setSelectedCountry(selectedOption);
+  };
 
   const nameRef = useRef("");
   const mobileRef = useRef("");
@@ -42,7 +60,7 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
     try {
       const newCustomer = {
         name: nameRef.current.value,
-        mobile: mobileRef.current.value,
+        mobile: selectedCountry.value + mobileRef.current.value,
         password: passwordRef.current.value,
         email: emailRef.current.value,
         gender: genderRef.current.value,
@@ -202,15 +220,28 @@ const CreateCustomerJSX = ({ showModal, setShowModal }) => {
               <label className="block mb-2 after:content-['*'] after:ml-0.5 after:text-red-500">
                 Mobile:
               </label>
-              <input
-                type="tel"
-                ref={mobileRef}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                required
-                onKeyPress={handleKeyPress}
-                onBlur={(e) => validateMobile(e.target.value)}
-                onChange={(e) => validateMobile(e.target.value)}
-              />
+              <div className="flex items-center">
+                <div className="w-2/5">
+                  <Select
+                    options={countryOptions}
+                    value={selectedCountry}
+                    onChange={handleCountryChange}
+                    isSearchable
+                    className="w-full" // Ensure it takes full width of its container
+                  />
+                </div>
+                <div className="w-4/5 ml-2">
+                  <input
+                    type="tel"
+                    ref={mobileRef}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    required
+                    onKeyPress={handleKeyPress}
+                    onBlur={(e) => validateMobile(e.target.value)}
+                    onChange={(e) => validateMobile(e.target.value)}
+                  />
+                </div>
+              </div>
 
               {mobileError && <p className="text-red-500">{mobileError}</p>}
             </div>

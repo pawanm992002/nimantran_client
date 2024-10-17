@@ -179,7 +179,7 @@ const CreateEvent = () => {
   }, []);
 
   return (
-    <div>
+    <div className="m-5">
       <h2 className="text-3xl font-semibold mb-6 text-center">Create Event</h2>
       <div className="flex items-center h-full w-full">
         <form
@@ -268,9 +268,57 @@ const CreateEvent = () => {
             />
           </div>
 
+          <div className="mb-6">
+            <label className="mx-0 text-lg font-medium text-gray-700">
+              Location
+            </label>
+            <div className="flex gap-x-2 mt-1">
+              <select
+                onChange={handleCountryChange}
+                value={selectedCountry}
+                className="p-2 rounded-md max-w-28"
+              >
+                <option value="">Select Country</option>
+                {countries.map((country) => (
+                  <option key={country.isoCode} value={country.isoCode}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                onChange={handleStateChange}
+                value={selectedState}
+                disabled={!selectedCountry}
+                className="p-2 rounded-md max-w-28 outline-1 outline-gray-800 bg-gray-200"
+              >
+                <option value="">Select State</option>
+                {states.map((state) => (
+                  <option key={state.isoCode} value={state.isoCode}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                onChange={handleCityChange}
+                value={selectedCity}
+                disabled={!selectedState}
+                className="p-2 rounded-md max-w-28 outline-1 outline-gray-800 bg-gray-200"
+              >
+                <option value="">Select City</option>
+                {cities.map((city) => (
+                  <option key={city.id} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="mb-6 ">
             <label className="mx-0 text-lg font-medium text-gray-700">
-              Edit Type
+              Edit Type <span className="text-red-600">*</span>
             </label>
             <select
               value={editType}
@@ -283,65 +331,13 @@ const CreateEvent = () => {
             </select>
           </div>
 
-          <div className="flex gap-x-2">
-            <div className="">
-              <label className="block text-lg font-medium text-gray-700">
-                Location
-              </label>
-              <div className="flex gap-x-2 ">
-                <select
-                  onChange={handleCountryChange}
-                  value={selectedCountry}
-                  className="py-2 px-1 rounded-md max-w-28"
-                >
-                  <option value="">Select Country</option>
-                  {countries.map((country) => (
-                    <option key={country.isoCode} value={country.isoCode}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  onChange={handleStateChange}
-                  value={selectedState}
-                  disabled={!selectedCountry}
-                  className="py-2 px-1 rounded-md max-w-28 outline-1 outline-gray-800 bg-gray-200"
-                >
-                  <option value="">Select State</option>
-                  {states.map((state) => (
-                    <option key={state.isoCode} value={state.isoCode}>
-                      {state.name}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  onChange={handleCityChange}
-                  value={selectedCity}
-                  disabled={!selectedState}
-                  className="py-2 px-1 rounded-md max-w-28 outline-1 outline-gray-800 bg-gray-200"
-                >
-                  <option value="">Select City</option>
-                  {cities.map((city) => (
-                    <option key={city.id} value={city.name}>
-                      {city.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className=" w-full flex items-center justify-end">
-            <div className="flex items-center justify-end w-full mt-6">
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md w-full"
-              >
-                Create Event
-              </button>
-            </div>
+          <div className="flex items-center justify-center w-full mt-6">
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md w-full"
+            >
+              Create Event
+            </button>
           </div>
         </form>
       </div>

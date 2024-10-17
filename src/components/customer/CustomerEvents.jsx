@@ -1,18 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import EditEventModal from "../events/EditEventModal";
-import CreateEventModal from "../events/CreateEventModal";
-import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const CustomerEvents = () => {
   const navigate = useNavigate();
-  const [customer, setCustomer] = useState({});
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [searchItem, setsearchItem] = useState("");
   const token = localStorage.getItem("token");
   const [params] = useSearchParams();
@@ -44,33 +40,26 @@ const CustomerEvents = () => {
     setSelectedEvent(null);
   };
 
-  const handleCloseCreateModal = () => {
-    setShowCreateModal(false);
-  };
-
-  const handleDeleteEvent = async (event) => {
-    try {
-      await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/events/delete-event/${event._id}/${customer._id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setEvents(events.filter((e) => e._id !== event._id));
-      toast.success("Event deleted successfully");
-    } catch (error) {
-      console.error("Error deleting event:", error);
-      toast.error("Error deleting event");
-    }
-  };
+  // const handleDeleteEvent = async (event) => {
+  //   try {
+  //     await axios.delete(
+  //       `${process.env.REACT_APP_BACKEND_URL}/events/delete-event/${event._id}/${customer._id}`,
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       }
+  //     );
+  //     setEvents(events.filter((e) => e._id !== event._id));
+  //     toast.success("Event deleted successfully");
+  //   } catch (error) {
+  //     console.error("Error deleting event:", error);
+  //     toast.error("Error deleting event");
+  //   }
+  // };
 
   const handleEventUpdated = () => {
     fetchEvents();
   };
 
-  const handleEventCreated = () => {
-    fetchEvents();
-  };
   const handleEditClick = (customerId, event) => {
     setSelectedEvent(event);
     setShowEditModal(true);
@@ -195,13 +184,8 @@ const CustomerEvents = () => {
         show={showEditModal}
         onClose={handleCloseEditModal}
         event={selectedEvent}
-        customerId={customer._id}
+        customerId={id}
         onEventUpdated={handleEventUpdated}
-      />
-      <CreateEventModal
-        show={showCreateModal}
-        onClose={handleCloseCreateModal}
-        onEventCreated={handleEventCreated}
       />
     </div>
   );

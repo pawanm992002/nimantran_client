@@ -1,17 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { Country } from "country-state-city";
+import Select from "react-select";
+
 const Register = () => {
   const [mobile, setMobile] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [cpassword, setCPassword] = useState("");
   const [error, setError] = useState({ mobile: "", password: "" });
   const [role, setRole] = useState("client"); // default role for registration
   const [clientId, setClientId] = useState("");
   const [togglePassword, settogglePassword] = useState(false);
+  const [ctogglePassword, setCtogglePassword] = useState(false);
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState({});
+
+  useEffect(() => {
+    const allCountries = Country.getAllCountries().map((country) => ({
+      label: `(${country.phonecode}) ${country.isoCode}`,
+      value: country.phonecode,
+      code: country.isoCode,
+    }));
+    setCountryOptions(allCountries);
+    setSelectedCountry(allCountries[0]);
+  }, []);
+
+  const handleCountryChange = (selectedOption) => {
+    setSelectedCountry(selectedOption);
+  };
 
   const navigate = useNavigate();
   const handleKeyPress = (event) => {
@@ -37,14 +58,21 @@ const Register = () => {
   };
 
   const validatePassword = (value) => {
+    if (password !== value) {
+      setError((prevError) => ({
+        ...prevError,
+        password: "Password must be same as Confirm Password",
+      }));
+      return;
+    }
     if (value.length < 6) {
       setError((prevError) => ({
         ...prevError,
         password: "Password must be at least 6 characters long",
       }));
-    } else {
-      setError((prevError) => ({ ...prevError, password: "" }));
+      return;
     }
+    setError((prevError) => ({ ...prevError, password: "" }));
   };
 
   const registerUser = async (event) => {
@@ -53,7 +81,12 @@ const Register = () => {
       return; // Exit the function if there are errors
     }
     try {
-      const user = { mobile, password, role, name };
+      const user = {
+        mobile: selectedCountry.value + mobile,
+        password,
+        role,
+        name,
+      };
       if (role === "customer") {
         user.clientId = clientId;
       }
@@ -80,15 +113,15 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-3">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-md">
+        {/* Logo Section */}
         <div className="flex justify-center mt-6">
-          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-gray-400">Logo</span>
-          </div>
+          <img src="/nimantran logo.png" alt="Logo" className="h-16" />
         </div>
-        <div className="p-8">
-          <form onSubmit={registerUser} className="space-y-6">
+        {/* Form Section */}
+        <div className="px-7 py-3">
+          <form onSubmit={registerUser} className="space-y-5">
             <h2 className="text-2xl font-bold text-gray-900 text-center">
               Registration
             </h2>
@@ -115,16 +148,29 @@ const Register = () => {
               >
                 Mobile Number
               </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                id="mobile"
-                placeholder="Enter your mobile number"
-                value={mobile}
-                onChange={(e) => handleMobileChange(e)}
-                onKeyPress={handleKeyPress}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
-              />
+              <div className="flex items-center">
+                <div className="w-2/5">
+                  <Select
+                    options={countryOptions}
+                    value={selectedCountry}
+                    onChange={handleCountryChange}
+                    isSearchable
+                    className="w-full"
+                  />
+                </div>
+                <div className="w-4/5 ml-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    id="mobile"
+                    placeholder="Enter your mobile number"
+                    value={mobile}
+                    onChange={(e) => handleMobileChange(e)}
+                    onKeyPress={handleKeyPress}
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+                  />
+                </div>
+              </div>
               {error.mobile && (
                 <p className="text-red-500 text-sm mt-1">{error.mobile}</p>
               )}
@@ -136,7 +182,7 @@ const Register = () => {
               >
                 Password
               </label>
-              <div className=" relative">
+              <div className="relative">
                 <input
                   type={`${togglePassword ? "text" : "password"}`}
                   id="password"
@@ -153,7 +199,7 @@ const Register = () => {
                   } sm:text-sm transition duration-150 ease-in-out`}
                 />
                 <span
-                  className=" absolute bottom-2 right-2.5 cursor-pointer text-blue-500"
+                  className="absolute bottom-2 right-2.5 cursor-pointer text-blue-500"
                   onClick={() => settogglePassword((prev) => !prev)}
                 >
                   {togglePassword ? (
@@ -167,6 +213,42 @@ const Register = () => {
                 <p className="text-red-500 text-sm mt-1">{error.password}</p>
               )}
             </div>
+            <div>
+              <label
+                htmlFor="cpassword"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={`${ctogglePassword ? "text" : "password"}`}
+                  id="cpassword"
+                  placeholder="Enter your password"
+                  value={cpassword}
+                  onChange={(e) => {
+                    setCPassword(e.target.value);
+                    validatePassword(e.target.value);
+                  }}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none ${
+                    error.password
+                      ? "focus:ring-red-500 focus:border-red-500"
+                      : "focus:ring-blue-500 focus:border-blue-500"
+                  } sm:text-sm transition duration-150 ease-in-out`}
+                />
+                <span
+                  className="absolute bottom-2 right-2.5 cursor-pointer text-blue-500"
+                  onClick={() => setCtogglePassword((prev) => !prev)}
+                >
+                  {ctogglePassword ? (
+                    <FontAwesomeIcon icon={faEye} />
+                  ) : (
+                    <FontAwesomeIcon icon={faEyeSlash} />
+                  )}
+                </span>
+              </div>
+            </div>
+            {console.log(password, cpassword)}
             <div>
               <label
                 htmlFor="role"
@@ -210,17 +292,16 @@ const Register = () => {
                 Register
               </button>
             </div>
-            <p className="text-sm text-gray-600 text-center">
-              Already have an account?
-              <a
-                href="/login"
-                className="text-blue-600 hover:text-blue-500 transition duration-150 ease-in-out"
-              >
-                {" "}
-                Login
-              </a>
-            </p>
           </form>
+          <p className="text-sm text-gray-600 text-center mt-4">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-blue-600 hover:text-blue-500 transition duration-150 ease-in-out"
+            >
+              Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>

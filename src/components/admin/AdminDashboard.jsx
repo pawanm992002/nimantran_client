@@ -3,6 +3,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
+import Select from "react-select";
+import { Country } from "country-state-city";
+
 const AdminDashboard = () => {
   const token = localStorage.getItem("token");
   const [mobile, setMobile] = useState("");
@@ -13,6 +16,33 @@ const AdminDashboard = () => {
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [acceptedRequestId, setAcceptedRequestId] = useState("");
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState({});
+
+  useEffect(() => {
+    const allCountries = Country.getAllCountries().map((country) => ({
+      label: `(${country.phonecode}) ${country.isoCode}`,
+      value: country.phonecode,
+      code: country.isoCode,
+    }));
+    setCountryOptions(allCountries);
+    setSelectedCountry(allCountries[0]);
+  }, []);
+
+  const handleCountryChange = (selectedOption) => {
+    setSelectedCountry(selectedOption);
+  };
+
+  const handleMobileChange = (e) => {
+    const mobileRegex = /^\d{10}$/;
+    const isValid = mobileRegex.test(e.target.value);
+
+    if (isValid) {
+      setMobile(e.target.value);
+    } else {
+      setMobile(e.target.value);
+    }
+  };
 
   useEffect(() => {
     fetchRequests();
@@ -43,7 +73,7 @@ const AdminDashboard = () => {
       }
       const { data } = await axios.post(
         `${process.env.REACT_APP_ADMIN}/create-client`,
-        { mobile, password, name },
+        { mobile: selectedCountry.value + mobile, password, name },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -102,12 +132,12 @@ const AdminDashboard = () => {
   const handleFiltersStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   };
- const handleKeyPress = (event) => {
-   const charCode = event.which ? event.which : event.keyCode;
-   if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-     event.preventDefault();
-   }
- };
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+    }
+  };
   const filteredData =
     selectedStatus === "All"
       ? requests
@@ -168,17 +198,32 @@ const AdminDashboard = () => {
                 />
               </div>
               <div className="mb-4 flex flex-col gap-y-1.5">
-                <label htmlFor="mobile" className=" text-gray-700 ">
-                  Mobile
-                </label>
-                <input
-                  id="mobile"
-                  type="text"
-                  className="w-full m-0 px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={mobile}
-                  onKeyPress={handleKeyPress}
-                  onChange={(e) => setMobile(e.target.value)}
-                />
+                <div className="flex items-center">
+                  {/* Country Code Dropdown */}
+                  <div className="w-2/5">
+                    <Select
+                      options={countryOptions}
+                      value={selectedCountry}
+                      onChange={handleCountryChange}
+                      isSearchable
+                      className="w-full" // Ensure it takes full width of its container
+                    />
+                  </div>
+
+                  {/* Mobile Number Input */}
+                  <div className="w-4/5 ml-2">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      id="mobile"
+                      placeholder="Enter your mobile number"
+                      value={mobile}
+                      onChange={(e) => handleMobileChange(e)}
+                      onKeyPress={handleKeyPress}
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+                    />
+                  </div>
+                </div>
               </div>
               <div className="mb-4 flex flex-col gap-y-1.5">
                 <label htmlFor="temp_password" className=" text-gray-700 ">
